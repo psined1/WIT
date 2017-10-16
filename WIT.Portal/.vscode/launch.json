@@ -1,0 +1,46 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "chrome",
+      "request": "attach",
+      "name": "Attach to Chrome",
+      "port": 9222,
+      "webRoot": "${workspaceRoot}/../../.."
+    },
+    {
+      "name": "Launch Chrome",
+       "type": "chrome",
+       "request": "launch",
+       "url": "http://localhost:4200/",
+       "sourceMaps": true,
+       "trace": true,
+       "webRoot": "${workspaceRoot}"   ,
+       "runtimeArgs": [
+        "--remote-debugging-port=9222"
+      ]  
+   }
+]
+}
+/*
+{
+  "version": "0.2.0",
+  "configurations": [
+        {
+           "name": "Attach to Chrome, with sourcemaps",
+            "type": "chrome",
+            "request": "attach",
+            "url": "http://localhost:4200",
+            "port": 9222,
+            "sourceMaps": true,
+            "trace": true,
+            "webRoot": "${workspaceRoot}",
+            "runtimeArgs": [
+                "--disable-session-crashed-bubble",
+                "--disable-infobars"
+            ],
+            "userDataDir": "${workspaceRoot}/.vscode/chrome"      
+        }
+  ]
+}
+*/

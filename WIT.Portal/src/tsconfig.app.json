@@ -1,0 +1,15 @@
+{
+  "extends": "../tsconfig-cli.json",
+  "compilerOptions": {
+    "outDir": "../out-tsc/app",
+    "emitDecoratorMetadata": true,                                                                   
+    "experimentalDecorators": true,             
+    "module": "es5",
+    "baseUrl": "",
+    "types": []
+  },
+  "exclude": [
+    "test.ts",
+    "**/*.spec.ts"
+  ]
+}
