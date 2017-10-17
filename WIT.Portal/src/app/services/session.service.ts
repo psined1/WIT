@@ -1,5 +1,6 @@
 ﻿import { Injectable, EventEmitter } from '@angular/core';
 import { User } from '../entities/user.entity';
+import { Headers } from '@angular/http';
 
 @Injectable()
 export class SessionService {
@@ -50,7 +51,33 @@ export class SessionService {
         this.city = "";
         this.state = "";
         this.zipCode = "";
-        this.isAuthenicated = false;   
+        this.isAuthenicated = false;
+
+        this.saveToken("");
     }
 
+    private saveToken(token: string): void {
+
+        if (typeof (Storage) !== "undefined") {
+            localStorage.setItem("WIT.Token", token);
+        }
+    }
+
+    public setToken(headers: Headers): void {
+
+        if (typeof (Storage) !== "undefined") {
+
+            let token = localStorage.getItem("WIT.Token");
+            headers.append('Authorization', token);
+        }
+    }
+
+    public updateToken(headers: Headers): void {
+
+        let authorizationToken = headers.get("Authorization");
+        if (authorizationToken != null) {
+
+            this.saveToken(authorizationToken);
+        }
+    }
 }

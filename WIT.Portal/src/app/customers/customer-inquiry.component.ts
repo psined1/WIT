@@ -54,7 +54,7 @@ export class CustomerInquiryComponent implements OnInit {
         this.columns.push(new DataGridColumn('companyName', 'Company Name', '[{"width": "30%" , "hyperLink": true, "disableSorting": false}]'));
         this.columns.push(new DataGridColumn('city', 'City', '[{"width": "20%" , "disableSorting": false}]'));
         this.columns.push(new DataGridColumn('zipCode', 'Zip Code', '[{"width": "15%" , "disableSorting": false}]'));
-        this.columns.push(new DataGridColumn('dateUpdated', 'Date Updated', '[{"width": "15%" , "disableSorting": false, "formatDate": true}]'));
+        this.columns.push(new DataGridColumn('UpdatedOn', 'Date Updated', '[{"width": "15%" , "disableSorting": false, "formatDate": true}]'));
 
         this.executeSearch();
 

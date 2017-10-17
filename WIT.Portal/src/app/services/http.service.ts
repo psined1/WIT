@@ -12,56 +12,46 @@ import 'rxjs/add/operator/map';
 @Injectable()
 export class HttpService {
 
-    constructor(private http: Http, private blockUIService: BlockUIService) {
+    constructor(
+        private http: Http,
+        private blockUIService: BlockUIService,
+        private sessionService: SessionService
+    ) {
+    }
+
+    private makeHeaders(): Headers {
+        let headers = new Headers();
+        headers.append("Content-Type", "application/json; charset=utf-8");
+        headers.append('Accept', 'q=0.8;application/json;q=0.9');
+
+        this.sessionService.setToken(headers);
+
+        return headers;
     }
 
     public httpPost(object: any, url: string): Observable<any> {
 
-        this.blockUIService.blockUIEvent.emit({
-            value: true
-        });
+        this.blockUIService.startBlock();
      
         let body = JSON.stringify(object);
-
-        let headers = new Headers();      
-        headers.append("Content-Type", "application/json; charset=utf-8");
-        headers.append('Accept', 'q=0.8;application/json;q=0.9');
-   
-        if (typeof (Storage) !== "undefined") {
-
-            let token = localStorage.getItem("WIT.Token");
-            headers.append('Authorization', token);
-        }
-
+        let headers = this.makeHeaders();
         let options = new RequestOptions({ headers: headers });
 
         return this.http.post(url, body, options)
             .map((response) => this.parseResponse(response, this.blockUIService, true))
             .catch((err) => this.handleError(err, this.blockUIService, true));
-
     }
 
 
     public httpPostWithNoBlock(object: any, url: string): Observable<any> {
 
         let body = JSON.stringify(object);
-
-        let headers = new Headers();      
-        headers.append("Content-Type", "application/json; charset=utf-8");
-        headers.append('Accept', 'q=0.8;application/json;q=0.9');
-
-        if (typeof (Storage) !== "undefined") {
-
-            let token = localStorage.getItem("WIT.Token");
-            headers.append('Authorization', token);
-        }
-
+        let headers = this.makeHeaders();
         let options = new RequestOptions({ headers: headers });
 
         return this.http.post(url, body, options)
             .map((response) => this.parseResponse(response, this.blockUIService, false))
             .catch((err) => this.handleError(err, this.blockUIService, false));
-
     }
 
 
@@ -70,35 +60,22 @@ export class HttpService {
         let body = error.json();
 
         if (blocking) {
-            blockUIService.blockUIEvent.emit({
-                value: false
-            });
+            blockUIService.stopBlock();
         }
      
         return Observable.throw(body);
-
     }
 
     private parseResponse(response: Response, blockUIService: BlockUIService, blocking: Boolean) {
 
-        let authorizationToken = response.headers.get("Authorization");
-        if (authorizationToken != null) {
-
-            if (typeof (Storage) !== "undefined") {
-                localStorage.setItem("WIT.Token", authorizationToken);
-            }
-        }
+        this.sessionService.updateToken(response.headers);
 
         if (blocking) {
-            blockUIService.blockUIEvent.emit({
-                value: false
-            });
+            blockUIService.stopBlock();
         }
      
         let body = response.json();
 
         return body;
     }
-
-
 }

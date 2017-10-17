@@ -31,22 +31,20 @@ export class AppComponent implements OnInit {
     public imagesDirectory: string;
 
     constructor(
-
         private sessionService: SessionService,
         private userService: UserService,
         private blockUIService: BlockUIService,
         private router: Router,
-        private elementRef: ElementRef) {
-
+        private elementRef: ElementRef
+    ) {
         let native = this.elementRef.nativeElement;
      
         this.webApiEndPoint = native.getAttribute("webApiEndPoint");
         this.imagesDirectory = native.getAttribute("imagesDirectory");
        
-        console.log("images directory="+this.imagesDirectory);
+        console.log("images directory=" + this.imagesDirectory);
 
-        sessionService.apiServer = this.webApiEndPoint;      
-
+        this.sessionService.apiServer = this.webApiEndPoint;      
     }
 
     public ngOnInit() {
@@ -56,18 +54,12 @@ export class AppComponent implements OnInit {
         this.sessionService.sessionEvent.subscribe(user => this.onAuthenication(user));
         this.blockUIService.blockUIEvent.subscribe(event => this.blockUnBlockUI(event));
 
-        this.blockUIService.blockUIEvent.emit({
-            value: true
-        });
+        this.blockUIService.startBlock();
 
-        let user: User = new User();
-
-        this.userService.authenicate(user)
+        this.userService.authenicate()
             .subscribe(
             response => this.authenicateOnSuccess(response),
             response => this.authenicateOnError(response));
-
-
     }
 
     private blockUnBlockUI(event) {
@@ -76,48 +68,28 @@ export class AppComponent implements OnInit {
 
     private authenicateOnSuccess(response: User) {
 
-        this.blockUIService.blockUIEvent.emit({
-            value: false
-        });
+        this.blockUIService.stopBlock();
 
         if (response.returnStatus == false) {
             return;
         }
 
-        let user: User = new User();
-        user.emailAddress = response.emailAddress;
-        user.firstName = response.firstName;
-        user.lastName = response.lastName;
-        user.addressLine1 = response.addressLine1;
-        user.addressLine2 = response.addressLine2;
-        user.city = response.city;
-        user.state = response.state;
-        user.zipCode = response.zipCode;
-
-        this.firstName = response.firstName;
-        this.lastName = response.lastName;
-        this.isAuthenicated = true;
-
-        this.sessionService.authenicated(user);
+        this.sessionService.authenicated(response);
 
         this.currentRoute = this.router.url;
 
         if (this.currentRoute == "/" || this.currentRoute == undefined) {
             this.router.navigate(['/home/home']);
             return;
-        }
-        else {
+        } else {
             this.router.navigate([this.currentRoute]);
         }
-
     }
 
     private authenicateOnError(response) {
 
         this.isAuthenicated = false;
-        this.blockUIService.blockUIEvent.emit({
-            value: false
-        });
+        this.blockUIService.stopBlock();
     }
 
     private onAuthenication(user: User): void {
@@ -125,23 +97,11 @@ export class AppComponent implements OnInit {
         this.firstName = user.firstName;
         this.lastName = user.lastName;
         this.isAuthenicated = true;
-
     }
 
     public logout() {
 
-        this.firstName = "";
-        this.lastName = "";
-        this.isAuthenicated = false;
         this.sessionService.logout();
-
-        if (typeof (Storage) !== "undefined") {
-            localStorage.setItem("WIT.Token", "");
-        }
-
         this.router.navigate(['/home/home']);
-
     }
-
-
 }

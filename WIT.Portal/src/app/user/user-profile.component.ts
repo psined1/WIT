@@ -34,6 +34,7 @@ export class UserProfileComponent implements OnInit {
 
         this.address = new Address();
 
+        // populate from session first
         this.firstName = this.sessionService.firstName;
         this.lastName = this.sessionService.lastName;
         this.address.addressLine1 = this.sessionService.addressLine1;
@@ -42,10 +43,25 @@ export class UserProfileComponent implements OnInit {
         this.address.state = this.sessionService.state;
         this.address.zipCode = this.sessionService.zipCode;
 
+        // update from backend
         this.userService.getProfile()
             .subscribe(
-            response => this.getProfileSuccess(response),
-            response => this.getProfileOnError(response));
+                response => {
+                    this.firstName = response.firstName;
+                    this.lastName = response.lastName;
+                    this.address.addressLine1 = response.addressLine1;
+                    this.address.addressLine2 = response.addressLine2;
+                    this.address.city = response.city;
+                    this.address.state = response.state;
+                    this.address.zipCode = response.zipCode;            
+                },
+                response => {
+                    this.alertService.renderErrorMessage(response.returnMessage);
+                    this.messageBox = this.alertService.returnFormattedMessage();
+                    this.alerts = this.alertService.returnAlerts();
+                    this.alertService.setValidationErrors(this, response.validationErrors);
+                }
+            );
     }
 
     private clearInputErrors() {
@@ -53,24 +69,6 @@ export class UserProfileComponent implements OnInit {
         this.lastNameInputError = false;     
     }
 
-
-    private getProfileSuccess(user: User): void {
-
-        this.firstName = user.firstName;
-        this.lastName = user.lastName;
-        this.address.addressLine1 = user.addressLine1;
-        this.address.addressLine2 = user.addressLine2;
-        this.address.city = user.city;
-        this.address.state = user.state;
-        this.address.zipCode = user.zipCode;            
-    }
-
-    private getProfileOnError(response: User): void {
-        this.alertService.renderErrorMessage(response.returnMessage);
-        this.messageBox = this.alertService.returnFormattedMessage();
-        this.alerts = this.alertService.returnAlerts();
-        this.alertService.setValidationErrors(this, response.validationErrors);
-    }
 
     public updateProfile(): void {
 
@@ -114,7 +112,4 @@ export class UserProfileComponent implements OnInit {
         this.alerts = this.alertService.returnAlerts();
         this.alertService.setValidationErrors(this, response.validationErrors);    
     }
-
-
-   
 }

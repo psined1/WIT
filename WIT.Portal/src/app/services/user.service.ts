@@ -30,15 +30,16 @@ export class UserService {
         return this.httpService.httpPost(user, url);
     }
 
-    public authenicate(user: User): Observable<any> {
+    public authenicate(): Observable<any> {
     
-        let url = this.sessionService.apiServer +  "users/Authenicate";
+        let user : User = new User();
+        let url = this.sessionService.apiServer + "users/Authenicate";
         return this.httpService.httpPostWithNoBlock(user, url);
     }
 
     public getProfile(): Observable<any> {
 
-        let user = new User();
+        let user : User = new User();
         let url = this.sessionService.apiServer + "users/GetProfile";
         return this.httpService.httpPost(user, url);
     }

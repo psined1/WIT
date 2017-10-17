@@ -11,11 +11,15 @@ export class BlockUIService {
 
     public startBlock() {
         console.log('startBlock');
-        this.blockUIEvent.emit(true);
+        this.blockUIEvent.emit({
+            value: true
+        });
     }
 
     public stopBlock() {
         console.log('stopBlock');
-        this.blockUIEvent.emit(false);
+        this.blockUIEvent.emit({
+            value: false
+        });
     }
 }

@@ -259,7 +259,7 @@ namespace WIT.Business
             {
                 _userDataService.CreateSession();
 
-                User user = _userDataService.GetUser(userInformation.UserID);
+                User user = _userDataService.GetUser(userInformation.CurrentUserID);
                 if (user == null)
                 {
                     transaction.ReturnMessage.Add("Invalid session");
