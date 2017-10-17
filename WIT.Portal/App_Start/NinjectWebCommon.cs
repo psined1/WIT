@@ -1,7 +1,7 @@
-[assembly: WebActivatorEx.PreApplicationStartMethod(typeof(CodeProjectAngular2.Portal.App_Start.NinjectWebCommon), "Start")]
-[assembly: WebActivatorEx.ApplicationShutdownMethodAttribute(typeof(CodeProjectAngular2.Portal.App_Start.NinjectWebCommon), "Stop")]
+[assembly: WebActivatorEx.PreApplicationStartMethod(typeof(WIT.Portal.App_Start.NinjectWebCommon), "Start")]
+[assembly: WebActivatorEx.ApplicationShutdownMethodAttribute(typeof(WIT.Portal.App_Start.NinjectWebCommon), "Stop")]
 
-namespace CodeProjectAngular2.Portal.App_Start
+namespace WIT.Portal.App_Start
 {
     using System;
     using System.Web;
@@ -10,6 +10,8 @@ namespace CodeProjectAngular2.Portal.App_Start
 
     using Ninject;
     using Ninject.Web.Common;
+    using WIT.Interfaces;
+    using WIT.Data.Services;
 
     public static class NinjectWebCommon 
     {
@@ -62,9 +64,8 @@ namespace CodeProjectAngular2.Portal.App_Start
         /// <param name="kernel">The kernel.</param>
         private static void RegisterServices(IKernel kernel)
         {
-            kernel.Bind<WIT.Interfaces.IUserDataService>().To<WIT.Data.Services.UserDataService>();
-            kernel.Bind<WIT.Interfaces.ICustomerDataService>().To<WIT.Data.Services.CustomerDataService>();
-
+            kernel.Bind<IUserDataService>().To<UserDataService>();
+            kernel.Bind<ICustomerDataService>().To<CustomerDataService>();
         }
     }
 }

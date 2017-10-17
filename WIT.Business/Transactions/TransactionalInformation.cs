@@ -21,6 +21,7 @@ namespace WIT.Business.Entities
         public int CurrentPageNumber { get; set; }
 
         public int CurrentUserID { get; set; } // DP
+        public string CurrentUserEmail { get; set; }
 
         public TransactionalInformation()
         {

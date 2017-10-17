@@ -8,66 +8,47 @@ using WIT.Business.Entities;
 using System.Configuration;
 using WIT.Interfaces;
 using WIT.Data.Models;
+using FluentValidation.Results;
 
 namespace WIT.Business
 {
-    public class UserBusinessRules : AbstractValidator<User>
+    public class UserBusinessRules : AbstractValidator<UserInformation>
     {
-        private User _user;
-        private Boolean _emailAddressIsValid = true;
-        private Boolean _passwordConfirmationEntered = true;
+        private UserInformation _userInformation = null;
+        private IUserDataService _userDataService = null;
 
         /// <summary>
         /// Account Business Rules
         /// </summary>
-        public UserBusinessRules(IUserDataService userDataService, User user, string passwordConfirmation)
+        public UserBusinessRules(IUserDataService userDataService, UserInformation userInformation)
         {
-            userDataService.CreateSession();
+            _userInformation = userInformation;
+            _userDataService = userDataService;
 
-            if (user.EmailAddress.Length > 0)
-            {
-                _user = userDataService.GetUser(user.EmailAddress);
-                if (_user != null) _emailAddressIsValid = false;
-            }
+            _userInformation.PasswordConfirmation = (_userInformation.PasswordConfirmation ?? String.Empty).Trim();
 
-            userDataService.CloseSession();
-
-            passwordConfirmation = passwordConfirmation.Trim();
-            if (passwordConfirmation == null || passwordConfirmation == string.Empty || passwordConfirmation.Length == 0)
-            {
-                _passwordConfirmationEntered = false;
-            }
-
+            // default rules
             RuleFor(a => a.FirstName).NotEmpty().WithMessage("First Name is required.");
             RuleFor(a => a.LastName).NotEmpty().WithMessage("Last Name is required.");
-            RuleFor(a => a.Password).NotEmpty().WithMessage("Password is required.");
-            RuleFor(a => a.Password).Must(PasswordConfirmationRequired).WithMessage("Password Confirmation is required.");
-            RuleFor(a => a.Password).Matches(passwordConfirmation).WithMessage("Passwords do not match");
-            RuleFor(a => a.EmailAddress).NotEmpty().WithMessage("Email Address is required.");
-            RuleFor(a => a.EmailAddress).EmailAddress().WithMessage("Invalid Email Address.");
-            RuleFor(a => a.EmailAddress).Must(ValidateDuplicateEmailAddress).WithMessage("Email Address already exists.");          
 
+            RuleSet("register", () => {
+                RuleFor(a => a.EmailAddress)
+                    .NotEmpty().WithMessage("Email Address is required.")
+                    .EmailAddress().WithMessage("Invalid Email Address.")
+                    .Must(e => ValidateDuplicateEmailAddress(e)).WithMessage("Email Address already exists.")
+                    ;
 
+                RuleFor(a => a.PasswordConfirmation).NotEmpty().WithMessage("Password Confirmation is required.");
+
+                RuleFor(a => a.Password)
+                    .NotEmpty().WithMessage("Password is required.")
+                    .Matches(_userInformation.PasswordConfirmation).WithMessage("Passwords do not match")
+                    ;
+            });
         }
 
-        /// <summary>
-        /// User Business Rules
-        /// </summary>
-        /// <param name="userDataService"></param>
-        /// <param name="user"></param>
-        //public UserBusinessRules(IUserDataService userDataService, User user)
-        //{
-        //    RuleFor(a => a.FirstName).NotEmpty().WithMessage("First Name is required.");
-        //    RuleFor(a => a.LastName).NotEmpty().WithMessage("Last Name is required.");          
-        //}
 
-
-        public UserBusinessRules()
-        {
-            RuleFor(a => a.FirstName).NotEmpty().WithMessage("First Name is required.");
-            RuleFor(a => a.LastName).NotEmpty().WithMessage("Last Name is required.");
-        }
-
+        
         /// <summary>
         /// Validate Duplicate Email Address
         /// </summary>
@@ -75,21 +56,21 @@ namespace WIT.Business
         /// <returns></returns>
         private bool ValidateDuplicateEmailAddress(string emailAddress)
         {
-            return _emailAddressIsValid;
-
+            return (
+                string.IsNullOrWhiteSpace(_userInformation.EmailAddress) || 
+                _userDataService.GetUser(_userInformation.EmailAddress) == null
+                );
         }
 
-        /// <summary>
-        /// Validation of Password Confirmation
-        /// </summary>
-        /// <param name="password"></param>
-        /// <returns></returns>
-        private bool PasswordConfirmationRequired(string password)
+        public ValidationResult ValidateRegisterUser()
         {
-            return _passwordConfirmationEntered;
-
+            return this.Validate(_userInformation, ruleSet: "default,register");
         }
 
+        public ValidationResult ValidateUpdateProfile()
+        {
+            return this.Validate(_userInformation, ruleSet: "default");
+        }
     }
 }
 

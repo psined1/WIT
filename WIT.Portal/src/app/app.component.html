@@ -13,25 +13,23 @@
     </ul>
     <ul class="nav navbar-nav">
         <li class="nav-item">
-            <a class="nav-link" href="https://twitter.com/@fuel9"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+            <a class="nav-link" target="_blank" href="https://twitter.com/@fuel9"><i class="fa fa-twitter" aria-hidden="true"></i></a>
         </li>
     </ul>
 
-    <ul class="nav navbar-nav" [hidden]="!isAuthenicated">
+    <ul *ngIf="isAuthenicated" class="nav navbar-nav">
         <li><a [routerLink]="['/products/product-maintenance']" class="nav-link" href="#">Product Maintenance</a></li>
         <li><a [routerLink]="['/products/product-inquiry']" class="nav-link" href="#">Product Inquiry</a></li>
         <li><a [routerLink]="['/customers/customer-maintenance']">Customer Maintenance</a></li>
         <li><a [routerLink]="['/customers/customer-inquiry']">Customer Inquiry</a></li>
     </ul>
 
-    <ul class="nav navbar-nav navbar-right" [hidden]="isAuthenicated">
-        <li><a [routerLink]="['/home/register']">Register</a></li>
-        <li><a [routerLink]="['/home/login']">Login</a></li>
-    </ul>
-
-    <ul class="nav navbar-nav navbar-right" [hidden]="!isAuthenicated">
-        <li><a [routerLink]="['/user/user-profile']">{{firstName}}&nbsp;{{lastName}}&nbsp;</a></li>
-        <li><a style="cursor:pointer" (click)="logout()">Logout</a></li>
+    <ul class="nav navbar-nav navbar-right">
+        <li *ngIf="!isAuthenicated"><a [routerLink]="['/home/register']">Register</a></li>
+        <li *ngIf="!isAuthenicated"><a [routerLink]="['/home/login']">Login</a></li>
+        <li *ngIf="isAuthenicated"><a [routerLink]="['/user/user-profile']">{{firstName}}&nbsp;{{lastName}}&nbsp;</a></li>
+        <li *ngIf="isAuthenicated"><a href="#" style="cursor:pointer" (click)="logout()">Logout</a></li>
+        <li>&nbsp;&nbsp;&nbsp;</li>
     </ul>
 
 </nav>

@@ -16,36 +16,36 @@ export class UserService {
 
         let url = this.sessionService.apiServer +  "users/registerUser";     
         return this.httpService.httpPost(user, url);
-                   
     }
 
     public Ping(user: User): Observable<any> {
 
         let url = this.sessionService.apiServer + "users/Ping";     
         return this.httpService.httpPost(user, url);
-
     }
 
     public login(user: User): Observable<any> {
 
         let url = this.sessionService.apiServer +  "users/login";
         return this.httpService.httpPost(user, url);
-
     }
 
     public authenicate(user: User): Observable<any> {
     
         let url = this.sessionService.apiServer +  "users/Authenicate";
         return this.httpService.httpPostWithNoBlock(user, url);
+    }
 
+    public getProfile(): Observable<any> {
+
+        let user = new User();
+        let url = this.sessionService.apiServer + "users/GetProfile";
+        return this.httpService.httpPost(user, url);
     }
 
     public updateProfile(user: User): Observable<any> {
 
-        let url = this.sessionService.apiServer +  "users/UpdateProfile";
+        let url = this.sessionService.apiServer + "users/UpdateProfile";
         return this.httpService.httpPost(user, url);
-
     }
-
-
 }

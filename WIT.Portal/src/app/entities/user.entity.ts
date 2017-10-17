@@ -12,7 +12,9 @@ export class User extends TransactionalInformation {
     public zipCode: string;
     public password: string;    
     public passwordConfirmation: string;
-    public dateCreated: Date;
-    public dateUpdated: Date;
+    public CreatedOn: Date;
+    public UpdatedOn: Date;
+    public CreatedBy: string;
+    public UpdatedBy: string;
 }
 

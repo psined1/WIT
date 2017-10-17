@@ -125,7 +125,6 @@ namespace WIT.Business
 
             try
             {
-
                 customer.CustomerCode = customerInformation.CustomerCode;
                 customer.CompanyName = customerInformation.CompanyName;
                 customer.CustomerID = customerInformation.CustomerID;
@@ -294,8 +293,10 @@ namespace WIT.Business
             customerInformation.CompanyName = ReplaceNullValue(customer.CompanyName);
             customerInformation.CustomerCode = ReplaceNullValue(customer.CustomerCode);
             customerInformation.CustomerID = customer.CustomerID;
-            customerInformation.DateCreated = customer.DateCreated;
-            customerInformation.DateUpdated = customer.DateUpdated;
+            customerInformation.CreatedOn = customer.CreatedOn;
+            customerInformation.UpdatedOn = customer.UpdatedOn;
+            customerInformation.CreatedBy = customer.CreatedBy;
+            customerInformation.UpdatedBy = customer.UpdatedBy;
             customerInformation.PhoneNumber = ReplaceNullValue(customer.PhoneNumber);
             customerInformation.State = ReplaceNullValue(customer.State);
             customerInformation.ZipCode = ReplaceNullValue(customer.ZipCode);

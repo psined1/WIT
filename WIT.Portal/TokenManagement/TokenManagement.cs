@@ -8,7 +8,7 @@ using WIT.Business.Entities;
 
 namespace WIT.Portal.TokenManagement
 {
-    public class TokenManager
+    public static class TokenManager
     {
         /// <summary>
         /// Create Token
@@ -17,11 +17,10 @@ namespace WIT.Portal.TokenManagement
         /// <returns></returns>
         public static string CreateToken(UserInformation userInformation)
         {
-            string userID = userInformation.UserID.ToString();
-    
             var claims = new List<Claim>();
-            claims.Add(CreateClaim("UserID", userID));
-   
+            claims.Add(new Claim("UserID", userInformation.CurrentUserID.ToString()));
+            claims.Add(new Claim("UserEmail", userInformation.CurrentUserEmail));
+
             var tokenHandler = new JwtSecurityTokenHandler();
 
             DateTime now = DateTime.UtcNow.AddHours(TimeZoneInfo.Local.GetUtcOffset(DateTime.UtcNow).Hours);
@@ -84,17 +83,6 @@ namespace WIT.Portal.TokenManagement
         }
 
         /// <summary>
-        /// Create Claim
-        /// </summary>
-        /// <param name="type"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        private static Claim CreateClaim(string type, string value)
-        {
-            return new Claim(type, value);
-        }
-
-        /// <summary>
         /// Get Bytes
         /// </summary>
         /// <param name="str"></param>
@@ -107,15 +95,10 @@ namespace WIT.Portal.TokenManagement
 
         }
 
-        /// <summary>
-        /// Get UserID
-        /// </summary>
-        /// <param name="tokenString"></param>
-        /// <returns></returns>
-        public static int GetUserID(string tokenString)
+
+        public static int GetUserID(this ClaimsPrincipal that)
         {
-            ClaimsPrincipal principal = TokenManager.ValidateToken(tokenString);
-            var claim = principal.Claims.Where(p => p.Type == "UserID").SingleOrDefault();
+            var claim = that.Claims.Where(p => p.Type == "UserID").SingleOrDefault();
             if (claim == null)
             {
                 return 0;
@@ -124,10 +107,17 @@ namespace WIT.Portal.TokenManagement
             int userID = Convert.ToInt32(claim.Value);
 
             return userID;
-
         }
 
+        public static string GetUserEmail(this ClaimsPrincipal that)
+        {
+            var claim = that.Claims.Where(p => p.Type == "UserEmail").SingleOrDefault();
+            if (claim == null)
+            {
+                return null;
+            }
 
-
+            return claim.Value;
+        }
     }
 }

@@ -31,61 +31,103 @@ namespace WIT.Business
         /// <param name="userInformation"></param>
         /// <param name="transaction"></param>
         /// <returns></returns>
-        public User RegisterUser(UserInformation userInformation, out TransactionalInformation transaction)
+        public void RegisterUser(UserInformation userInformation, out TransactionalInformation transaction)
         {
-            transaction = new TransactionalInformation();
-
-            User user = new User();
+            transaction = new TransactionalInformation()
+            {
+                ReturnStatus = false
+            };
 
             try
             {
+                _userDataService.CreateSession();
+                _userDataService.BeginTransaction();
 
+                UserBusinessRules userBusinessRules = new UserBusinessRules(_userDataService, userInformation);
+                ValidationResult results = userBusinessRules.ValidateRegisterUser();
+
+                if (!results.IsValid)
+                {
+                    transaction.PopulateValidationErrors(results.Errors);
+                    return;
+                }
+
+                User user = new User();
                 user.EmailAddress = userInformation.EmailAddress;
                 user.FirstName = userInformation.FirstName;
                 user.LastName = userInformation.LastName;
                 user.Password = userInformation.Password;
-                user.AddressLine1 = string.Empty;
-                user.AddressLine2 = string.Empty;
-                user.City = string.Empty;
-                user.State = string.Empty;
-                user.ZipCode = string.Empty;
+                user.AddressLine1 = userInformation.AddressLine1;
+                user.AddressLine2 = userInformation.AddressLine2;
+                user.City = userInformation.City;
+                user.State = userInformation.State;
+                user.ZipCode = userInformation.ZipCode;
+                user.CreatedBy = userInformation.EmailAddress;
+                user.UpdatedBy = userInformation.EmailAddress;
 
-                UserBusinessRules userBusinessRules = new UserBusinessRules(_userDataService, user, userInformation.PasswordConfirmation);
-                ValidationResult results = userBusinessRules.Validate(user);
-
-                bool validationSucceeded = results.IsValid;
-                IList<ValidationFailure> failures = results.Errors;
-
-                if (validationSucceeded == false)
-                {
-                    //transaction = ValidationErrors.PopulateValidationErrors(failures);
-                    transaction.PopulateValidationErrors(failures);
-                    return user;
-                }
-
-                _userDataService.CreateSession();
-                _userDataService.BeginTransaction();
                 _userDataService.CreateUser(user);
                 _userDataService.CommitTransaction(true);
 
-                transaction.ReturnStatus = true;
-                transaction.ReturnMessage.Add("user successfully created.");
+                populateFromUser(userInformation, user);
 
+                userInformation.CurrentUserID = user.UserID;
+                userInformation.CurrentUserEmail = user.EmailAddress;
+
+                userInformation.IsAuthenicated = true;
+                userInformation.ReturnMessage.Clear();
+                userInformation.ReturnMessage.Add("Profile successfully created.");
+                userInformation.ReturnStatus = true;
+
+                transaction.ReturnStatus = true;
             }
+
             catch (Exception ex)
             {
-                string errorMessage = ex.Message;
-                transaction.ReturnMessage.Add(errorMessage);
-                transaction.ReturnStatus = false;
+                transaction.ReturnMessage.Add(ex.Message);
             }
+
             finally
             {
                 _userDataService.CloseSession();
             }
+        }
 
-            return user;
+        /// <summary>
+        /// Get Profile
+        /// </summary>
+        /// <param name="userInformation"></param>
+        /// <param name="transaction"></param>
+        public void GetProfile(UserInformation userInformation, out TransactionalInformation transaction)
+        {
+            transaction = new TransactionalInformation()
+            {
+                ReturnStatus = false
+            };
 
+            try
+            {
+                _userDataService.CreateSession();
 
+                User user = _userDataService.GetUser(userInformation.CurrentUserID);
+
+                populateFromUser(userInformation, user);
+
+                userInformation.ReturnMessage.Clear();
+                userInformation.ReturnMessage.Add("Success.");
+                userInformation.ReturnStatus = true;
+
+                transaction.ReturnStatus = true;
+            }
+
+            catch (Exception ex)
+            {
+                transaction.ReturnMessage.Add(ex.Message);
+            }
+
+            finally
+            {
+                _userDataService.CloseSession();
+            }
         }
 
         /// <summary>
@@ -95,61 +137,58 @@ namespace WIT.Business
         /// <param name="transaction"></param>
         public void UpdateProfile(UserInformation userInformation, out TransactionalInformation transaction)
         {
-            transaction = new TransactionalInformation();
-
-            User user = new User();
+            transaction = new TransactionalInformation()
+            {
+                ReturnStatus = false
+            };
 
             try
             {
-
-               
-                user.FirstName = userInformation.FirstName;
-                user.LastName = userInformation.LastName;           
-
-                UserBusinessRules userBusinessRules = new UserBusinessRules();
-                ValidationResult results = userBusinessRules.Validate(user);
-
-                bool validationSucceeded = results.IsValid;
-                IList<ValidationFailure> failures = results.Errors;
-
-                if (validationSucceeded == false)
-                {
-                    //transaction = ValidationErrors.PopulateValidationErrors(failures);
-                    transaction.PopulateValidationErrors(failures);
-                    return;
-                }
-
                 _userDataService.CreateSession();
                 _userDataService.BeginTransaction();
 
-                User existingUser = _userDataService.GetUser(userInformation.UserID);
-                existingUser.AddressLine1 = userInformation.AddressLine1;
-                existingUser.AddressLine2 = userInformation.AddressLine2;
-                existingUser.City = userInformation.City;
-                existingUser.State = userInformation.State;
-                existingUser.ZipCode = userInformation.ZipCode;
+                UserBusinessRules userBusinessRules = new UserBusinessRules(_userDataService, userInformation);
+                ValidationResult results = userBusinessRules.ValidateUpdateProfile();
+
+                if (!results.IsValid)
+                {
+                    transaction.PopulateValidationErrors(results.Errors);
+                    return;
+                }
+
+                User user = _userDataService.GetUser(userInformation.CurrentUserID);
+                
+                user.FirstName = userInformation.FirstName;
+                user.LastName = userInformation.LastName;
+                user.AddressLine1 = userInformation.AddressLine1;
+                user.AddressLine2 = userInformation.AddressLine2;
+                user.City = userInformation.City;
+                user.State = userInformation.State;
+                user.ZipCode = userInformation.ZipCode;
+                user.UpdatedBy = userInformation.CurrentUserEmail;
+                user.UpdatedOn = DateTime.Now;
 
                 _userDataService.UpdateUser(user);
                 _userDataService.CommitTransaction(true);
 
-                transaction.ReturnStatus = true;
-                transaction.ReturnMessage.Add("Your profile was successfully updated.");
+                populateFromUser(userInformation, user);
 
+                userInformation.ReturnMessage.Clear();
+                userInformation.ReturnMessage.Add("Profile successfully updated.");
+                userInformation.ReturnStatus = true;
+
+                transaction.ReturnStatus = true;
             }
+
             catch (Exception ex)
             {
-                string errorMessage = ex.Message;
-                transaction.ReturnMessage.Add(errorMessage);
-                transaction.ReturnStatus = false;
+                transaction.ReturnMessage.Add(ex.Message);
             }
+
             finally
             {
                 _userDataService.CloseSession();
             }
-
-            return;
-
-
         }
 
 
@@ -160,79 +199,47 @@ namespace WIT.Business
         /// <param name="password"></param>
         /// <param name="transaction"></param>
         /// <returns></returns>
-        public User Login(string emailAddress, string password, out TransactionalInformation transaction)
+        public void Login(UserInformation userInformation, out TransactionalInformation transaction)
         {
-            transaction = new TransactionalInformation();
-
-            User user = new User();
-
-            string errorMessage2 = string.Empty;
+            transaction = new TransactionalInformation()
+            {
+                ReturnStatus = false
+            };
 
             try
             {
-
-                errorMessage2 = "login 1";
-
                 _userDataService.CreateSession();
 
-                errorMessage2 = "login 2";
+                User user = _userDataService.GetUser(userInformation.EmailAddress);
 
-                user = _userDataService.GetUser(emailAddress);
-
-                errorMessage2 = "login 3";
-
-                if (user != null)
+                if (user == null || user.Password != userInformation.Password)
                 {
-                    if (user.Password != password)
-                    {
-                        transaction.ReturnMessage.Add("Invalid login.");
-                        transaction.ReturnStatus = false;
-                        return user;
-                    }
-                }
-                else
-                {
-                    transaction.ReturnMessage.Add("Invalid login. " + emailAddress);
-                    transaction.ReturnStatus = false;
-                    user = new User();
-                    return user;
+                    transaction.ReturnMessage.Add("Invalid login or password.");
+                    return;
                 }
 
+                populateFromUser(userInformation, user);
 
-                errorMessage2 = "login 4";
+                userInformation.CurrentUserID = user.UserID;
+                userInformation.CurrentUserEmail = user.EmailAddress;
+
+                userInformation.IsAuthenicated = true;
+                userInformation.ReturnStatus = true;
+                userInformation.ReturnMessage.Clear();
+                userInformation.ReturnMessage.Add("Login successful.");
 
                 transaction.ReturnStatus = true;
-                transaction.ReturnMessage.Add("user successfully logged in.");
-
-                if (user.AddressLine1 == null) user.AddressLine1 = string.Empty;
-                if (user.AddressLine2 == null) user.AddressLine2 = string.Empty;
-                if (user.City == null) user.City = string.Empty;
-                if (user.State == null) user.State = string.Empty;
-                if (user.ZipCode == null) user.ZipCode = string.Empty;
-
             }
+
             catch (Exception ex)
             {
-                string errorMessage = string.Empty;
-                if (ex.InnerException != null)
-                {
-                    errorMessage = ex.Message + " " + errorMessage2 + " " + ex.InnerException.ToString();
-                }
-                else
-                {
-                    errorMessage = ex.Message + " " + errorMessage2;
-                }
-                transaction.ReturnMessage.Add(errorMessage);
-                transaction.ReturnStatus = false;
+                transaction.ReturnMessage.Add(ex.Message);
             }
+
             finally
             {
                 _userDataService.CloseSession();
             }
-
-            return user;
-
-
         }
 
         /// <summary>
@@ -241,53 +248,60 @@ namespace WIT.Business
         /// <param name="userID"></param>
         /// <param name="transaction"></param>
         /// <returns></returns>
-        public User Authenicate(int userID, out TransactionalInformation transaction)
+        public void Authenicate(UserInformation userInformation, out TransactionalInformation transaction)
         {
-            transaction = new TransactionalInformation();
-
-            User user = new User();
+            transaction = new TransactionalInformation()
+            {
+                ReturnStatus = false
+            };
 
             try
             {
-
                 _userDataService.CreateSession();
 
-                user = _userDataService.GetUser(userID);
+                User user = _userDataService.GetUser(userInformation.UserID);
                 if (user == null)
                 {
                     transaction.ReturnMessage.Add("Invalid session");
                     transaction.ReturnStatus = false;
-                    return user;
+                    return;
                 }
 
+                populateFromUser(userInformation, user);
+
+                userInformation.IsAuthenicated = true;
+                userInformation.ReturnStatus = true;
+                userInformation.ReturnMessage.Clear();
+                userInformation.ReturnMessage.Add("Valid session.");
+
                 transaction.ReturnStatus = true;
-                transaction.ReturnMessage.Add("Valid session.");
-
-                if (user.AddressLine1 == null) user.AddressLine1 = string.Empty;
-                if (user.AddressLine2 == null) user.AddressLine2 = string.Empty;
-                if (user.City == null) user.City = string.Empty;
-                if (user.State == null) user.State = string.Empty;
-                if (user.ZipCode == null) user.ZipCode = string.Empty;
-
             }
+
             catch (Exception ex)
             {
-                string errorMessage = ex.Message;
-                transaction.ReturnMessage.Add(errorMessage);
-                transaction.ReturnStatus = false;
+                transaction.ReturnMessage.Add(ex.Message);
             }
+
             finally
             {
                 _userDataService.CloseSession();
             }
-
-            return user;
-
-
         }
 
+        private void populateFromUser(UserInformation userInformation, User user)
+        {
+            userInformation.UserID = user.UserID;
+            userInformation.EmailAddress = user.EmailAddress;
+            userInformation.FirstName = user.FirstName;
+            userInformation.LastName = user.LastName;
+            userInformation.AddressLine1 = user.AddressLine1 ?? String.Empty;
+            userInformation.AddressLine2 = user.AddressLine2 ?? String.Empty;
+            userInformation.City = user.City ?? String.Empty;
+            userInformation.State = user.State ?? String.Empty;
+            userInformation.ZipCode = user.ZipCode ?? String.Empty;
 
-
-
+            userInformation.Password = String.Empty;
+            userInformation.PasswordConfirmation = String.Empty;
+        }
     }
 }

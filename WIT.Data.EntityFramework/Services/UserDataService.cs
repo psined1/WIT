@@ -22,9 +22,9 @@ namespace WIT.Data.Services
         /// <param name="user"></param>
         public void CreateUser(User user)
         {
-            //DateTime now = DateTime.Now;
-            //user.DateCreated = now;
-            //user.DateUpdated = now;
+            DateTime now = DateTime.Now;
+            user.CreatedOn = now;
+            user.UpdatedOn = now;
             db.Users.Add(user);
         }
 
@@ -34,7 +34,7 @@ namespace WIT.Data.Services
         /// <param name="user"></param>
         public void UpdateUser(User user)
         {
-            user.DateUpdated = DateTime.Now;
+            user.UpdatedOn = DateTime.Now;
         }
 
         /// <summary>
@@ -44,7 +44,6 @@ namespace WIT.Data.Services
         /// <returns></returns>
         public User GetUser(string emailAddress)
         {
-            //User user = dbConnection.Users.Where(u => u.EmailAddress == emailAddress).FirstOrDefault();
             User user = db.Users.Where(u => u.EmailAddress == emailAddress).FirstOrDefault();
             return user;
         }
@@ -56,7 +55,6 @@ namespace WIT.Data.Services
         /// <returns></returns>
         public User GetUser(int userID)
         {
-            //User user = dbConnection.Users.Where(u => u.UserID == userID).FirstOrDefault();
             User user = db.Users.Where(u => u.UserID == userID).FirstOrDefault();
             return user;
         }

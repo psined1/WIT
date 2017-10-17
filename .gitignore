@@ -200,3 +200,4 @@ WIT.Business.Entities
 /WIT.Business/*.user
 /WIT.Portal/Properties/PublishProfiles/*.user
 /WIT.Portal/*.user
+/packages

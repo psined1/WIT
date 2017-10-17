@@ -36,7 +36,7 @@ namespace WIT.Portal.WebApiControllers
                 return transaction;
             }
 
-            int userID = TokenManager.GetUserID(tokenString);
+            int userID = principal.GetUserID();
 
             if (userID == 0)
             {
@@ -45,6 +45,8 @@ namespace WIT.Portal.WebApiControllers
             }
 
             info.CurrentUserID = userID;
+            info.CurrentUserEmail = principal.GetUserEmail();
+
             transaction.ReturnStatus = true;
 
             return transaction;

@@ -37,7 +37,6 @@ export class SessionService {
         this.isAuthenicated = true;
 
         this.sessionEvent.emit(user);
-
     }
 
     public logout() {
@@ -52,7 +51,6 @@ export class SessionService {
         this.state = "";
         this.zipCode = "";
         this.isAuthenicated = false;   
-              
     }
 
 }

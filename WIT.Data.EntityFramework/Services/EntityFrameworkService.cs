@@ -13,20 +13,23 @@ namespace WIT.Data.Services
    
     public class EntityFrameworkService : IDataRepository, IDisposable
     {
-
-        //AngularDatabase _connection;
         private Entities _db = new Entities();
 
         /// <summary>
         /// Database Context
         /// </summary>
-        //protected AngularDatabase dbConnection
-        //{
-        //    get { return _connection; }
-        //}
         protected Entities db
         {
             get { return _db; }
+        }
+
+        public void CreateSession()
+        {
+            //Database.SetInitializer(new MigrateDatabaseToLatestVersion<CodeProjectDatabase, Configuration>()); 
+        }
+
+        public void BeginTransaction()
+        {
         }
 
         /// <summary>
@@ -35,7 +38,6 @@ namespace WIT.Data.Services
         /// <param name="closeSession"></param>
         public void CommitTransaction(Boolean closeSession)
         {
-            //dbConnection.SaveChanges();
             db.SaveChanges();
         }
 
@@ -45,28 +47,17 @@ namespace WIT.Data.Services
         /// <param name="closeSession"></param>
         public void RollbackTransaction(Boolean closeSession)
         {
-
         }
 
-        public void Save(object entity) { }
-        public void CreateSession() 
+        public void CloseSession()
         {
-            //Database.SetInitializer(new MigrateDatabaseToLatestVersion<CodeProjectDatabase, Configuration>()); 
-
-            //_connection = new AngularDatabase();
-            _db = new Entities();
         }
-        public void BeginTransaction() { }
-
-        public void CloseSession() { }
 
         /// <summary>
         /// Dispose of connection
         /// </summary>
         public virtual void Dispose()
         {
-            //if (_connection != null)
-            //    _connection.Dispose();
             if (_db != null)
                 _db.Dispose();
         }

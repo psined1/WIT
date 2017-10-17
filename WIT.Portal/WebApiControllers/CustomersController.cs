@@ -138,27 +138,6 @@ namespace WIT.Portal.WebApiControllers
 
             TransactionalInformation transaction = new TransactionalInformation();
 
-            /*if (request.Headers.Authorization == null)
-            {
-                transaction.ReturnMessage.Add("Your session is invalid.");
-                transaction.ReturnStatus = false;
-                var badResponse = Request.CreateResponse<TransactionalInformation>(HttpStatusCode.Unauthorized, transaction);
-                return badResponse;
-            }
-
-            string tokenString = request.Headers.Authorization.ToString();
-
-            ClaimsPrincipal principal = TokenManager.ValidateToken(tokenString);
-
-            if (principal == null)
-            {
-
-                transaction.ReturnMessage.Add("Your session is invalid.");
-                transaction.ReturnStatus = false;
-                var badResponse = Request.CreateResponse<TransactionalInformation>(HttpStatusCode.Unauthorized, transaction);
-                return badResponse;
-            }*/
-
             try
             {
                 transaction = this.ValidateToken(request, customerInformation);

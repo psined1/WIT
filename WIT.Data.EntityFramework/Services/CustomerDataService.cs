@@ -18,9 +18,9 @@ namespace WIT.Data.Services
         /// <param name="customer"></param>
         public void CreateCustomer(Customer customer)
         {
-            DateTime now = DateTime.Now;
-            customer.DateCreated = now;
-            customer.DateUpdated = now;
+            //DateTime now = DateTime.Now;
+            //customer.DateCreated = now;
+            //customer.DateUpdated = now;
             db.Customers.Add(customer);
         }
 
@@ -30,7 +30,7 @@ namespace WIT.Data.Services
         /// <param name="customer"></param>
         public void UpdateCustomer(Customer customer)
         {
-            customer.DateUpdated = DateTime.Now;
+            customer.UpdatedOn = DateTime.Now;
         }
 
         /// <summary>

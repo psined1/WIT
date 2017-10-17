@@ -25,7 +25,6 @@ namespace WIT.Portal.WebApiControllers
         [HttpPost]   
         public HttpResponseMessage Ping([FromBody] UserInformation userInformation)
         {
-
             TransactionalInformation transaction = new TransactionalInformation();
 
             userInformation = new UserInformation();
@@ -34,7 +33,6 @@ namespace WIT.Portal.WebApiControllers
 
             var response = Request.CreateResponse<UserInformation>(HttpStatusCode.OK, userInformation);          
             return response;
-
         }
 
         /// <summary>
@@ -47,153 +45,51 @@ namespace WIT.Portal.WebApiControllers
         [HttpPost]
         public HttpResponseMessage RegisterUser(HttpRequestMessage request, [FromBody] UserInformation userInformation)
         {
-
+            HttpResponseMessage response = null;
             TransactionalInformation transaction = new TransactionalInformation();
 
-            UserBusinessService userBusinessService = new UserBusinessService(_userDataService);
-            User user = userBusinessService.RegisterUser(userInformation, out transaction);
-            if (transaction.ReturnStatus == false)
+            try
             {
-                var badResponse = Request.CreateResponse<TransactionalInformation>(HttpStatusCode.BadRequest, transaction);
-                return badResponse;
+                UserBusinessService userBusinessService = new UserBusinessService(_userDataService);
+                userBusinessService.RegisterUser(userInformation, out transaction);
+                if (!transaction.ReturnStatus)
+                {
+                    throw new HttpResponseException(HttpStatusCode.BadRequest);
+                }
+
+                string tokenString = TokenManager.CreateToken(userInformation);
+
+                response = Request.CreateResponse<UserInformation>(HttpStatusCode.OK, userInformation);
+                response.Headers.Add("Access-Control-Expose-Headers", "Authorization");
+                response.Headers.Add("Authorization", tokenString);
             }
 
-            userInformation.UserID = user.UserID;
+            catch (HttpResponseException ex)
+            {
+                response = Request.CreateResponse<TransactionalInformation>(ex.Response.StatusCode, transaction);
+            }
 
-            string tokenString = TokenManager.CreateToken(userInformation);
+            catch (Exception ex)
+            {
+                transaction.ReturnMessage.Add(ex.ToString());
+                response = Request.CreateResponse<TransactionalInformation>(HttpStatusCode.BadRequest, transaction);
+            }
 
-            userInformation.UserID = user.UserID;
-            userInformation.ReturnStatus = true;
-            userInformation.ReturnMessage = transaction.ReturnMessage;
-
-            var response = Request.CreateResponse<UserInformation>(HttpStatusCode.OK, userInformation);
-            response.Headers.Add("Access-Control-Expose-Headers", "Authorization");
-            response.Headers.Add("Authorization", tokenString);
             return response;
-
         }
 
         /// <summary>
-        /// Login
+        /// Update Profile
         /// </summary>
         /// <param name="request"></param>
         /// <param name="userInformation"></param>
         /// <returns></returns>
-        [Route("Login")]
+        [Route("GetProfile")]
         [HttpPost]
-        public HttpResponseMessage Login(HttpRequestMessage request, [FromBody] UserInformation userInformation)
+        public HttpResponseMessage GetProfile(HttpRequestMessage request, [FromBody] UserInformation userInformation)
         {
-
-            //string errorMessage = string.Empty;
-
-  
+            HttpResponseMessage response = null;
             TransactionalInformation transaction = new TransactionalInformation();
-
-            string emailAddress = userInformation.EmailAddress;
-            string password = userInformation.Password;
-
-            UserBusinessService userBusinessService = new UserBusinessService(_userDataService);
-            User user = userBusinessService.Login(emailAddress, password, out transaction);
-            if (transaction.ReturnStatus == false)
-            {
-                var badResponse = Request.CreateResponse<TransactionalInformation>(HttpStatusCode.BadRequest, transaction);
-                return badResponse;
-            }
-
-            userInformation.UserID = user.UserID;
-
-            string tokenString = TokenManager.CreateToken(userInformation);
-
-            userInformation.UserID = user.UserID;
-            userInformation.EmailAddress = user.EmailAddress;
-            userInformation.FirstName = user.FirstName;
-            userInformation.LastName = user.LastName;
-            userInformation.AddressLine1 = user.AddressLine1;
-            userInformation.AddressLine2 = user.AddressLine2;
-            userInformation.City = user.City;
-            userInformation.State = user.State;
-            userInformation.ZipCode = user.ZipCode;
-
-            userInformation.ReturnStatus = true;
-            userInformation.ReturnMessage = transaction.ReturnMessage;
-
-            var response = Request.CreateResponse<UserInformation>(HttpStatusCode.OK, userInformation);
-            response.Headers.Add("Access-Control-Expose-Headers", "Authorization");
-            response.Headers.Add("Authorization", tokenString);
-            return response;
-
-        }
-
-        /// <summary>
-        /// Authenicate
-        /// </summary>
-        /// <param name="request"></param>
-        /// <param name="userInformation"></param>
-        /// <returns></returns>
-        [Route("Authenicate")]
-        [HttpPost]
-        public HttpResponseMessage Authenicate(HttpRequestMessage request, [FromBody] UserInformation userInformation)
-        {
-
-            TransactionalInformation transaction = new TransactionalInformation();
-
-            /*if (request.Headers.Authorization == null)
-            {
-                transaction.ReturnMessage.Add("Your session is invalid.");
-                transaction.ReturnStatus = false;
-                var badResponse = Request.CreateResponse<TransactionalInformation>(HttpStatusCode.Unauthorized, transaction);
-                return badResponse;
-            }
-
-            string tokenString = request.Headers.Authorization.ToString();
-
-            ClaimsPrincipal principal = TokenManager.ValidateToken(tokenString);
-
-            if (principal == null)
-            {
-               
-                transaction.ReturnMessage.Add("Your session is invalid.");
-                transaction.ReturnStatus = false;
-                var badResponse = Request.CreateResponse<TransactionalInformation>(HttpStatusCode.Unauthorized, transaction);          
-                return badResponse;
-            }
-
-            int userID = TokenManager.GetUserID(Request.Headers.Authorization.ToString());
-            if (userID == 0)
-            {
-                transaction.ReturnMessage.Add("Your session is invalid.");
-                transaction.ReturnStatus = false;
-                var badResponse = Request.CreateResponse<TransactionalInformation>(HttpStatusCode.Unauthorized, transaction);
-                return badResponse;
-            }
-
-            UserBusinessService userBusinessService = new UserBusinessService(_userDataService);
-            User user = userBusinessService.Authenicate(userID, out transaction);
-            if (transaction.ReturnStatus == false)
-            {
-                var badResponse = Request.CreateResponse<TransactionalInformation>(HttpStatusCode.BadRequest, transaction);
-                return badResponse;
-            }
-
-            userInformation.UserID = user.UserID;
-            userInformation.EmailAddress = user.EmailAddress;
-            userInformation.FirstName = user.FirstName;
-            userInformation.LastName = user.LastName;
-            userInformation.AddressLine1 = user.AddressLine1;
-            userInformation.AddressLine2 = user.AddressLine2;
-            userInformation.City = user.City;
-            userInformation.State = user.State;
-            userInformation.ZipCode = user.ZipCode;
-
-            userInformation.IsAuthenicated = true;          
-            userInformation.ReturnStatus = true;
-
-            var response = Request.CreateResponse<UserInformation>(HttpStatusCode.OK, userInformation);
-            response.Headers.Add("Access-Control-Expose-Headers", "Authorization");
-            response.Headers.Add("Authorization", tokenString);
-            return response;
-            */
-
 
             try
             {
@@ -205,43 +101,28 @@ namespace WIT.Portal.WebApiControllers
                 }
 
                 UserBusinessService userBusinessService = new UserBusinessService(_userDataService);
-                User user = userBusinessService.Authenicate(userInformation.UserID, out transaction);
+                userBusinessService.GetProfile(userInformation, out transaction);
                 if (transaction.ReturnStatus == false)
                 {
                     throw new HttpResponseException(HttpStatusCode.BadRequest);
                 }
 
-                userInformation.UserID = user.UserID;
-                userInformation.EmailAddress = user.EmailAddress;
-                userInformation.FirstName = user.FirstName;
-                userInformation.LastName = user.LastName;
-                userInformation.AddressLine1 = user.AddressLine1;
-                userInformation.AddressLine2 = user.AddressLine2;
-                userInformation.City = user.City;
-                userInformation.State = user.State;
-                userInformation.ZipCode = user.ZipCode;
-
-                userInformation.IsAuthenicated = true;
-                userInformation.ReturnStatus = true;
-
-                var response = Request.CreateResponse<UserInformation>(HttpStatusCode.OK, userInformation);
-                response.Headers.Add("Access-Control-Expose-Headers", "Authorization");
-                response.Headers.Add("Authorization", request.Headers.Authorization.ToString());
-                return response;
+                response = Request.CreateResponse<UserInformation>(HttpStatusCode.OK, userInformation);
             }
 
             catch (HttpResponseException ex)
             {
-                return Request.CreateResponse<TransactionalInformation>(ex.Response.StatusCode, transaction);
+                response = Request.CreateResponse<TransactionalInformation>(ex.Response.StatusCode, transaction);
             }
 
             catch (Exception ex)
             {
                 transaction.ReturnMessage.Add(ex.ToString());
-                return Request.CreateResponse<TransactionalInformation>(HttpStatusCode.BadRequest, transaction);
+                response = Request.CreateResponse<TransactionalInformation>(HttpStatusCode.BadRequest, transaction);
             }
-        }
 
+            return response;
+        }
 
         /// <summary>
         /// Update Profile
@@ -253,56 +134,8 @@ namespace WIT.Portal.WebApiControllers
         [HttpPost]
         public HttpResponseMessage UpdateProfile(HttpRequestMessage request, [FromBody] UserInformation userInformation)
         {
-
+            HttpResponseMessage response = null;
             TransactionalInformation transaction = new TransactionalInformation();
-
-            /*if (request.Headers.Authorization == null)
-            {
-                transaction.ReturnMessage.Add("Your session is invalid.");
-                transaction.ReturnStatus = false;
-                var badResponse = Request.CreateResponse<TransactionalInformation>(HttpStatusCode.Unauthorized, transaction);
-                return badResponse;
-            }
-
-            string tokenString = request.Headers.Authorization.ToString();
-
-            ClaimsPrincipal principal = TokenManager.ValidateToken(tokenString);
-
-            if (principal == null)
-            {
-
-                transaction.ReturnMessage.Add("Your session is invalid.");
-                transaction.ReturnStatus = false;
-                var badResponse = Request.CreateResponse<TransactionalInformation>(HttpStatusCode.Unauthorized, transaction);
-                return badResponse;
-            }
-
-            //int userID = TokenManager.GetUserID(Request.Headers.Authorization.ToString());
-            int userID = TokenManager.GetUserID(tokenString);
-            if (userID == 0)
-            {
-                transaction.ReturnMessage.Add("Your session is invalid.");
-                transaction.ReturnStatus = false;
-                var badResponse = Request.CreateResponse<TransactionalInformation>(HttpStatusCode.Unauthorized, transaction);
-                return badResponse;
-            }
-
-            userInformation.UserID = userID;
-
-            UserBusinessService userBusinessService = new UserBusinessService(_userDataService);
-            userBusinessService.UpdateProfile(userInformation, out transaction);
-            if (transaction.ReturnStatus == false)
-            {
-                var badResponse = Request.CreateResponse<TransactionalInformation>(HttpStatusCode.BadRequest, transaction);
-                return badResponse;
-            }
-                    
-            userInformation.ReturnStatus = true;
-            userInformation.ReturnMessage = transaction.ReturnMessage;
-
-            var response = Request.CreateResponse<UserInformation>(HttpStatusCode.OK, userInformation);           
-            return response;
-            */
 
             try
             {
@@ -320,23 +153,114 @@ namespace WIT.Portal.WebApiControllers
                     throw new HttpResponseException(HttpStatusCode.BadRequest);
                 }
 
-                userInformation.ReturnStatus = true;
-                userInformation.ReturnMessage = transaction.ReturnMessage;
-
-                return Request.CreateResponse<UserInformation>(HttpStatusCode.OK, userInformation);
+                response = Request.CreateResponse<UserInformation>(HttpStatusCode.OK, userInformation);
             }
 
             catch (HttpResponseException ex)
             {
-                return Request.CreateResponse<TransactionalInformation>(ex.Response.StatusCode, transaction);
+                response = Request.CreateResponse<TransactionalInformation>(ex.Response.StatusCode, transaction);
             }
 
             catch (Exception ex)
             {
                 transaction.ReturnMessage.Add(ex.ToString());
-                return Request.CreateResponse<TransactionalInformation>(HttpStatusCode.BadRequest, transaction);
+                response = Request.CreateResponse<TransactionalInformation>(HttpStatusCode.BadRequest, transaction);
             }
+
+            return response;
         }
 
+        /// <summary>
+        /// Login
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="userInformation"></param>
+        /// <returns></returns>
+        [Route("Login")]
+        [HttpPost]
+        public HttpResponseMessage Login(HttpRequestMessage request, [FromBody] UserInformation userInformation)
+        {
+            HttpResponseMessage response = null;
+            TransactionalInformation transaction = new TransactionalInformation();
+
+            try
+            {
+                UserBusinessService userBusinessService = new UserBusinessService(_userDataService);
+                userBusinessService.Login(userInformation, out transaction);
+                if (!transaction.ReturnStatus)
+                {
+                    throw new HttpResponseException(HttpStatusCode.BadRequest);
+                }
+
+                string tokenString = TokenManager.CreateToken(userInformation);
+
+                response = Request.CreateResponse<UserInformation>(HttpStatusCode.OK, userInformation);
+                response.Headers.Add("Access-Control-Expose-Headers", "Authorization");
+                response.Headers.Add("Authorization", tokenString);
+            }
+
+            catch (HttpResponseException ex)
+            {
+                response = Request.CreateResponse<TransactionalInformation>(ex.Response.StatusCode, transaction);
+            }
+
+            catch (Exception ex)
+            {
+                transaction.ReturnMessage.Add(ex.ToString());
+                response = Request.CreateResponse<TransactionalInformation>(HttpStatusCode.BadRequest, transaction);
+            }
+
+            return response;
+        }
+
+        /// <summary>
+        /// Authenicate
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="userInformation"></param>
+        /// <returns></returns>
+        [Route("Authenicate")]
+        [HttpPost]
+        public HttpResponseMessage Authenicate(HttpRequestMessage request, [FromBody] UserInformation userInformation)
+        {
+            HttpResponseMessage response = null;
+            TransactionalInformation transaction = new TransactionalInformation();
+
+            try
+            {
+                transaction = this.ValidateToken(request, userInformation);
+
+                if (!transaction.ReturnStatus)
+                {
+                    throw new HttpResponseException(HttpStatusCode.Unauthorized);
+                }
+
+                UserBusinessService userBusinessService = new UserBusinessService(_userDataService);
+                userBusinessService.Authenicate(userInformation, out transaction);
+                if (transaction.ReturnStatus == false)
+                {
+                    throw new HttpResponseException(HttpStatusCode.BadRequest);
+                }
+
+                string tokenString = request.Headers.Authorization.ToString();
+
+                response = Request.CreateResponse<UserInformation>(HttpStatusCode.OK, userInformation);
+                response.Headers.Add("Access-Control-Expose-Headers", "Authorization");
+                response.Headers.Add("Authorization", tokenString);
+            }
+
+            catch (HttpResponseException ex)
+            {
+                response = Request.CreateResponse<TransactionalInformation>(ex.Response.StatusCode, transaction);
+            }
+
+            catch (Exception ex)
+            {
+                transaction.ReturnMessage.Add(ex.ToString());
+                response = Request.CreateResponse<TransactionalInformation>(HttpStatusCode.BadRequest, transaction);
+            }
+
+            return response;
+        }
     }
 }
