@@ -10,9 +10,9 @@ export class Customer extends TransactionalInformation {
     public state: string;
     public zipCode: string;
     public phoneNumber: string;
-    public CreatedOn: Date;
-    public UpdatedOn: Date;
-    public CreatedBy: string;
-    public UpdatedBy: string;
+    public createdOn: Date;
+    public updatedOn: Date;
+    public createdBy: string;
+    public updatedBy: string;
     public customers: Array<Customer>;
 }
