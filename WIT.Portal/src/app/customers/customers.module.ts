@@ -6,6 +6,10 @@ import { CustomersRoutingModule } from './customers-routing.module';
 import { FormsModule } from '@angular/forms';
 import { SharedModule } from '../shared/shared.module';
 
+import { ModalModule } from 'ngx-bootstrap';
+import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
+import { CustomerService } from '../services/customer.service';
+
 
 @NgModule({
     declarations: [
@@ -16,8 +20,10 @@ import { SharedModule } from '../shared/shared.module';
         CommonModule,
         CustomersRoutingModule,
         FormsModule,
-        SharedModule
-    ]
-
+        SharedModule,
+        ModalModule.forRoot()
+    ],
+    entryComponents: [CustomerMaintenanceComponent],
+    providers: [CustomerService, BsModalService, BsModalRef]
 })
 export class CustomersModule { }

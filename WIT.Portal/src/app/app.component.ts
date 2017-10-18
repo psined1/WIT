@@ -2,10 +2,7 @@ import { Component, EventEmitter, OnInit, Input, ElementRef, ApplicationRef } fr
 import { SessionService } from './services/session.service';
 import { User } from './entities/user.entity';
 import { UserService } from './services/user.service';
-import { CustomerService } from './services/customer.service';
-import { HttpService } from './services/http.service';
 import { BlockUIService } from './services/blockui.service';
-import { AlertService } from './services/alert.service';
 import { Router } from '@angular/router';
 import { environment } from '../environments/environment';
 
@@ -13,7 +10,7 @@ import { environment } from '../environments/environment';
     selector: 'app-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.css'],
-    providers: [UserService, CustomerService, HttpService, BlockUIService, AlertService]
+    providers: [UserService]
 })
 export class AppComponent implements OnInit {
 

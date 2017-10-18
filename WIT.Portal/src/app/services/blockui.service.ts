@@ -10,14 +10,14 @@ export class BlockUIService {
     }
 
     public startBlock() {
-        console.log('startBlock');
+        //console.log('startBlock');
         this.blockUIEvent.emit({
             value: true
         });
     }
 
     public stopBlock() {
-        console.log('stopBlock');
+        //console.log('stopBlock');
         this.blockUIEvent.emit({
             value: false
         });

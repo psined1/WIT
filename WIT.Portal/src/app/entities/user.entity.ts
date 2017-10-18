@@ -1,4 +1,4 @@
-﻿import { TransactionalInformation } from './transactionalinformation.entity';
+﻿import { TransactionalInformation } from '../entities/transactionalInformation.entity';
 
 export class User extends TransactionalInformation {
     public userID: number;

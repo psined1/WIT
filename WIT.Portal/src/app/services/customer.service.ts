@@ -22,14 +22,14 @@ export class CustomerService {
     public getCustomers(customer: Customer): Observable<any> {
 
         let url = this.sessionService.apiServer + "customers/getcustomers";
-        return this.httpService.httpPost(customer, url);
+        return this.httpService.httpPostNonblocking(customer, url);
 
     }
    
     public getCustomer(customer: Customer): Observable<any> {
 
         let url = this.sessionService.apiServer + "customers/getcustomer";
-        return this.httpService.httpPost(customer, url);
+        return this.httpService.httpPostNonblocking(customer, url);
 
     }
 

@@ -34,7 +34,7 @@ export class UserService {
     
         let user : User = new User();
         let url = this.sessionService.apiServer + "users/Authenicate";
-        return this.httpService.httpPostWithNoBlock(user, url);
+        return this.httpService.httpPostNonblocking(user, url);
     }
 
     public getProfile(): Observable<any> {

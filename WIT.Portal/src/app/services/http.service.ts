@@ -8,6 +8,8 @@ import { BlockUIService } from './blockui.service';
 import { Observable } from 'rxjs';
 import 'rxjs/add/operator/map';
 
+import { TransactionalInformation } from '../entities/transactionalInformation.entity';
+
 
 @Injectable()
 export class HttpService {
@@ -43,7 +45,7 @@ export class HttpService {
     }
 
 
-    public httpPostWithNoBlock(object: any, url: string): Observable<any> {
+    public httpPostNonblocking(object: any, url: string): Observable<any> {
 
         let body = JSON.stringify(object);
         let headers = this.makeHeaders();
@@ -55,14 +57,34 @@ export class HttpService {
     }
 
 
-    private handleError(error: any, blockUIService: BlockUIService, blocking: Boolean) {
-
-        let body = error.json();
+    private handleError(err: any, blockUIService: BlockUIService, blocking: Boolean) {
 
         if (blocking) {
             blockUIService.stopBlock();
         }
-     
+
+        let body: any;
+
+        if (err.status === 0) {
+            body = new TransactionalInformation();
+            body.returnStatus = false;
+            if (err.mesage) {
+                body.returnMessage = err.message;
+            } else {
+                switch (err.type) {
+                    case 3:
+                        body.returnMessage = "Server did not respond or general network error. Please try again later.";
+                        break;
+
+                    default:
+                        body.returnMessage = "Fatal communication error. Contact the administrator.";
+                        break;
+                }
+            }
+        } else {
+            body = err.json();
+        }
+
         return Observable.throw(body);
     }
 

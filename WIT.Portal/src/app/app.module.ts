@@ -15,7 +15,14 @@ import { FooterComponent } from './shared/footer.component';
 import { SharedModule } from './shared/shared.module';
 import { UserProfileComponent } from './user/user-profile.component';
 import { AuthorizationGuard } from "./authorization-guard";
+
 import { SessionService } from "./services/session.service";
+import { HttpService } from './services/http.service';
+import { BlockUIService } from './services/blockui.service';
+import { AlertService } from './services/alert.service';
+
+//import { ModalModule } from 'ngx-bootstrap';
+//import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 
 @NgModule({
     declarations: [
@@ -34,8 +41,9 @@ import { SessionService } from "./services/session.service";
         HttpModule,
         SharedModule,       
         RouterModule.forRoot(AppRoutes)
+        //ModalModule.forRoot()
     ],     
-    providers: [SessionService,AuthorizationGuard],
+    providers: [HttpService, BlockUIService, AlertService, SessionService, AuthorizationGuard], //, BsModalService, BsModalRef],
     bootstrap: [AppComponent]
 })
 export class AppModule { }

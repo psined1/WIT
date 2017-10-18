@@ -48,7 +48,8 @@ export class LoginComponent {
 
     }
 
-    private loginOnError(response: User) {
+    private loginOnError(response: any) {
+        //console.log(response);
         this.alertService.renderErrorMessage(response.returnMessage);
         this.messageBox = this.alertService.returnFormattedMessage();
         this.alerts = this.alertService.returnAlerts();

@@ -6,7 +6,11 @@ import { AlertService } from '../services/alert.service';
 import { CustomerService } from '../services/customer.service';
 import { AlertBoxComponent } from '../shared/alertbox.component';
 import { Customer } from '../entities/customer.entity';
-import { TransactionalInformation } from '../entities/transactionalinformation.entity';
+import { TransactionalInformation } from '../entities/transactionalInformation.entity';
+
+import { CustomerMaintenanceComponent } from '../customers/customer-maintenance.component';
+import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
+import { Subscription } from 'rxjs/Subscription';
 
 @Component({
     templateUrl: './customer-inquiry.component.html'
@@ -36,7 +40,18 @@ export class CustomerInquiryComponent implements OnInit {
     public delaySearch: Boolean;
     public runningSearch: Boolean;
 
-    constructor(private alertService: AlertService, private customerService: CustomerService, private router: Router) {
+    private modalSubscription: Subscription;
+    private updatedEvent: EventEmitter<Boolean>;
+    private requiresRefresh: Boolean = false;
+
+
+    constructor(
+        private alertService: AlertService,
+        private customerService: CustomerService,
+        private router: Router,
+
+        private modalService: BsModalService
+    ) {
 
         this.currentPageNumber = 1;
         this.autoFilter = false;
@@ -142,7 +157,6 @@ export class CustomerInquiryComponent implements OnInit {
         else if (datagridEvent.EventType == "Sorting") {
             this.sortCustomers(datagridEvent.SortDirection, datagridEvent.SortExpression);
         }
-
     }
 
 
@@ -152,8 +166,24 @@ export class CustomerInquiryComponent implements OnInit {
         let row = this.customers[rowSelected];
         let customerID = row.customerID;
 
-        this.router.navigate(['/customers/customer-maintenance', { id: customerID }]);
+        //this.router.navigate(['/customers/customer-maintenance', { id: customerID }]);
 
+        this.requiresRefresh = false;
+        this.modalSubscription = this.modalService.onHidden.subscribe((reason: string) => {
+            //console.log(`onHidden event has been fired${reason ? ', dismissed by ' + reason : ''}`);
+            this.modalSubscription.unsubscribe();
+            this.updatedEvent.unsubscribe();
+
+            if (this.requiresRefresh) {
+                this.executeSearch();
+            }
+        });
+        let modalRef = this.modalService.show(CustomerMaintenanceComponent);
+        let maintComponent: CustomerMaintenanceComponent = modalRef.content;
+        this.updatedEvent = maintComponent.updatedEvent
+            .subscribe(updated => this.requiresRefresh = updated)
+            ;
+        maintComponent.setCustomerID(customerID);
     }
 
     private sortCustomers(sortDirection: string, sortExpression: string) {

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, EventEmitter } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Address } from '../entities/address.entity';
 import { Customer } from '../entities/customer.entity';
@@ -9,21 +9,25 @@ import { AlertService } from '../services/alert.service';
 import { SessionService } from '../services/session.service';
 import { AddressComponent } from '../shared/address.component';
 
+import { BsModalRef } from 'ngx-bootstrap/modal/modal-options.class';
+
+
 @Component({
     templateUrl: './customer-maintenance.component.html'
 })
 
 export class CustomerMaintenanceComponent implements OnInit {
 
-    public title: string = 'Customer Maintenance';
     public customerID: number;
+
+    public title: string = 'Customer Maintenance';
     public customerCode: string;
     public companyName: string;
     public phoneNumber: string;
     public address: Address;
 
     public showUpdateButton: Boolean;
-    public showAddButton: Boolean;
+    public updatedEvent: EventEmitter<Boolean> = new EventEmitter();
 
     public customerCodeInputError: Boolean;
     public companyNameInputError: Boolean;
@@ -31,42 +35,46 @@ export class CustomerMaintenanceComponent implements OnInit {
     public messageBox: string;
     public alerts: Array<string> = [];
 
-    constructor(private route: ActivatedRoute, private customerService: CustomerService, private sessionService: SessionService, private alertService: AlertService) { }
+    constructor(
+        public bsModalRef: BsModalRef,
+
+        private route: ActivatedRoute,
+        private customerService: CustomerService,
+        private sessionService: SessionService,
+        private alertService: AlertService
+    ) { }
+
+    public setCustomerID(customerID: number): void {
+
+        this.customerID = customerID;
+        if (this.customerID > 0) {
+
+            let customer = new Customer();
+            customer.customerID = this.customerID;
+            this.customerService.getCustomer(customer)
+                .subscribe(
+                response => this.getCustomerOnSuccess(response),
+                response => this.getCustomerOnError(response)
+                );
+        }
+    }
 
     public ngOnInit() {
 
+        this.customerID = 0;
         this.showUpdateButton = false;
-        this.showAddButton = false;
 
         this.address = new Address();
 
         this.route.params.subscribe(params => {
 
             let id: string = params['id'];
-
             if (id != undefined) {
-
                 this.customerID = parseInt(id);
-
-                let customer = new Customer();
-                customer.customerID = this.customerID;
-
-                this.customerService.getCustomer(customer)
-                    .subscribe(
-                    response => this.getCustomerOnSuccess(response),
-                    response => this.getCustomerOnError(response));
-
-
             }
-            else {
-                this.customerID = 0;
-                this.showAddButton = true;
-                this.showUpdateButton = false;
-            }
-
         });
 
-
+        this.setCustomerID(this.customerID);
     }
 
     private getCustomerOnSuccess(response: Customer) {
@@ -79,7 +87,6 @@ export class CustomerMaintenanceComponent implements OnInit {
         this.address.state = response.state;
         this.address.zipCode = response.zipCode;
         this.showUpdateButton = true;
-        this.showAddButton = false;
     }
 
     private getCustomerOnError(response: Customer) {
@@ -117,13 +124,13 @@ export class CustomerMaintenanceComponent implements OnInit {
 
         if (this.customerID == 0) {
             this.customerID = response.customerID;
-            this.showAddButton = false;
             this.showUpdateButton = true;
         }
 
         this.alertService.renderSuccessMessage(response.returnMessage);
         this.messageBox = this.alertService.returnFormattedMessage();
         this.alerts = this.alertService.returnAlerts();
+        this.updatedEvent.emit(true);
     }
 
     private updateCustomerOnError(response: Customer) {
@@ -138,6 +145,5 @@ export class CustomerMaintenanceComponent implements OnInit {
         this.customerCodeInputError = false;
         this.companyNameInputError = false;
     }
-
-
 }
+

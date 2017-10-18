@@ -35,14 +35,14 @@
 
 </div>
 
-<div [hidden]="showUpdateButton == false">
+<div *ngIf="showUpdateButton">
     <button (click)="updateCustomer()" class="btn btn-primary">
         Update
     </button>
 </div>
 
 
-<div [hidden]="showAddButton == false">
+<div *ngIf="!showUpdateButton">
     <button (click)="updateCustomer()" class="btn btn-primary">
         Create Customer
     </button>
