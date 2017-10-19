@@ -178,7 +178,14 @@ export class CustomerInquiryComponent implements OnInit {
                 this.executeSearch();
             }
         });
-        let modalRef = this.modalService.show(CustomerMaintenanceComponent);
+        let modalRef = this.modalService.show(CustomerMaintenanceComponent,
+            Object.assign({}, {
+                animated: true,
+                keyboard: true,
+                backdrop: true,
+                ignoreBackdropClick: false
+            }, { class: 'modal-lg' })
+        );
         let maintComponent: CustomerMaintenanceComponent = modalRef.content;
         this.updatedEvent = maintComponent.updatedEvent
             .subscribe(updated => this.requiresRefresh = updated)
