@@ -322,6 +322,8 @@
     <Content Include="src\app\shared\address.component.html" />
     <Content Include="src\app\shared\alertbox.component.css" />
     <Content Include="src\app\shared\alertbox.component.html" />
+    <Content Include="src\app\shared\confirm-yes-no\confirm-yes-no.component.css" />
+    <Content Include="src\app\shared\confirm-yes-no\confirm-yes-no.component.html" />
     <Content Include="src\app\shared\datagrid\datagrid.component.html" />
     <Content Include="src\app\shared\datagrid\datagrid.css" />
     <Content Include="src\app\shared\footer.component.css" />
@@ -415,6 +417,8 @@
     <TypeScriptCompile Include="src\app\shared\address.component.ts" />
     <TypeScriptCompile Include="src\app\shared\alertbox.component.spec.ts" />
     <TypeScriptCompile Include="src\app\shared\alertbox.component.ts" />
+    <TypeScriptCompile Include="src\app\shared\confirm-yes-no\confirm-yes-no.component.spec.ts" />
+    <TypeScriptCompile Include="src\app\shared\confirm-yes-no\confirm-yes-no.component.ts" />
     <TypeScriptCompile Include="src\app\shared\datagrid\datagrid.component.ts" />
     <TypeScriptCompile Include="src\app\shared\datagrid\datagrid.core.ts" />
     <TypeScriptCompile Include="src\app\shared\footer.component.spec.ts" />

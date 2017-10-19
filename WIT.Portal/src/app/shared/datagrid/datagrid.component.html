@@ -27,9 +27,9 @@
 
         <tr *ngFor="let row of rows; let i = index">
 
-            <td *ngFor="let col of columns" [ngStyle]="{'width': col.width, 'text-align': col.textAlign}">
+            <td *ngFor="let col of columns; let j = index" [ngStyle]="{'width': col.width, 'text-align': col.textAlign}">
 
-                <div *ngIf="col.hyperLink == false && col.singleButton == false && col.multiButton == false">
+                <div *ngIf="!col.hyperLink && !col.buttons.length">
                     <span class="table-responsive-custom"><b>{{col.description}}:&nbsp;</b></span>
                
                     <div *ngIf="col.formatDate == true && col.formatDateTime == false">{{row[col.name] | date:"MM/dd/yyyy"}}</div>
@@ -38,9 +38,9 @@
 
                 </div>
 
-                <div *ngIf="col.hyperLink == true">
+                <div *ngIf="col.hyperLink">
                     <span class="table-responsive-custom" style="width:100%"><b>{{col.description}}:&nbsp;</b></span>
-                    <div style="text-decoration: underline; cursor:pointer;" (click)="selectedRow(i)">
+                    <div style="text-decoration: underline; cursor:pointer;" (click)="selectedRow(col, i)">
                    
                         <div *ngIf="col.formatDate == true && col.formatDateTime == false">{{row[col.name] | date:"MM/dd/yyyy"}}</div>
                         <div *ngIf="col.formatDateTime == true && col.formatDate == false">{{row[col.name] | date:"mm" }}</div>
@@ -49,23 +49,14 @@
                     </div>
                 </div>
 
-                <div *ngIf="col.singleButton == true">
+                <div *ngIf="col.buttons.length">
                     <span class="table-responsive-custom" style="width:100%"><b>{{col.description}}:&nbsp;</b></span>
-                    <button class="btn btn-primary" (click)="buttonClicked(col.buttonText,i)">
-                        <b>{{col.buttonText}}</b>
-                    </button>
-                </div>
-
-                <div *ngIf="col.multiButton == true">
-                    <span class="table-responsive-custom" style="width:100%"><b>{{col.description}}:&nbsp;</b></span>
-                    <div *ngFor="let button of col.buttons" style="float:left">
-                        <button class="btn btn-primary" (click)="buttonClicked(button.ButtonText,i)">
-                            <b>{{button.ButtonText}}&nbsp;</b>
+                    <div *ngFor="let button of col.buttons; let k = index" style="float:left">
+                        <button class="btn btn-sm" (click)="buttonClicked(button,col,i)">
+                            {{button.Text}}
                         </button>&nbsp;
                     </div>
-
                 </div>
-
 
             </td>
         </tr>

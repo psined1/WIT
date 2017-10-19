@@ -205,6 +205,61 @@ namespace WIT.Business
 
 
         /// <summary>
+        /// Delete Customer
+        /// </summary>
+        /// <param name="customerInformation"></param>
+        /// <param name="transaction"></param>
+        public void DeleteCustomer(CustomerInformation customerInformation, out TransactionalInformation transaction)
+        {
+            transaction = new TransactionalInformation()
+            {
+                ReturnStatus = false
+            };
+
+            try
+            {
+                _customerDataService.CreateSession();
+                _customerDataService.BeginTransaction();
+
+                Customer customer = _customerDataService.GetCustomer(customerInformation.CustomerID);
+
+                if (customer == null || customer.CustomerID == 0)
+                {
+                    throw new Exception(string.Format("Customer ID {0} does not exist", customerInformation.CustomerID));
+                }
+
+                _customerDataService.DeleteCustomer(customer);
+                _customerDataService.CommitTransaction(true);
+
+                customerInformation.CustomerCode = customer.CustomerCode;
+                customerInformation.CompanyName = customer.CompanyName;
+                customerInformation.AddressLine1 = customer.AddressLine1;
+                customerInformation.AddressLine2 = customer.AddressLine2;
+                customerInformation.City = customer.City;
+                customerInformation.State = customer.State;
+                customerInformation.ZipCode = customer.ZipCode;
+                customerInformation.PhoneNumber = customer.PhoneNumber;
+
+                transaction.ReturnStatus = true;
+                transaction.ReturnMessage.Add("Customer was successfully deleted at " + DateTime.Now.ToString());
+            }
+
+            catch (Exception ex)
+            {
+                transaction.ReturnMessage.Add(ex.Message);
+
+                _customerDataService.RollbackTransaction(true);
+            }
+
+            finally
+            {
+                _customerDataService.CloseSession();
+            }
+        }
+
+
+
+        /// <summary>
         /// Get Customers
         /// </summary>
         /// <param name="customerCode"></param>

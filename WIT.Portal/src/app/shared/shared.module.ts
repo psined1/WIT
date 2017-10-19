@@ -6,24 +6,32 @@ import { AddressComponent } from '../shared/address.component';
 import { DataGrid } from '../shared/datagrid/datagrid.component';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ConfirmYesNoComponent } from './confirm-yes-no/confirm-yes-no.component';
+
+import { ModalModule } from 'ngx-bootstrap';
+import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
+
 
 @NgModule({
     declarations: [     
         AlertBoxComponent,
         AddressComponent,
-        DataGrid
+        DataGrid,
+        ConfirmYesNoComponent
     ],   
     imports: [
         FormsModule,      
         AlertModule.forRoot(), 
-        CommonModule
+        CommonModule,
+        ModalModule.forRoot()
     ],
     exports: [
         AlertBoxComponent,
         AddressComponent,
         DataGrid
     ],
-    providers:[AlertBoxComponent],
+    entryComponents: [ConfirmYesNoComponent],
+    providers: [AlertBoxComponent, BsModalService, BsModalRef],
     schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA]
 })
 export class SharedModule { }

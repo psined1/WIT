@@ -1,7 +1,9 @@
 import { Component, OnInit, EventEmitter, Output, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
+
 import { DataGridColumn, DataGridButton, DataGridEventInformation } from '../shared/datagrid/datagrid.core';
 import { DataGrid } from '../shared/datagrid/datagrid.component';
+
 import { AlertService } from '../services/alert.service';
 import { CustomerService } from '../services/customer.service';
 import { AlertBoxComponent } from '../shared/alertbox.component';
@@ -9,8 +11,10 @@ import { Customer } from '../entities/customer.entity';
 import { TransactionalInformation } from '../entities/transactionalInformation.entity';
 
 import { CustomerMaintenanceComponent } from '../customers/customer-maintenance.component';
+import { ConfirmYesNoComponent } from '../shared/confirm-yes-no/confirm-yes-no.component';
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 import { Subscription } from 'rxjs/Subscription';
+
 
 @Component({
     templateUrl: './customer-inquiry.component.html'
@@ -36,19 +40,21 @@ export class CustomerInquiryComponent implements OnInit {
     private sortDirection: string;
     private sortExpression: string;
 
-    public autoFilter: Boolean;
-    public delaySearch: Boolean;
-    public runningSearch: Boolean;
+    public autoFilter: Boolean = false;
+    public delaySearch: Boolean = false;
+    public runningSearch: Boolean = false;
 
     private modalSubscription: Subscription;
     private updatedEvent: EventEmitter<Boolean>;
     private requiresRefresh: Boolean = false;
+    private modalRef: BsModalRef;
 
 
     constructor(
         private alertService: AlertService,
         private customerService: CustomerService,
         private router: Router,
+        private route: ActivatedRoute,
 
         private modalService: BsModalService
     ) {
@@ -65,11 +71,24 @@ export class CustomerInquiryComponent implements OnInit {
 
     public ngOnInit() {
 
-        this.columns.push(new DataGridColumn('customerCode', 'Customer Code', '[{"width": "20%" , "disableSorting": false}]'));
-        this.columns.push(new DataGridColumn('companyName', 'Company Name', '[{"width": "30%" , "hyperLink": true, "disableSorting": false}]'));
-        this.columns.push(new DataGridColumn('city', 'City', '[{"width": "20%" , "disableSorting": false}]'));
-        this.columns.push(new DataGridColumn('zipCode', 'Zip Code', '[{"width": "15%" , "disableSorting": false}]'));
-        this.columns.push(new DataGridColumn('updatedOn', 'Date Updated', '[{"width": "15%" , "disableSorting": false, "formatDate": true}]'));
+        this.columns.push(new DataGridColumn('customerCode', 'Customer Code', '{"width": "20%" , "disableSorting": false}'));
+        this.columns.push(new DataGridColumn('companyName', 'Company Name', '{"width": "30%" , "hyperLink": true, "disableSorting": false}'));
+        this.columns.push(new DataGridColumn('cityAndState', 'City', '{"width": "20%" , "disableSorting": false}'));
+        this.columns.push(new DataGridColumn('zipCode', 'Zip Code', '{"width": "10%" , "disableSorting": false}'));
+        this.columns.push(new DataGridColumn('updatedOn', 'Date Updated', '{"width": "15%" , "disableSorting": false, "formatDate": true}'));
+        this.columns.push(new DataGridColumn('', 'Delete', '{"buttons": [{"name": "x", "text": "x"}]}'));
+
+        this.route.params.subscribe(params => {
+
+            let customerCode: string = params['customerCode'];
+            if (customerCode != undefined) {
+                this.customerCode = customerCode;
+            }
+            let companyName: string = params['companyName'];
+            if (companyName != undefined) {
+                this.companyName = companyName;
+            }
+        });
 
         this.executeSearch();
 
@@ -77,13 +96,7 @@ export class CustomerInquiryComponent implements OnInit {
 
     private executeSearch(): void {
 
-        if (this.runningSearch == true) return;
-
-        let miliseconds = 500;
-
-        if (this.delaySearch == false) {
-            miliseconds = 0;
-        }
+        if (this.runningSearch) return;
 
         this.runningSearch = true;
 
@@ -102,7 +115,7 @@ export class CustomerInquiryComponent implements OnInit {
                 response => this.getCustomersOnSuccess(response),
                 response => this.getCustomersOnError(response));
 
-        }, miliseconds)
+        }, this.delaySearch ? 500 : 0)
 
     }
 
@@ -117,7 +130,7 @@ export class CustomerInquiryComponent implements OnInit {
         transactionalInformation.sortDirection = this.sortDirection;
         transactionalInformation.sortExpression = this.sortExpression;
 
-        this.customers = response.customers;
+        this.customers = response.customers.map(c => new Customer(c));
 
         this.datagrid.databind(transactionalInformation);
 
@@ -157,16 +170,37 @@ export class CustomerInquiryComponent implements OnInit {
         else if (datagridEvent.EventType == "Sorting") {
             this.sortCustomers(datagridEvent.SortDirection, datagridEvent.SortExpression);
         }
+
+        else if (datagridEvent.EventType == "ButtonClicked") {
+            if (datagridEvent.Button.Name === "x") {
+                let rowSelected = datagridEvent.ItemSelected;
+                let customer = this.customers[rowSelected];
+                this.onDelete(customer);
+            }
+        }
     }
 
+    private onDelete(customer: Customer) {
+        this.requiresRefresh = false;
+        this.modalSubscription = this.modalService.onHide.subscribe((reason: string) => {
+            //console.log(`onHide event has been fired${reason ? ', dismissed by ' + reason : ''}`);
+            this.modalSubscription.unsubscribe();
+            if (this.modalRef.content.result === true) {
+                console.log("Deleting customer " + customer.companyName);
 
-    private selectedCustomer(itemSelected: number) {
+                this.customerService.deleteCustomer(customer)
+                    .subscribe(
+                    response => this.executeSearch(),
+                    response => this.getCustomersOnError(response));
+            }
+        });
+        this.modalRef = this.modalService.show(ConfirmYesNoComponent);
+        let yesNo: ConfirmYesNoComponent = this.modalRef.content;
+        yesNo.title = "Delete Customer";
+        yesNo.message = "About to delete customer account '" + customer.companyName + "'. Proceed?";
+    }
 
-        let rowSelected = itemSelected;
-        let row = this.customers[rowSelected];
-        let customerID = row.customerID;
-
-        //this.router.navigate(['/customers/customer-maintenance', { id: customerID }]);
+    private showCustomerForm(customerID: number) {
 
         this.requiresRefresh = false;
         this.modalSubscription = this.modalService.onHidden.subscribe((reason: string) => {
@@ -191,6 +225,22 @@ export class CustomerInquiryComponent implements OnInit {
             .subscribe(updated => this.requiresRefresh = updated)
             ;
         maintComponent.setCustomerID(customerID);
+    }
+
+    private newCustomer() {
+
+        this.showCustomerForm(0);
+    }
+
+    private selectedCustomer(itemSelected: number) {
+
+        let rowSelected = itemSelected;
+        let row = this.customers[rowSelected];
+        let customerID = row.customerID;
+
+        //this.router.navigate(['/customers/customer-maintenance', { id: customerID }]);
+
+        this.showCustomerForm(customerID);
     }
 
     private sortCustomers(sortDirection: string, sortExpression: string) {
@@ -231,31 +281,21 @@ export class CustomerInquiryComponent implements OnInit {
     public companyNameChanged(newValue): void {
 
         if (this.autoFilter == false) return;
-        if (newValue == "") return;
 
         this.companyName = newValue;
         this.currentPageNumber = 1;
         this.delaySearch = true;
-
-        setTimeout(() => {
-            this.executeSearch();
-        }, 500)
-
+        this.executeSearch();
     }
 
     public customerCodeChanged(newValue): void {
 
         if (this.autoFilter == false) return;
-        if (newValue == "") return;
 
         this.customerCode = newValue;
         this.currentPageNumber = 1;
         this.delaySearch = true;
-
-        setTimeout(() => {
-            this.executeSearch();
-        }, 500)
-
+        this.executeSearch();
     }
 
 

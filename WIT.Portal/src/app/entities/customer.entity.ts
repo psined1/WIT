@@ -15,4 +15,25 @@ export class Customer extends TransactionalInformation {
     public createdBy: string;
     public updatedBy: string;
     public customers: Array<Customer>;
+
+    constructor()
+    constructor(rhs: Customer)
+    constructor(rhs?: Customer) {
+        super();
+        if (rhs)
+            for (let k in rhs) this[k] = rhs[k];
+    }
+
+    public get cityAndState(): string {
+        let city = this.city || '';
+        let state = this.state || '';
+        if (city === '' && state === '')
+            return '';
+        else if (city === '')
+            return state;
+        else if (state === '')
+            return city;
+        else
+            return city + ', ' + state; 
+    }
 }

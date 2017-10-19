@@ -201,3 +201,4 @@ WIT.Business.Entities
 /WIT.Portal/Properties/PublishProfiles/*.user
 /WIT.Portal/*.user
 /packages
+/WIT.Data.EntityFramework/WIT.Data.csproj.user

@@ -172,5 +172,56 @@ namespace WIT.Portal.WebApiControllers
                 return Request.CreateResponse<TransactionalInformation>(HttpStatusCode.BadRequest, transaction);
             }
         }
+
+        /// <summary>
+        /// Delete Customer
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="customerInformation"></param>
+        /// <returns></returns>
+        [Route("DeleteCustomer")]
+        [HttpPost]
+        public HttpResponseMessage DeleteCustomer(HttpRequestMessage request, [FromBody] CustomerInformation customerInformation)
+        {
+
+            TransactionalInformation transaction = new TransactionalInformation();
+
+            try
+            {
+                transaction = this.ValidateToken(request, customerInformation);
+
+                if (!transaction.ReturnStatus)
+                {
+                    throw new HttpResponseException(HttpStatusCode.Unauthorized);
+                }
+
+                CustomerBusinessService customerBusinessService = new CustomerBusinessService(_customerDataService);
+                customerBusinessService.DeleteCustomer(customerInformation, out transaction);
+
+                if (!transaction.ReturnStatus)
+                {
+                    throw new HttpResponseException(HttpStatusCode.BadRequest);
+                }
+
+                customerInformation.ReturnStatus = true;
+                customerInformation.ReturnMessage = transaction.ReturnMessage;
+
+                return Request.CreateResponse<CustomerInformation>(HttpStatusCode.OK, customerInformation);
+            }
+
+            catch (HttpResponseException ex)
+            {
+                return Request.CreateResponse<TransactionalInformation>(ex.Response.StatusCode, transaction);
+            }
+
+            catch (Exception ex)
+            {
+                transaction.ReturnMessage.Add(ex.ToString());
+                return Request.CreateResponse<TransactionalInformation>(HttpStatusCode.BadRequest, transaction);
+            }
+        }
+
+
+
     }
 }

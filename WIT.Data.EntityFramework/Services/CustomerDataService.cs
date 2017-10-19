@@ -34,6 +34,15 @@ namespace WIT.Data.Services
         }
 
         /// <summary>
+        /// Delete Customer
+        /// </summary>
+        /// <param name="customer"></param>
+        public void DeleteCustomer(Customer customer)
+        {
+            db.Customers.Remove(customer);
+        }
+
+        /// <summary>
         /// Validate Duplicate Customer
         /// </summary>
         /// <param name="customerCode"></param>

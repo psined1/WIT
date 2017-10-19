@@ -40,5 +40,11 @@ export class CustomerService {
 
     }
 
+    public deleteCustomer(customer: Customer): Observable<any> {
+
+        let url = this.sessionService.apiServer + "customers/deletecustomer";
+        return this.httpService.httpPost(customer, url);
+
+    }
 
 }

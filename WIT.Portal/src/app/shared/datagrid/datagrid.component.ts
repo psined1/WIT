@@ -118,20 +118,22 @@ export class DataGrid implements OnInit {
 
     }
 
-    public selectedRow(i: number) {      
+    public selectedRow(col: DataGridColumn, i: number) {      
         let eventInformation = new DataGridEventInformation();
         eventInformation.EventType = "ItemSelected";
         eventInformation.ItemSelected = i;
+        eventInformation.Column = col;
         this.datagridEvent.emit({
             value: eventInformation
         });       
     }
 
-    public buttonClicked(buttonName: string, i: number) {
+    public buttonClicked(button: DataGridButton, col: DataGridColumn, i: number) {
 
         let eventInformation = new DataGridEventInformation();
         eventInformation.EventType = "ButtonClicked";
-        eventInformation.ButtonClicked = buttonName;
+        eventInformation.Column = col;
+        eventInformation.Button = button;
         eventInformation.ItemSelected = i;
 
         this.datagridEvent.emit({
