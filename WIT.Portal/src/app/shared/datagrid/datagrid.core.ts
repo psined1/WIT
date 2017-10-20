@@ -9,11 +9,10 @@ export class DataGridSortInformation {
 
 export class DataGridButton {
 
-    //public ButtonClicked: string;
-    //public ItemSelected: number;
     public Name: string;
     public Text: string;
-
+    public Class: string;
+    public Icon: string;
 }
 
 export class DataGridEventInformation {
@@ -32,18 +31,14 @@ export class DataGridColumn {
 
     name: string;
     description: string;
-    //options: any;
     cellWidth: string;
     textAlign: string;
 
     hyperLink: Boolean;
-    //singleButton: Boolean;
-    //multiButton: Boolean;
     disableSorting: Boolean;   
     formatDate: Boolean;
     formatDateTime: Boolean;
 
-    //buttonText: string;
     buttons: DataGridButton[] = [];
 
     constructor(name, description, options) {
@@ -60,27 +55,14 @@ export class DataGridColumn {
             this.hyperLink = false;
         }
 
-        //this.singleButton = this.options[0].singleButton;
-        //this.multiButton = this.options[0].multiButton;
-
-        //if (this.singleButton != true) {
-        //    this.singleButton = false;
-        //}
-
-        //if (this.singleButton == true) {
-        //    this.buttonText = this.options[0].buttonText;
-        //}
-
-        //if (this.multiButton != true) {
-        //    this.multiButton = false;
-        //}
-
         if (config.buttons && config.buttons.length) {
             let items = config.buttons.length;
             for (let i = 0; i < items; i++) {
                 let button = new DataGridButton();
-                button.Name = config.buttons[i].name;
-                button.Text = config.buttons[i].text;
+                button.Name = config.buttons[i].name || i.toString();
+                button.Text = config.buttons[i].text || "";
+                button.Class = config.buttons[i].class || "btn btn-default";
+                button.Icon = config.buttons[i].icon;
                 this.buttons.push(button);
             }
         }

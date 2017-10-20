@@ -21,7 +21,7 @@ export class AppComponent implements OnInit {
 
     public blockUI: Boolean;
 
-    public currentRoute: string;
+    //public currentRoute: string;    // TODO: move to session?
     public title: string;
     public version: string;
     public webApiEndPoint: string;
@@ -73,13 +73,14 @@ export class AppComponent implements OnInit {
 
         this.sessionService.authenicated(response);
 
-        this.currentRoute = this.router.url;
+        let currentRoute = this.router.url;
 
-        if (this.currentRoute == "/" || this.currentRoute == undefined) {
+        console.log(currentRoute);
+
+        if (currentRoute == "/" || currentRoute == undefined) {
             this.router.navigate(['/home/home']);
-            return;
         } else {
-            this.router.navigate([this.currentRoute]);
+            this.router.navigate([currentRoute]);
         }
     }
 

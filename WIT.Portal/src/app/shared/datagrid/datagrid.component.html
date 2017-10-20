@@ -51,8 +51,9 @@
 
                 <div *ngIf="col.buttons.length">
                     <span class="table-responsive-custom" style="width:100%"><b>{{col.description}}:&nbsp;</b></span>
-                    <div *ngFor="let button of col.buttons; let k = index" style="float:left">
-                        <button class="btn btn-sm" (click)="buttonClicked(button,col,i)">
+                    <div *ngFor="let button of col.buttons; let k = index" class="btn-group btn-group-xs pull-right">
+                        <button [class]="button.Class" (click)="buttonClicked(button,col,i)">
+                            <span *ngIf="button.Icon" [class]="'glyphicon glyphicon-'+button.Icon" aria-hidden="true"></span>
                             {{button.Text}}
                         </button>&nbsp;
                     </div>
@@ -77,7 +78,7 @@
     </button>
     &nbsp;{{currentPageNumber}}&nbsp;/&nbsp;{{totalPages}}&nbsp;
     <button class="btn ui-grid-pager-control" (click)="buttonNextPage()" [disabled]="disableNextPageButton || (totalPages == 1 && this.currentPageNumber == 1)">
-        <div class="last-triangle">
+        <div class="last-triangle next-triangle">
         </div>
     </button>
     <button class="btn ui-grid-pager-control" (click)="buttonLastPage()" [disabled]="disableLastPageButton || (totalPages == 1 && this.currentPageNumber == 1)">

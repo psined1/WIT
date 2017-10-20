@@ -9,7 +9,9 @@ export class AuthorizationGuard implements CanActivate {
     constructor(private _router: Router, private sessionService: SessionService) { }
 
     public canActivate() {              
-        if (this.sessionService.isAuthenicated==true) return true;
+        if (this.sessionService.isAuthenicated)
+            return true;
+
         this._router.navigate(['home/login']);
         return false;
     }

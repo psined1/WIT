@@ -12,6 +12,8 @@ export class ConfirmYesNoComponent implements OnInit {
     public result: Boolean = false;
     public title: string;
     public message: string;
+    public buttonYes: string = "Yes";
+    public buttonNo: string = "No";
 
     constructor(public bsModalRef: BsModalRef) { }
 

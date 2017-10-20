@@ -71,12 +71,12 @@ export class CustomerInquiryComponent implements OnInit {
 
     public ngOnInit() {
 
-        this.columns.push(new DataGridColumn('customerCode', 'Customer Code', '{"width": "20%" , "disableSorting": false}'));
-        this.columns.push(new DataGridColumn('companyName', 'Company Name', '{"width": "30%" , "hyperLink": true, "disableSorting": false}'));
-        this.columns.push(new DataGridColumn('cityAndState', 'City', '{"width": "20%" , "disableSorting": false}'));
-        this.columns.push(new DataGridColumn('zipCode', 'Zip Code', '{"width": "10%" , "disableSorting": false}'));
-        this.columns.push(new DataGridColumn('updatedOn', 'Date Updated', '{"width": "15%" , "disableSorting": false, "formatDate": true}'));
-        this.columns.push(new DataGridColumn('', 'Delete', '{"buttons": [{"name": "x", "text": "x"}]}'));
+        this.columns.push(new DataGridColumn('customerCode', 'Customer Code', '{"width": "20%"}'));
+        this.columns.push(new DataGridColumn('companyName', 'Company Name', '{"width": "30%" , "hyperLink": true}'));
+        this.columns.push(new DataGridColumn('cityAndState', 'City', '{"width": "20%"}'));
+        this.columns.push(new DataGridColumn('zipCode', 'Zip Code', '{"width": "10%"}'));
+        this.columns.push(new DataGridColumn('updatedOn', 'Date Updated', '{"width": "15%" , "formatDate": true}'));
+        this.columns.push(new DataGridColumn('', '', '{"disableSorting": true, "buttons": [{"name": "x", "icon": "trash", "class": "btn btn-danger"}]}'));
 
         this.route.params.subscribe(params => {
 

@@ -21,8 +21,7 @@ import { HttpService } from './services/http.service';
 import { BlockUIService } from './services/blockui.service';
 import { AlertService } from './services/alert.service';
 
-//import { ModalModule } from 'ngx-bootstrap';
-//import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
+import { BsDropdownModule } from 'ngx-bootstrap';
 
 @NgModule({
     declarations: [
@@ -40,10 +39,10 @@ import { AlertService } from './services/alert.service';
         FormsModule,
         HttpModule,
         SharedModule,       
-        RouterModule.forRoot(AppRoutes)
-        //ModalModule.forRoot()
+        RouterModule.forRoot(AppRoutes),
+        BsDropdownModule.forRoot()
     ],     
-    providers: [HttpService, BlockUIService, AlertService, SessionService, AuthorizationGuard], //, BsModalService, BsModalRef],
+    providers: [HttpService, BlockUIService, AlertService, SessionService, AuthorizationGuard],
     bootstrap: [AppComponent]
 })
 export class AppModule { }

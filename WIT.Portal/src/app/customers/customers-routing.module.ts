@@ -6,8 +6,8 @@ import { AuthorizationGuard } from "../authorization-guard";
 
 const customerRoutes: Routes = [
     { path: '', component: CustomerInquiryComponent },
-    { path: 'customer-inquiry', component: CustomerInquiryComponent, canActivate: [AuthorizationGuard]  },
-    { path: 'customer-maintenance', component: CustomerMaintenanceComponent, canActivate: [AuthorizationGuard]  }
+    { path: 'customer-inquiry', component: CustomerInquiryComponent, canActivate: [AuthorizationGuard]  }
+    //{ path: 'customer-maintenance', component: CustomerMaintenanceComponent, canActivate: [AuthorizationGuard]  }
 ]
 
 @NgModule({

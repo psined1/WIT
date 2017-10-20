@@ -274,6 +274,7 @@
     <Content Include=".vscode\launch.json" />
     <Content Include=".vscode\tasks.json" />
     <Content Include="e2e\tsconfig.e2e.json" />
+    <Content Include=".angular-cli.json" />
     <None Include="karma.conf.js" />
     <None Include="Properties\Settings.settings">
       <Generator>PublicSettingsSingleFileGenerator</Generator>
