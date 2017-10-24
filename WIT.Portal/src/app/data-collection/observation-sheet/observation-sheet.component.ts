@@ -1,53 +1,113 @@
-import { Component, OnInit } from '@angular/core';
-import { ObservationSheetItem } from '../entities/observationSheetItem';
+import { Component, OnInit, EventEmitter } from '@angular/core';
+import { ObservationSheetStep } from '../entities/observation-sheet-step.entity';
 import { AccordionConfig } from 'ngx-bootstrap/accordion';
+import { DragulaService } from 'ng2-dragula';
 
-/*export function getAccordionConfig(): AccordionConfig {
-    return Object.assign(new AccordionConfig(), { closeOthers: true });
-}*/
+import { ConfirmYesNoComponent } from '../../shared/confirm-yes-no/confirm-yes-no.component';
+
+import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
+
 
 @Component({
     selector: 'app-observation-sheet',
     templateUrl: './observation-sheet.component.html',
-    styleUrls: ['./observation-sheet.component.css']
-    //providers: [{ provide: AccordionConfig, useFactory: getAccordionConfig }]
+    styleUrls: ['./observation-sheet.component.css'],
+    providers: [DragulaService]
 })
 export class ObservationSheetComponent implements OnInit {
 
     private title = "Observation sheet";
-    private items: Array<ObservationSheetItem>;
+    public steps: Array<ObservationSheetStep>;
 
+    private modalRef: BsModalRef;
+    private modalEvents: EventEmitter<string>;
+    private dirty: Boolean;
 
-    constructor() { }
+    constructor(
+        private dragulaService: DragulaService,
+        private modalService: BsModalService
+    ) {
+        dragulaService.dropModel.subscribe((value) => {
+            //let [el, target, source] = value.slice(1);
+            //console.log('onDropModel:');
+            //console.log(el);
+            //console.log(target);
+            //console.log(source);
+            this.dirty = true;
+        });
+        /*dragulaService.removeModel.subscribe((value) => {
+            let [el, source] = value.slice(1);
+            console.log('onRemoveModel:');
+            console.log(el);
+            console.log(source);
+        });*/
+        dragulaService.setOptions('allSteps', {
+            moves: function (el: any, container: any, handle: any): any {
+                //console.log(el, container);
+                return handle.classList.contains('handle');
+            }
+        });
+    }
 
     ngOnInit() {
-        this.items = new Array<ObservationSheetItem>();
+        this.steps = new Array<ObservationSheetStep>();
 
-        let item: ObservationSheetItem;
+        for (let i = 1; i <= 0; i++) {
 
-        item = new ObservationSheetItem();
-        item.itemID = 1;
-        item.name = 'Test ' + item.itemID;
-        this.items.push(item);
+            let item = new ObservationSheetStep();
+            item.id = i;
+            item.name = 'Step ' + i;
+            this.steps.push(item);
+        }
 
-        item = new ObservationSheetItem();
-        item.itemID = 2;
-        item.name = 'Test ' + item.itemID;
-        this.items.push(item);
+        this.dirty = false;
     }
 
-    private addItem(): void {
-        let item = new ObservationSheetItem();
-        item.itemID = this.items.length + 1;
-        item.name = 'Test ' + item.itemID;
-        this.items.push(item);
+    private addStep(): void {
+        let item = new ObservationSheetStep();
+        let n = this.steps.length + 1;
+        item.name = 'Step ' + n;
+        this.steps.push(item);
+
+        this.dirty = true;
     }
 
-    private isOpenChange(event: any): void {
-        console.log(event);
+    private deleteStep(step: ObservationSheetStep): void {
+
+        this.modalEvents = this.modalService.onHide.subscribe((reason: string) => {
+            if (this.modalRef.content.result === true) {
+                this.modalEvents.unsubscribe();
+
+                /*this.customerService.deleteCustomer(customer)
+                    .subscribe(
+                    response => this.executeSearch(),
+                    response => this.getCustomersOnError(response));*/
+
+                let i = this.steps.indexOf(step);
+                if (i >= 0) {
+                    //step.deleted = true;
+                    this.steps.splice(i, 1);
+                    this.dirty = true;
+                }
+            }
+        });
+
+        //console.log(step);
+
+        this.modalRef = this.modalService.show(ConfirmYesNoComponent);
+        let yesNo: ConfirmYesNoComponent = this.modalRef.content;
+        yesNo.title = "Delete Observation Step";
+        yesNo.message = "About to delete observation step '" + step.name + "'. Proceed?";
     }
 
-    private onDragEnd(event: any): void {
-        console.log(event);
+    private save(): void {
+
+        for (let i = 0; i < this.steps.length; i++) {
+            let step = this.steps[i];
+            step.sort = i;
+            console.log(step);
+        }
+
+        this.dirty = false;
     }
 }

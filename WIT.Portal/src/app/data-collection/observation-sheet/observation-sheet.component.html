@@ -1,31 +1,54 @@
 <h4 class="page-header">{{title}}</h4>
 
-<!--
-<div class="panel panel-default">
-</div>
--->
-<section dndDropzone>
-    <div>
-        <accordion [closeOthers]="true">
-            <content *ngFor="let item of items">
+<div class='wrapper'>
+    <accordion [closeOthers]="true">
 
-                <accordion-group #group (isOpenChange)="isOpenChange($event)" [dndDraggable]="item" (dndEnd)="onDragEnd($event)">
-                    <div accordion-heading>
-                        {{item.name}}
+        <div class="container" [dragula]="'allSteps'" [dragulaModel]='steps'>
+
+            <content *ngFor="let step of steps; let i = index">
+
+                <accordion-group #group (isOpenChange)="isOpenChange($event)">
+
+                    <div accordion-heading><span class="handle glyphicon glyphicon-sort" aria-hidden="true"></span>&nbsp;&nbsp;
+                        <span [ngStyle]="{'font-style': !step.name || step.name === '' ? 'italic' : ''}">{{i+1}}. {{step.caption}}</span>
                         <i class="pull-right float-xs-right glyphicon"
                            [ngClass]="{'glyphicon-chevron-down': group?.isOpen, 'glyphicon-chevron-right': !group?.isOpen}"></i>
                     </div>
-                    <p>Optional content goes here</p>
-                </accordion-group>
 
-            </content>
-        </accordion>
+                    <div class="form-horizontal" role="form">
 
-    </div>
-</section>
+                            <div class="form-group">
+                                <label class="col-lg-3 col-sm-2 control-label required">Step Name</label>
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <input type="text" class="form-control" [(ngModel)]="step.name" (change)="dirty=true" [ngClass]="{'validation-error': !step.name || step.name === ''}">
+                                </div>
+                                <div class="col-lg-3" *ngIf="!step.name || step.name === ''">
+                                    <small class="text-danger">
+                                        Step Name is required
+                                    </small>
+                                </div>
+                            </div>
+
+                    </div>
+
+                    <div class="pull-left">
+                        <button (click)="false" class="btn btn-primary">Edit</button>
+                        <button (click)="deleteStep(step)" class="btn btn-danger">Delete</button>
+                    </div>
+
+              </accordion-group>
+
+        </content>
+
+</div>
+
+    </accordion>
+</div>
 
 <button type="button" class="btn btn-success"
-        (click)="addItem()">
+        (click)="addStep()">
     <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>&nbsp;Add step
 </button>
+
+<button type="button" class="btn btn-primary" (click)="save()" [disabled]="!dirty">Save Changes</button>
 

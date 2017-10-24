@@ -7,18 +7,20 @@ import { SharedModule } from '../shared/shared.module';
 import { AccordionModule } from 'ngx-bootstrap/accordion';
 import { ModalModule } from 'ngx-bootstrap';
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
-//import { DragulaModule } from 'ng2-dragula';
-import { DndModule } from 'ngx-drag-drop';
+import { DragulaModule } from 'ng2-dragula';
 
 import { DataCollectionRoutingModule } from './data-collection-routing.module';
 //import { CustomerService } from '../services/customer.service';
 
 import { ObservationSheetComponent } from './observation-sheet/observation-sheet.component';
+import { ConfirmYesNoComponent } from '../shared/confirm-yes-no/confirm-yes-no.component';
+import { VisibleStepsPipe } from '../data-collection/observation-sheet/visible-steps.pipe';
 
 
 @NgModule({
     declarations: [
-        ObservationSheetComponent
+        ObservationSheetComponent,
+        VisibleStepsPipe
     ],
     imports: [
         CommonModule,
@@ -26,11 +28,10 @@ import { ObservationSheetComponent } from './observation-sheet/observation-sheet
         FormsModule,
         SharedModule,
         ModalModule.forRoot(),
-        AccordionModule.forRoot()
-        //,DragulaModule
-        ,DndModule
+        AccordionModule.forRoot(),
+        DragulaModule
     ],
-    entryComponents: [],
+    entryComponents: [ConfirmYesNoComponent],
     providers: [BsModalService, BsModalRef]
 })
 export class DataCollectionModule { }

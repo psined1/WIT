@@ -55,7 +55,6 @@ export class CustomerInquiryComponent implements OnInit {
         private customerService: CustomerService,
         private router: Router,
         private route: ActivatedRoute,
-
         private modalService: BsModalService
     ) {
 

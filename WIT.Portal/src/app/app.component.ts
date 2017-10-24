@@ -53,10 +53,17 @@ export class AppComponent implements OnInit {
 
         this.blockUIService.startBlock();
 
+        /* DEBUG!!!
         this.userService.authenicate()
             .subscribe(
             response => this.authenicateOnSuccess(response),
             response => this.authenicateOnError(response));
+        */
+
+        let usr = new User();
+        usr.isAuthenicated = true;
+        usr.firstName = "Denis";
+        this.authenicateOnSuccess(usr);
     }
 
     private blockUnBlockUI(event) {

@@ -392,7 +392,9 @@
     <TypeScriptCompile Include="src\app\customers\customers-routing.module.ts" />
     <TypeScriptCompile Include="src\app\data-collection\data-collection-routing.module.ts" />
     <TypeScriptCompile Include="src\app\data-collection\data-collection.module.ts" />
-    <TypeScriptCompile Include="src\app\data-collection\entities\observationSheetItem.ts" />
+    <TypeScriptCompile Include="src\app\data-collection\entities\observation-sheet-step.entity.ts" />
+    <TypeScriptCompile Include="src\app\data-collection\observation-sheet\visible-steps.pipe.spec.ts" />
+    <TypeScriptCompile Include="src\app\data-collection\observation-sheet\visible-steps.pipe.ts" />
     <TypeScriptCompile Include="src\app\entities\address.entity.ts" />
     <TypeScriptCompile Include="src\app\entities\customer.entity.ts" />
     <TypeScriptCompile Include="src\app\entities\product.entity.ts" />
