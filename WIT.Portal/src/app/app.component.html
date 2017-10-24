@@ -1,9 +1,4 @@
-﻿<!-- Enable bootstrap 4 theme -->
-<script>
-    //window.__theme = 'bs4';
-</script>
-
-<nav class="navbar navbar-toggleable-md navbar-inverse bg-inverse fixed-top">
+﻿<nav class="navbar navbar-toggleable-md navbar-inverse bg-inverse fixed-top">
     <div class="container-fluid">
 
         <!-- Brand and toggle get grouped for better mobile display -->
@@ -46,6 +41,9 @@
                     <ul *dropdownMenu class="dropdown-menu">
                         <li>
                             <a [routerLink]="['/customers/customer-inquiry']">Customers</a>
+                        </li>
+                        <li>
+                            <a [routerLink]="['/dca']">Observation Sheet</a>
                         </li>
                     </ul>
                 </li>

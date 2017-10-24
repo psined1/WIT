@@ -203,3 +203,4 @@ WIT.Business.Entities
 /packages
 /WIT.Data.EntityFramework/WIT.Data.csproj.user
 /WIT.Interfaces/WIT.Interfaces.csproj.user
+/WIT.Portal/node_modules.rar

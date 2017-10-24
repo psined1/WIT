@@ -316,6 +316,8 @@
     <Content Include="src\app\home\register.component.css" />
     <Content Include="src\app\home\register.component.html" />
     <Content Include="src\app\images\loading-spinner-grey.gif" />
+    <Content Include="src\app\data-collection\observation-sheet\observation-sheet.component.css" />
+    <Content Include="src\app\data-collection\observation-sheet\observation-sheet.component.html" />
     <Content Include="src\app\products\product-inquiry.component.css" />
     <Content Include="src\app\products\product-inquiry.component.html" />
     <Content Include="src\app\products\product-maintenance.component.css" />
@@ -388,6 +390,9 @@
     <TypeScriptCompile Include="src\app\customers\customer-maintenance.component.ts" />
     <TypeScriptCompile Include="src\app\customers\customers.module.ts" />
     <TypeScriptCompile Include="src\app\customers\customers-routing.module.ts" />
+    <TypeScriptCompile Include="src\app\data-collection\data-collection-routing.module.ts" />
+    <TypeScriptCompile Include="src\app\data-collection\data-collection.module.ts" />
+    <TypeScriptCompile Include="src\app\data-collection\entities\observationSheetItem.ts" />
     <TypeScriptCompile Include="src\app\entities\address.entity.ts" />
     <TypeScriptCompile Include="src\app\entities\customer.entity.ts" />
     <TypeScriptCompile Include="src\app\entities\product.entity.ts" />
@@ -403,6 +408,8 @@
     <TypeScriptCompile Include="src\app\home\login.component.ts" />
     <TypeScriptCompile Include="src\app\home\register.component.spec.ts" />
     <TypeScriptCompile Include="src\app\home\register.component.ts" />
+    <TypeScriptCompile Include="src\app\data-collection\observation-sheet\observation-sheet.component.spec.ts" />
+    <TypeScriptCompile Include="src\app\data-collection\observation-sheet\observation-sheet.component.ts" />
     <TypeScriptCompile Include="src\app\products\product-inquiry.component.spec.ts" />
     <TypeScriptCompile Include="src\app\products\product-inquiry.component.ts" />
     <TypeScriptCompile Include="src\app\products\product-maintenance.component.spec.ts" />

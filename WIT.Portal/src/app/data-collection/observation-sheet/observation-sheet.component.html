@@ -1,0 +1,31 @@
+<h4 class="page-header">{{title}}</h4>
+
+<!--
+<div class="panel panel-default">
+</div>
+-->
+<section dndDropzone>
+    <div>
+        <accordion [closeOthers]="true">
+            <content *ngFor="let item of items">
+
+                <accordion-group #group (isOpenChange)="isOpenChange($event)" [dndDraggable]="item" (dndEnd)="onDragEnd($event)">
+                    <div accordion-heading>
+                        {{item.name}}
+                        <i class="pull-right float-xs-right glyphicon"
+                           [ngClass]="{'glyphicon-chevron-down': group?.isOpen, 'glyphicon-chevron-right': !group?.isOpen}"></i>
+                    </div>
+                    <p>Optional content goes here</p>
+                </accordion-group>
+
+            </content>
+        </accordion>
+
+    </div>
+</section>
+
+<button type="button" class="btn btn-success"
+        (click)="addItem()">
+    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>&nbsp;Add step
+</button>
+
