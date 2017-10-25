@@ -1,0 +1,34 @@
+<div class="modal-header">
+
+    <h4 class="modal-title pull-left">{{title}}</h4>
+
+</div>
+
+<div class="modal-body">
+
+    <div class="form-horizontal" role="form">
+
+        <div style="padding:10px;margin:10px;">
+
+            <div class="form-group">
+                <label class="col-lg-3 col-sm-2 control-label required">Step Name</label>
+                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                    <input type="text" class="form-control" id="stepName" name="stepName" 
+                            [(ngModel)]="step.name" [ngClass]="{'validation-error': !step.name || step.name === ''}" />
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <alertbox [alerts]="alerts" [messageBox]="messageBox"></alertbox>
+
+</div>
+
+<div class="modal-footer">
+    <div class="pull-left">
+        <button (click)="updateStep()" class="btn btn-primary">Update</button>
+        <button type="button" class="btn btn-default" (click)="bsModalRef.hide()">Close</button>
+    </div>
+</div>

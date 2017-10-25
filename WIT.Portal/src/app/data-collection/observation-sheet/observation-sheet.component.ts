@@ -4,6 +4,7 @@ import { AccordionConfig } from 'ngx-bootstrap/accordion';
 import { DragulaService } from 'ng2-dragula';
 
 import { ConfirmYesNoComponent } from '../../shared/confirm-yes-no/confirm-yes-no.component';
+import { StepMaintenanceComponent } from './step-maintenance.component';
 
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 
@@ -70,6 +71,31 @@ export class ObservationSheetComponent implements OnInit {
         this.steps.push(item);
 
         this.dirty = true;
+    }
+
+    private editStep(step: ObservationSheetStep): void {
+        /*this.modalEvents = this.modalService.onHidden.subscribe((reason: string) => {
+            //console.log(`onHidden event has been fired${reason ? ', dismissed by ' + reason : ''}`);
+            this.modalEvents.unsubscribe();
+            //this.updatedEvent.unsubscribe();
+
+            if (this.requiresRefresh) {
+                this.executeSearch();
+            }
+        });*/
+        let modalRef = this.modalService.show(StepMaintenanceComponent,
+            Object.assign({}, {
+                animated: true,
+                keyboard: true,
+                backdrop: true,
+                ignoreBackdropClick: false
+            }, { class: 'modal-lg' })
+        );
+        let maintComponent: StepMaintenanceComponent = modalRef.content;
+        //this.updatedEvent = maintComponent.updatedEvent
+        //    .subscribe(updated => this.requiresRefresh = updated)
+        //    ;
+        maintComponent.step = step;
     }
 
     private deleteStep(step: ObservationSheetStep): void {

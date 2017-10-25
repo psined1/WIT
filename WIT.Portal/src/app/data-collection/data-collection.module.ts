@@ -14,13 +14,12 @@ import { DataCollectionRoutingModule } from './data-collection-routing.module';
 
 import { ObservationSheetComponent } from './observation-sheet/observation-sheet.component';
 import { ConfirmYesNoComponent } from '../shared/confirm-yes-no/confirm-yes-no.component';
-import { VisibleStepsPipe } from '../data-collection/observation-sheet/visible-steps.pipe';
-
+import { StepMaintenanceComponent } from './observation-sheet/step-maintenance.component';
 
 @NgModule({
     declarations: [
         ObservationSheetComponent,
-        VisibleStepsPipe
+        StepMaintenanceComponent
     ],
     imports: [
         CommonModule,
@@ -31,7 +30,13 @@ import { VisibleStepsPipe } from '../data-collection/observation-sheet/visible-s
         AccordionModule.forRoot(),
         DragulaModule
     ],
-    entryComponents: [ConfirmYesNoComponent],
-    providers: [BsModalService, BsModalRef]
+    entryComponents: [
+        ConfirmYesNoComponent,
+        StepMaintenanceComponent
+    ],
+    providers: [
+        BsModalService,
+        BsModalRef
+    ]
 })
 export class DataCollectionModule { }
