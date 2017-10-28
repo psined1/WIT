@@ -1,54 +1,116 @@
-<h4 class="page-header">{{title}}</h4>
+    <h4 class="page-header">{{title}}</h4>
 
-<div class='wrapper'>
-    <accordion [closeOthers]="true">
+<tabset>
 
-        <div class="container" [dragula]="'allSteps'" [dragulaModel]='steps'>
+    <h3 [ngStyle]="{'font-style': !observationSheet.name ? 'italic' : ''}">{{observationSheet.caption}}</h3>
 
-            <content *ngFor="let step of steps; let i = index">
+    <!-- Basic info tab -->
+    
+    <tab heading="Basic Info">
 
-                <accordion-group #group (isOpenChange)="isOpenChange($event)">
+        <div class="panel panel-default" style="margin-top:20px">
 
-                    <div accordion-heading><span class="handle glyphicon glyphicon-sort" aria-hidden="true"></span>&nbsp;&nbsp;
-                        <span [ngStyle]="{'font-style': !step.name || step.name === '' ? 'italic' : ''}">{{i+1}}. {{step.caption}}</span>
-                        <i class="pull-right float-xs-right glyphicon"
-                           [ngClass]="{'glyphicon-chevron-down': group?.isOpen, 'glyphicon-chevron-right': !group?.isOpen}"></i>
+            <div class="form-horizontal" role="form">
+
+                <div style="padding:10px;margin:10px; ">
+
+                    <div class="form-group">
+                        <label class="col-lg-3 col-sm-2 control-label required">Name</label>
+                        <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                            <input type="text" class="form-control" id="sheetName" name="sheetName" 
+                                   (change)="isDirty=true" [(ngModel)]="observationSheet.name" [ngClass]="{'validation-error': !observationSheet.name}" />
+                        </div>
+                        <div class="col-lg-3" *ngIf="!observationSheet.name">
+                            <small class="text-danger">
+                                Name is required
+                            </small>
+                        </div>
                     </div>
 
-                    <div class="form-horizontal" role="form">
+                    <div class="form-group">
+                        <label class="col-lg-3 col-sm-2 control-label">Description</label>
+                        <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                            <textarea rows="5" class="form-control" id="sheetDesc" name="sheetDesc" 
+                                   (change)="isDirty=true" [(ngModel)]="observationSheet.description" [ngClass]="{'validation-error': false}"></textarea>
+                        </div>
+                    </div>
 
-                            <div class="form-group">
-                                <label class="col-lg-3 col-sm-2 control-label required">Step Name</label>
-                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                    <input type="text" class="form-control" [(ngModel)]="step.name" (change)="dirty=true" [ngClass]="{'validation-error': !step.name || step.name === ''}">
+                </div>
+
+            </div>
+
+        </div>
+
+    </tab>
+
+    <!-- Steps tab -->
+
+    <tab heading="Steps">
+
+        <div class="panel panel-body">
+
+            <div class='wrapper'>
+                <accordion [closeOthers]="true">
+                    <div [dragula]="'allSteps'" [dragulaModel]='observationSheet.steps'>
+
+                        <content *ngFor="let step of observationSheet.steps; let i = index">
+
+                            <accordion-group #group (isOpenChange)="isOpenChange($event)">
+
+                                <div accordion-heading>
+                                    <span class="handle glyphicon glyphicon-sort" aria-hidden="true"></span>&nbsp;&nbsp;
+                                    <span [ngStyle]="{'font-style': !step.name || step.name === '' ? 'italic' : ''}">{{i+1}}. {{step.caption}}</span>
+                                    <i class="pull-right float-xs-right glyphicon"
+                                       [ngClass]="{'glyphicon-chevron-down': group?.isOpen, 'glyphicon-chevron-right': !group?.isOpen}"></i>
                                 </div>
-                                <div class="col-lg-3" *ngIf="!step.name || step.name === ''">
-                                    <small class="text-danger">
-                                        Step Name is required
-                                    </small>
+
+                                <div class="form-horizontal" role="form">
+
+                                    <div class="form-group">
+                                        <label class="col-lg-3 col-sm-2 control-label required">Name</label>
+                                        <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                            <input type="text" class="form-control" [(ngModel)]="step.name" (change)="isDirty=true" [ngClass]="{'validation-error': !step.name || step.name === ''}">
+                                        </div>
+                                        <div class="col-lg-3" *ngIf="!step.name || step.name === ''">
+                                            <small class="text-danger">
+                                                Name is required
+                                            </small>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="col-lg-3 col-sm-2 control-label">Description</label>
+                                        <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                            <textarea class="form-control" rows="5" [(ngModel)]="step.description" (change)="isDirty=true"></textarea>
+                                        </div>
+                                    </div>
+
                                 </div>
-                            </div>
+
+                                <div class="pull-left">
+                                    <button (click)="editStep(step)" class="btn btn-primary">Edit</button>
+                                    <button (click)="deleteStep(step)" class="btn btn-danger">Delete</button>
+                                </div>
+
+                            </accordion-group>
+
+                        </content>
 
                     </div>
+                </accordion>
+            </div>
 
-                    <div class="pull-left">
-                        <button (click)="editStep(step)" class="btn btn-primary">Edit</button>
-                        <button (click)="deleteStep(step)" class="btn btn-danger">Delete</button>
-                    </div>
+            <span *ngIf="!observationSheet.steps.length">No steps have been defined.</span>
+            <button type="button" class="btn btn-success" (click)="addStep()">
+                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>&nbsp;Add step
+            </button>
 
-              </accordion-group>
+        </div>
 
-        </content>
+    </tab>
 
+</tabset>
+
+<div style="margin-bottom:10px;">
+    <button type="button" class="btn btn-primary" (click)="save()" [disabled]="!(isDirty && observationSheet.isValid)">Save Changes</button>
 </div>
-
-    </accordion>
-</div>
-
-<button type="button" class="btn btn-success"
-        (click)="addStep()">
-    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>&nbsp;Add step
-</button>
-
-<button type="button" class="btn btn-primary" (click)="save()" [disabled]="!dirty">Save Changes</button>
-

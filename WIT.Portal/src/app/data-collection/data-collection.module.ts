@@ -4,9 +4,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SharedModule } from '../shared/shared.module';
 
-import { AccordionModule } from 'ngx-bootstrap/accordion';
-import { ModalModule } from 'ngx-bootstrap';
-import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
+//BS imports
+import { ModalModule, TabsModule, AccordionModule, BsModalService, BsModalRef } from 'ngx-bootstrap';
 import { DragulaModule } from 'ng2-dragula';
 
 import { DataCollectionRoutingModule } from './data-collection-routing.module';
@@ -15,6 +14,8 @@ import { DataCollectionRoutingModule } from './data-collection-routing.module';
 import { ObservationSheetComponent } from './observation-sheet/observation-sheet.component';
 import { ConfirmYesNoComponent } from '../shared/confirm-yes-no/confirm-yes-no.component';
 import { StepMaintenanceComponent } from './observation-sheet/step-maintenance.component';
+
+
 
 @NgModule({
     declarations: [
@@ -27,6 +28,7 @@ import { StepMaintenanceComponent } from './observation-sheet/step-maintenance.c
         FormsModule,
         SharedModule,
         ModalModule.forRoot(),
+        TabsModule.forRoot(),
         AccordionModule.forRoot(),
         DragulaModule
     ],

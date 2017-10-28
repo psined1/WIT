@@ -32,16 +32,25 @@
                             <a class="nav-link" target="_blank" href="https://twitter.com/@fuel9"><i class="fa fa-twitter" aria-hidden="true"></i></a>
                         </li>
                     </ul>
-                </li>                
-
+                </li>
+                
                 <li *ngIf="isAuthenicated" class="dropdown" dropdown>
                     <a [routerLink]="" dropdownToggle (click)="false" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                        Master Data <span class="caret"></span>
+                        Library <span class="caret"></span>
                     </a>
                     <ul *dropdownMenu class="dropdown-menu">
                         <li>
                             <a [routerLink]="['/customers/customer-inquiry']">Customers</a>
                         </li>
+                            
+                    </ul>
+                </li>
+
+                <li *ngIf="isAuthenicated" class="dropdown" dropdown>
+                    <a [routerLink]="" dropdownToggle (click)="false" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                        Analysis <span class="caret"></span>
+                    </a>
+                    <ul *dropdownMenu class="dropdown-menu">
                         <li>
                             <a [routerLink]="['/dca']">Observation Sheet</a>
                         </li>

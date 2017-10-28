@@ -11,10 +11,18 @@
         <div style="padding:10px;margin:10px;">
 
             <div class="form-group">
-                <label class="col-lg-3 col-sm-2 control-label required">Step Name</label>
+                <label class="col-lg-3 col-sm-2 control-label required">Name</label>
                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                     <input type="text" class="form-control" id="stepName" name="stepName" 
                             [(ngModel)]="step.name" [ngClass]="{'validation-error': !step.name || step.name === ''}" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-lg-3 col-sm-2 control-label">Description</label>
+                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                    <textarea class="form-control" id="stepDescription" name="stepDescription" rows="5"
+                           [(ngModel)]="step.description" [ngClass]="{'validation-error': false}"></textarea>
                 </div>
             </div>
 

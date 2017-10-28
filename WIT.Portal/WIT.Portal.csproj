@@ -395,6 +395,7 @@
     <TypeScriptCompile Include="src\app\data-collection\data-collection-routing.module.ts" />
     <TypeScriptCompile Include="src\app\data-collection\data-collection.module.ts" />
     <TypeScriptCompile Include="src\app\data-collection\entities\observation-sheet-step.entity.ts" />
+    <TypeScriptCompile Include="src\app\data-collection\entities\observation-sheet.entity.ts" />
     <TypeScriptCompile Include="src\app\data-collection\observation-sheet\step-maintenance.component.spec.ts" />
     <TypeScriptCompile Include="src\app\data-collection\observation-sheet\step-maintenance.component.ts" />
     <TypeScriptCompile Include="src\app\entities\address.entity.ts" />

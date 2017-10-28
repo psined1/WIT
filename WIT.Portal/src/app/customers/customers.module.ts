@@ -10,11 +10,10 @@ import { ModalModule } from 'ngx-bootstrap';
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 import { CustomerService } from '../services/customer.service';
 
-
 @NgModule({
     declarations: [
         CustomerInquiryComponent,
-        CustomerMaintenanceComponent,    
+        CustomerMaintenanceComponent
     ],
     imports: [
         CommonModule,

@@ -4,7 +4,7 @@ export class ObservationSheetStep extends TransactionalInformation {
     public id: number;
     public sort: number;
     public name: string;
-    //public deleted: Boolean;
+    public description: string;
     public hash: number;
 
     constructor() {
@@ -16,5 +16,9 @@ export class ObservationSheetStep extends TransactionalInformation {
 
     public get caption() {
         return this.name || 'Unnamed step';
+    }
+
+    public get isValid() {
+        return ((this.name || "") !== "");
     }
 }

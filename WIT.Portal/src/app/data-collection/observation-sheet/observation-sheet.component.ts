@@ -1,5 +1,4 @@
 import { Component, OnInit, EventEmitter } from '@angular/core';
-import { ObservationSheetStep } from '../entities/observation-sheet-step.entity';
 import { AccordionConfig } from 'ngx-bootstrap/accordion';
 import { DragulaService } from 'ng2-dragula';
 
@@ -7,6 +6,9 @@ import { ConfirmYesNoComponent } from '../../shared/confirm-yes-no/confirm-yes-n
 import { StepMaintenanceComponent } from './step-maintenance.component';
 
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
+
+import { ObservationSheet } from '../entities/observation-sheet.entity';
+import { ObservationSheetStep } from '../entities/observation-sheet-step.entity';
 
 
 @Component({
@@ -18,11 +20,11 @@ import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 export class ObservationSheetComponent implements OnInit {
 
     private title = "Observation sheet";
-    public steps: Array<ObservationSheetStep>;
+    public observationSheet: ObservationSheet;
 
     private modalRef: BsModalRef;
     private modalEvents: EventEmitter<string>;
-    private dirty: Boolean;
+    private isDirty: Boolean;
 
     constructor(
         private dragulaService: DragulaService,
@@ -34,7 +36,7 @@ export class ObservationSheetComponent implements OnInit {
             //console.log(el);
             //console.log(target);
             //console.log(source);
-            this.dirty = true;
+            this.isDirty = true;
         });
         /*dragulaService.removeModel.subscribe((value) => {
             let [el, source] = value.slice(1);
@@ -51,26 +53,27 @@ export class ObservationSheetComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.steps = new Array<ObservationSheetStep>();
+
+        this.observationSheet = new ObservationSheet();
 
         for (let i = 1; i <= 0; i++) {
 
             let item = new ObservationSheetStep();
             item.id = i;
             item.name = 'Step ' + i;
-            this.steps.push(item);
+            this.observationSheet.steps.push(item);
         }
 
-        this.dirty = false;
+        this.isDirty = false;
     }
 
     private addStep(): void {
         let item = new ObservationSheetStep();
-        let n = this.steps.length + 1;
+        let n = this.observationSheet.steps.length + 1;
         item.name = 'Step ' + n;
-        this.steps.push(item);
+        this.observationSheet.steps.push(item);
 
-        this.dirty = true;
+        this.isDirty = true;
     }
 
     private editStep(step: ObservationSheetStep): void {
@@ -109,11 +112,10 @@ export class ObservationSheetComponent implements OnInit {
                     response => this.executeSearch(),
                     response => this.getCustomersOnError(response));*/
 
-                let i = this.steps.indexOf(step);
+                let i = this.observationSheet.steps.indexOf(step);
                 if (i >= 0) {
-                    //step.deleted = true;
-                    this.steps.splice(i, 1);
-                    this.dirty = true;
+                    this.observationSheet.steps.splice(i, 1);
+                    this.isDirty = true;
                 }
             }
         });
@@ -128,12 +130,12 @@ export class ObservationSheetComponent implements OnInit {
 
     private save(): void {
 
-        for (let i = 0; i < this.steps.length; i++) {
-            let step = this.steps[i];
+        for (let i = 0; i < this.observationSheet.steps.length; i++) {
+            let step = this.observationSheet.steps[i];
             step.sort = i;
             console.log(step);
         }
 
-        this.dirty = false;
+        this.isDirty = false;
     }
 }
