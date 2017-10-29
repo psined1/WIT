@@ -1,6 +1,7 @@
 ﻿import { Component, EventEmitter, Injectable, Output, Input, OnChanges, OnInit, Host} from '@angular/core';
 import { DataGridColumn, DataGridSorter, DataGridButton, DataGridSortInformation, DataGridEventInformation } from './datagrid.core';
 import { TransactionalInformation } from '../../entities/transactionalinformation.entity';
+import { GridInfo } from '../../entities/grid-info.entity';
 
 @Component({
     selector: 'datagrid',
@@ -48,11 +49,11 @@ export class DataGrid implements OnInit {
         this.disableFirstPageButton = true;
         this.disablePreviousPageButton = true;
 
-        this.pageSizes.push(5);
         this.pageSizes.push(10);
-        this.pageSizes.push(15);
+        this.pageSizes.push(20);
+        this.pageSizes.push(30);
       
-        this.pageSizeForGrid = 15;
+        this.pageSizeForGrid = 20;
 
         this.sortColumn = "";
         this.sortAscending = false;
@@ -62,11 +63,11 @@ export class DataGrid implements OnInit {
 
     public ngOnInit() {}
 
-    public databind(transactionalInformation: TransactionalInformation) {
+    public databind(gridInfo: TransactionalInformation | GridInfo) {
     
-        this.currentPageNumber = transactionalInformation.currentPageNumber;
-        this.totalPages = transactionalInformation.totalPages;
-        this.totalRows = transactionalInformation.totalRows;
+        this.currentPageNumber = gridInfo.currentPageNumber;
+        this.totalPages = gridInfo.totalPages;
+        this.totalRows = gridInfo.totalRows;
 
         this.itemNumberBegin = ((this.currentPageNumber - 1) * this.pageSize) + 1;
         this.itemNumberEnd = this.currentPageNumber * this.pageSize;

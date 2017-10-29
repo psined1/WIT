@@ -16,5 +16,6 @@ export const AppRoutes: Routes = [
     { path: 'home/login', component: LoginComponent },
     { path: 'user/user-profile', component: UserProfileComponent, canActivate: [AuthorizationGuard] },
     { path: 'customers', loadChildren: './customers/customers.module#CustomersModule' },
-    { path: 'dca', loadChildren: './data-collection/data-collection.module#DataCollectionModule' }
+    { path: 'dca', loadChildren: './data-collection/data-collection.module#DataCollectionModule' },
+    { path: 'library/product-features', loadChildren: './library/library.module#LibraryModule' },
 ];

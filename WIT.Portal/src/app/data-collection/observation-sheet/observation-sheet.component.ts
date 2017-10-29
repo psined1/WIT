@@ -7,8 +7,8 @@ import { StepMaintenanceComponent } from './step-maintenance.component';
 
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 
-import { ObservationSheet } from '../entities/observation-sheet.entity';
-import { ObservationSheetStep } from '../entities/observation-sheet-step.entity';
+import { ObservationSheet } from '../../entities/observation-sheet.entity';
+import { ObservationSheetStep } from '../../entities/observation-sheet-step.entity';
 
 
 @Component({

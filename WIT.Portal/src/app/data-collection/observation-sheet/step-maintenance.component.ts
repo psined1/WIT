@@ -1,7 +1,7 @@
 import { Component, Input, OnInit, EventEmitter } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
-import { ObservationSheetStep } from '../entities/observation-sheet-step.entity';
+import { ObservationSheetStep } from '../../entities/observation-sheet-step.entity';
 
 import { AlertBoxComponent } from '../../shared/alertbox.component';
 //import { CustomerService } from '../../services/customer.service';
@@ -82,14 +82,14 @@ export class StepMaintenanceComponent implements OnInit {
         this.address.state = response.state;
         this.address.zipCode = response.zipCode;
         this.showUpdateButton = true;
-    }*/
+    }
 
     private getCustomerOnError(response: ObservationSheetStep) {
         this.alertService.renderErrorMessage(response.returnMessage);
         this.messageBox = this.alertService.returnFormattedMessage();
         this.alerts = this.alertService.returnAlerts();
         this.alertService.setValidationErrors(this, response.validationErrors);
-    }
+    }*/
 
     private updateStep(): void {
         alert('updated');
@@ -115,9 +115,9 @@ export class StepMaintenanceComponent implements OnInit {
             .subscribe(
             response => this.updateCustomerOnSuccess(response),
             response => this.updateCustomerOnError(response));
-    }*/
+    }
 
-    /*private updateCustomerOnSuccess(response: Customer) {
+    private updateCustomerOnSuccess(response: Customer) {
 
         if (this.customerID == 0) {
             this.customerID = response.customerID;
@@ -128,7 +128,7 @@ export class StepMaintenanceComponent implements OnInit {
         this.messageBox = this.alertService.returnFormattedMessage();
         this.alerts = this.alertService.returnAlerts();
         this.updatedEvent.emit(true);
-    }*/
+    }
 
     private updateCustomerOnError(response: ObservationSheetStep) {
         this.alertService.renderErrorMessage(response.returnMessage);
@@ -137,7 +137,7 @@ export class StepMaintenanceComponent implements OnInit {
         this.alertService.setValidationErrors(this, response.validationErrors);
     }
 
-    /*
+    
     private clearInputErrors() {
         this.customerCodeInputError = false;
         this.companyNameInputError = false;

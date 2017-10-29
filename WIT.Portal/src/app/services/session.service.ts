@@ -63,11 +63,19 @@ export class SessionService {
         }
     }
 
+    public getToken(): string {
+
+        let token: string = "";
+        if (typeof (Storage) !== "undefined") {
+            token = localStorage.getItem("WIT.Token");
+        }
+        return token;
+    }
+
     public setToken(headers: Headers): void {
 
-        if (typeof (Storage) !== "undefined") {
-
-            let token = localStorage.getItem("WIT.Token");
+        let token = this.getToken();
+        if (token) {
             headers.append('Authorization', token);
         }
     }
@@ -75,8 +83,7 @@ export class SessionService {
     public updateToken(headers: Headers): void {
 
         let authorizationToken = headers.get("Authorization");
-        if (authorizationToken != null) {
-
+        if (authorizationToken != null && authorizationToken !== this.getToken()) {
             this.saveToken(authorizationToken);
         }
     }

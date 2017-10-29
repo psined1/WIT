@@ -23,6 +23,19 @@
           <Property Name="CreatedBy" Type="varchar" MaxLength="100" />
           <Property Name="UpdatedBy" Type="varchar" MaxLength="100" />
         </EntityType>
+        <EntityType Name="ProductFeature">
+          <Key>
+            <PropertyRef Name="ProductFeatureId" />
+          </Key>
+          <Property Name="ProductFeatureId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Code" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="100" />
+          <Property Name="Description" Type="varchar" MaxLength="250" />
+          <Property Name="CreatedOn" Type="datetime" />
+          <Property Name="UpdatedOn" Type="datetime" />
+          <Property Name="CreatedBy" Type="varchar" MaxLength="50" />
+          <Property Name="UpdatedBy" Type="varchar" MaxLength="50" />
+        </EntityType>
         <EntityType Name="User">
           <Key>
             <PropertyRef Name="UserID" />
@@ -44,6 +57,7 @@
         </EntityType>
         <EntityContainer Name="WITDataModelsStoreContainer">
           <EntitySet Name="Customer" EntityType="Self.Customer" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ProductFeature" EntityType="Self.ProductFeature" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="User" EntityType="Self.User" Schema="dbo" store:Type="Tables" />
         </EntityContainer>
       </Schema></edmx:StorageModels>
@@ -53,6 +67,7 @@
         <EntityContainer Name="Entities" annotation:LazyLoadingEnabled="true" >
           <EntitySet Name="Users" EntityType="WIT.Data.Models.User" />
           <EntitySet Name="Customers" EntityType="WIT.Data.Models.Customer" />
+          <EntitySet Name="ProductFeatures" EntityType="WIT.Data.Models.ProductFeature" />
         </EntityContainer>
         <EntityType Name="User">
           <Key>
@@ -90,6 +105,19 @@
           <Property Name="UpdatedOn" Type="DateTime" Precision="3" />
           <Property Name="CreatedBy" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
           <Property Name="UpdatedBy" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="ProductFeature">
+          <Key>
+            <PropertyRef Name="ProductFeatureId" />
+          </Key>
+          <Property Name="ProductFeatureId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Code" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Name" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Description" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="CreatedOn" Type="DateTime" Precision="3" />
+          <Property Name="UpdatedOn" Type="DateTime" Precision="3" />
+          <Property Name="CreatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="UpdatedBy" Type="String" MaxLength="50" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -133,6 +161,20 @@
                 <ScalarProperty Name="CompanyName" ColumnName="CompanyName" />
                 <ScalarProperty Name="CustomerCode" ColumnName="CustomerCode" />
                 <ScalarProperty Name="CustomerID" ColumnName="CustomerID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ProductFeatures">
+            <EntityTypeMapping TypeName="WIT.Data.Models.ProductFeature">
+              <MappingFragment StoreEntitySet="ProductFeature">
+                <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="UpdatedOn" ColumnName="UpdatedOn" />
+                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Code" ColumnName="Code" />
+                <ScalarProperty Name="ProductFeatureId" ColumnName="ProductFeatureId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
