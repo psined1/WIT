@@ -67,8 +67,8 @@ export class ProductFeatureListComponent implements OnInit {
 
         console.log('init');
 
-        this.columns.push(new DataGridColumn('code', 'Feature Code', '{"width": "20%"}'));
-        this.columns.push(new DataGridColumn('name', 'Feature Name', '{"width": "30%" , "hyperLink": true}'));
+        this.columns.push(new DataGridColumn('code', 'Code', '{"width": "20%"}'));
+        this.columns.push(new DataGridColumn('name', 'Name', '{"width": "30%" , "hyperLink": true}'));
         this.columns.push(new DataGridColumn('description', 'Description', '{"width": "30%"}'));
         this.columns.push(new DataGridColumn('updatedOn', 'Updated On', '{"width": "15%" , "formatDate": true}'));
         this.columns.push(new DataGridColumn('', '', '{"disableSorting": true, "buttons": [{"name": "x", "icon": "trash", "class": "btn btn-danger"}]}'));
@@ -117,13 +117,14 @@ export class ProductFeatureListComponent implements OnInit {
         let list = new ProductFeatureList(response.data);
         this.datagrid.databind(list.gridInfo);
         this.list = list;
-        this.alertService.renderSuccessMessage("As of " + new Date().toLocaleTimeString());
+        [this.messageBox, this.alerts] = this.alertService.renderSuccessMessage("As of " + new Date().toLocaleTimeString());
         this.runningSearch = false;
     }
 
     private getListOnError(response: TransactionInfo): void {
 
         this.alertService.renderErrorMessage(response.returnMessage);
+        [this.messageBox, this.alerts] = this.alertService.renderErrorMessage(response.returnMessage);
         this.runningSearch = false;
     }
 
@@ -202,7 +203,9 @@ export class ProductFeatureListComponent implements OnInit {
         this.updatedEvent = maintComponent.updatedEvent
             .subscribe(updated => this.requiresRefresh = updated)
             ;
-        maintComponent.getItem(item.productFeatureId);
+        if (item) {
+            maintComponent.getItem(item.productFeatureId);
+        }
     }
 
     private addItem() {

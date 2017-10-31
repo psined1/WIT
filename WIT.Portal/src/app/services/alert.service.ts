@@ -24,16 +24,17 @@ export class AlertService {
         return this.alerts;
     }
 
-    renderErrorMessage(message) {
+    renderErrorMessage(message): [string, any[]] {
 
         let messageBox = this.formatMessage(message);   
         this.alerts = [];
         this.messageBox = messageBox;
         this.alerts.push({ msg: messageBox, type: 'danger', closable: true });
 
+        return [this.messageBox, this.alerts];
     };
 
-    renderSuccessMessage(message) {
+    renderSuccessMessage(message) : [string, any[]] {
 
         let messageBox = this.formatMessage(message);
 
@@ -41,9 +42,10 @@ export class AlertService {
         this.messageBox = messageBox;
         this.alerts.push({ msg: messageBox, type: 'success', closable: true });
 
+        return [this.messageBox, this.alerts];
     };
 
-    renderWarningMessage(message) {
+    renderWarningMessage(message): [string, any[]] {
 
         let messageBox = this.formatMessage(message);
 
@@ -51,9 +53,10 @@ export class AlertService {
         this.messageBox = messageBox;
         this.alerts.push({ msg: messageBox, type: 'warning', closable: true });
 
+        return [this.messageBox, this.alerts];
     };
 
-    renderInformationalMessage(message) {
+    renderInformationalMessage(message): [string, any[]] {
 
         let messageBox = this.formatMessage(message);
 
@@ -61,6 +64,7 @@ export class AlertService {
         this.messageBox = messageBox;
         this.alerts.push({ msg: messageBox, type: 'info', closable: true });
 
+        return [this.messageBox, this.alerts];
     };
 
     formatMessage(message) {

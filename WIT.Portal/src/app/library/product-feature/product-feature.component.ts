@@ -18,16 +18,13 @@ import { ProductFeature } from '../../entities/product-feature.entity';
 
 export class ProductFeatureComponent implements OnInit {
 
-    //public customerID: number;
-
-    //@Input()
-    public item: ProductFeature = new ProductFeature();
-
     public title: string = 'Product Feature Maintenance';
-    //public customerCode: string;
-    //public companyName: string;
-    //public phoneNumber: string;
-    //public address: Address;
+
+    public alerts: Array<string> = [];
+    public messageBox: string;
+
+    @Input()
+    public item: ProductFeature = new ProductFeature();
 
     public get showUpdateButton(): Boolean {
         return this.item.productFeatureId > 0;
@@ -37,9 +34,6 @@ export class ProductFeatureComponent implements OnInit {
 
     //public customerCodeInputError: Boolean;
     //public companyNameInputError: Boolean;
-
-    public messageBox: string;
-    public alerts: Array<string> = [];
 
     constructor(
         public bsModalRef: BsModalRef,
@@ -78,14 +72,14 @@ export class ProductFeatureComponent implements OnInit {
     private getOnSuccess(response: TransactionInfo) {
 
         let item = new ProductFeature(response.data);
+        this.messageBox = "";
+        this.alerts = [];
         this.item = item;
     }
 
     private getOnError(response: TransactionInfo) {
 
-        this.alertService.renderErrorMessage(response.returnMessage);
-        //this.messageBox = this.alertService.returnFormattedMessage();
-        //this.alerts = this.alertService.returnAlerts();
+        [this.messageBox, this.alerts] = this.alertService.renderErrorMessage(response.returnMessage);
         this.alertService.setValidationErrors(this, response.validationErrors);
     }
 
@@ -105,18 +99,14 @@ export class ProductFeatureComponent implements OnInit {
         let item = new ProductFeature(response.data);
         this.item = item;
 
-        this.alertService.renderSuccessMessage(response.returnMessage);
-        //this.messageBox = this.alertService.returnFormattedMessage();
-        //this.alerts = this.alertService.returnAlerts();
+        [this.messageBox, this.alerts] = this.alertService.renderSuccessMessage(response.returnMessage);
 
         this.updatedEvent.emit(true);
     }
 
     private updateOnError(response: TransactionInfo) {
 
-        this.alertService.renderErrorMessage(response.returnMessage);
-        //this.messageBox = this.alertService.returnFormattedMessage();
-        //this.alerts = this.alertService.returnAlerts();
+        [this.messageBox, this.alerts] = this.alertService.renderErrorMessage(response.returnMessage);
         this.alertService.setValidationErrors(this, response.validationErrors);
     }
 
