@@ -153,6 +153,10 @@
       <HintPath>..\packages\System.IdentityModel.Tokens.Jwt.4.0.2.206221351\lib\net45\System.IdentityModel.Tokens.Jwt.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Linq.Dynamic, Version=1.0.6132.35681, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Linq.Dynamic.1.0.7\lib\net40\System.Linq.Dynamic.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
       <Private>True</Private>
@@ -262,6 +266,7 @@
     <Compile Include="TokenManagement\TokenManagement.cs" />
     <Compile Include="WebApiControllers\BaseApiController.cs" />
     <Compile Include="WebApiControllers\CustomersController.cs" />
+    <Compile Include="WebApiControllers\LibraryController.cs" />
     <Compile Include="WebApiControllers\UsersController.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -305,7 +310,6 @@
     <Content Include="src\app\customers\customer-inquiry.component.html" />
     <Content Include="src\app\customers\customer-maintenance.component.css" />
     <Content Include="src\app\customers\customer-maintenance.component.html" />
-    <Content Include="src\app\data-collection\observation-sheet\step-maintenance.component.css" />
     <Content Include="src\app\data-collection\observation-sheet\step-maintenance.component.html" />
     <Content Include="src\app\home\about.component.css" />
     <Content Include="src\app\home\about.component.html" />
@@ -318,9 +322,8 @@
     <Content Include="src\app\home\register.component.css" />
     <Content Include="src\app\home\register.component.html" />
     <Content Include="src\app\images\loading-spinner-grey.gif" />
-    <Content Include="src\app\data-collection\observation-sheet\observation-sheet.component.css" />
     <Content Include="src\app\data-collection\observation-sheet\observation-sheet.component.html" />
-    <Content Include="src\app\library\product-feature\product-feature-list.component.css" />
+    <Content Include="src\app\library\product-feature\product-feature.component.html" />
     <Content Include="src\app\library\product-feature\product-feature-list.component.html" />
     <Content Include="src\app\products\product-inquiry.component.css" />
     <Content Include="src\app\products\product-inquiry.component.html" />
@@ -329,8 +332,6 @@
     <Content Include="src\app\shared\address.component.html" />
     <Content Include="src\app\shared\alertbox.component.css" />
     <Content Include="src\app\shared\alertbox.component.html" />
-    <Content Include="src\app\shared\confirm-yes-no\confirm-yes-no.component.css" />
-    <Content Include="src\app\shared\confirm-yes-no\confirm-yes-no.component.html" />
     <Content Include="src\app\shared\datagrid\datagrid.component.html" />
     <Content Include="src\app\shared\datagrid\datagrid.css" />
     <Content Include="src\app\shared\footer.component.css" />
@@ -396,7 +397,6 @@
     <TypeScriptCompile Include="src\app\customers\customers-routing.module.ts" />
     <TypeScriptCompile Include="src\app\data-collection\data-collection-routing.module.ts" />
     <TypeScriptCompile Include="src\app\data-collection\data-collection.module.ts" />
-    <TypeScriptCompile Include="src\app\data-collection\observation-sheet\step-maintenance.component.spec.ts" />
     <TypeScriptCompile Include="src\app\data-collection\observation-sheet\step-maintenance.component.ts" />
     <TypeScriptCompile Include="src\app\entities\address.entity.ts" />
     <TypeScriptCompile Include="src\app\entities\customer.entity.ts" />
@@ -419,11 +419,10 @@
     <TypeScriptCompile Include="src\app\home\login.component.ts" />
     <TypeScriptCompile Include="src\app\home\register.component.spec.ts" />
     <TypeScriptCompile Include="src\app\home\register.component.ts" />
-    <TypeScriptCompile Include="src\app\data-collection\observation-sheet\observation-sheet.component.spec.ts" />
     <TypeScriptCompile Include="src\app\data-collection\observation-sheet\observation-sheet.component.ts" />
     <TypeScriptCompile Include="src\app\library\library.module.ts" />
     <TypeScriptCompile Include="src\app\library\library-routing.module.ts" />
-    <TypeScriptCompile Include="src\app\library\product-feature\product-feature-list.component.spec.ts" />
+    <TypeScriptCompile Include="src\app\library\product-feature\product-feature.component.ts" />
     <TypeScriptCompile Include="src\app\library\product-feature\product-feature-list.component.ts" />
     <TypeScriptCompile Include="src\app\products\product-inquiry.component.spec.ts" />
     <TypeScriptCompile Include="src\app\products\product-inquiry.component.ts" />
@@ -441,7 +440,6 @@
     <TypeScriptCompile Include="src\app\shared\address.component.ts" />
     <TypeScriptCompile Include="src\app\shared\alertbox.component.spec.ts" />
     <TypeScriptCompile Include="src\app\shared\alertbox.component.ts" />
-    <TypeScriptCompile Include="src\app\shared\confirm-yes-no\confirm-yes-no.component.spec.ts" />
     <TypeScriptCompile Include="src\app\shared\confirm-yes-no\confirm-yes-no.component.ts" />
     <TypeScriptCompile Include="src\app\shared\datagrid\datagrid.component.ts" />
     <TypeScriptCompile Include="src\app\shared\datagrid\datagrid.core.ts" />

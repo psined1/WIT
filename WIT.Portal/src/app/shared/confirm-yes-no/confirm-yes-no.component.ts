@@ -4,8 +4,21 @@ import { BsModalRef } from 'ngx-bootstrap/modal/modal-options.class';
 
 @Component({
   selector: 'app-confirm-yes-no',
-  templateUrl: './confirm-yes-no.component.html',
-  styleUrls: ['./confirm-yes-no.component.css']
+  template: `
+<div class="modal-header">
+    <h4 class="modal-title pull-left">{{title}}</h4>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="bsModalRef.hide()">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+    {{message}}
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" (click)="confirm()">{{buttonYes}}</button>
+    <button type="button" class="btn btn-default" (click)="bsModalRef.hide()">{{buttonNo}}</button>
+</div>
+`
 })
 export class ConfirmYesNoComponent implements OnInit {
 

@@ -2,7 +2,7 @@
 import { ListBase, GridInfo } from './grid-info.entity';
 
 export class ProductFeature extends BaseEntity {
-    public id: number;
+    public productFeatureId: number;
     public code: string;
     public name: string;
     public description: string;
@@ -12,7 +12,7 @@ export class ProductFeature extends BaseEntity {
     constructor(rhs?: ProductFeature) {
         super(rhs);
         if (!rhs) {
-            this.id = 0;
+            this.productFeatureId = 0;
         }
     }
 
@@ -27,12 +27,15 @@ export class ProductFeature extends BaseEntity {
 
 export class ProductFeatureList extends ListBase {
     public items: Array<ProductFeature>;
+    public code: string;
+    public name: string;
 
     constructor()
     constructor(rhs: ProductFeatureList)
     constructor(rhs?: ProductFeatureList) {
 
         super(rhs);
+
         if (!this.items || !Array.isArray(this.items)) {
             this.items = new Array<ProductFeature>();
         } else {

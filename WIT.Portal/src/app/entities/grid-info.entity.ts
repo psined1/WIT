@@ -9,12 +9,17 @@
     constructor()
     constructor(rhs: GridInfo)
     constructor(rhs?: GridInfo) {
-        this.totalRows = 0;
-        this.pageSize = 20;
-        this.reset();
 
         if (rhs) {
-            for (let k in rhs) this[k] = rhs[k];
+            this.totalRows = rhs.totalRows;
+            this.pageSize = rhs.pageSize;
+            this.currentPageNumber = rhs.currentPageNumber;
+            this.sortExpression = rhs.sortExpression;
+            this.sortDirection = rhs.sortDirection;
+        } else {
+            this.totalRows = 0;
+            this.pageSize = 20;
+            this.reset();
         }
 
         if (this.currentPageNumber > this.totalPages) {
@@ -44,6 +49,7 @@ export class ListBase {
     constructor(rhs?: ListBase) {
 
         if (rhs) {
+            for (let k in rhs) this[k] = rhs[k];
             this.gridInfo = new GridInfo(rhs.gridInfo);
         } else {
             this.gridInfo = new GridInfo();

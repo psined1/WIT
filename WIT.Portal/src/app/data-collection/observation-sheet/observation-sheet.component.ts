@@ -14,7 +14,6 @@ import { ObservationSheetStep } from '../../entities/observation-sheet-step.enti
 @Component({
     selector: 'app-observation-sheet',
     templateUrl: './observation-sheet.component.html',
-    styleUrls: ['./observation-sheet.component.css'],
     providers: [DragulaService]
 })
 export class ObservationSheetComponent implements OnInit {

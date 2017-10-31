@@ -54,6 +54,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rules\UserBusinessRules.cs" />
     <Compile Include="Services\UserBusinessService.cs" />
+    <Compile Include="Transactions\GridInfo.cs" />
+    <Compile Include="Transactions\ProductFeatureList.cs" />
+    <Compile Include="Transactions\TransactionInfo.cs" />
     <Compile Include="Transactions\TransactionalInformation.cs" />
     <Compile Include="Transactions\CustomerInformation.cs" />
     <Compile Include="Transactions\UserInformation.cs" />

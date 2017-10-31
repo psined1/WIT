@@ -9,13 +9,15 @@ import { LibraryService } from '../services/library.service';
 
 import { LibraryRoutingModule } from './library-routing.module';
 
-import { ProductFeatureListComponent } from "./product-feature/product-feature-list.component";
 import { ConfirmYesNoComponent } from '../shared/confirm-yes-no/confirm-yes-no.component';
+import { ProductFeatureListComponent } from "./product-feature/product-feature-list.component";
+import { ProductFeatureComponent } from "./product-feature/product-feature.component";
 
 
 @NgModule({
     declarations: [
-        ProductFeatureListComponent
+        ProductFeatureListComponent,
+        ProductFeatureComponent
     ],
     imports: [
         CommonModule,
@@ -26,7 +28,8 @@ import { ConfirmYesNoComponent } from '../shared/confirm-yes-no/confirm-yes-no.c
         TabsModule.forRoot()
     ],
     entryComponents: [
-        ConfirmYesNoComponent
+        ConfirmYesNoComponent,
+        ProductFeatureComponent
     ],
     providers: [
         BsModalService,

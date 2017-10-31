@@ -40,8 +40,9 @@ export class HttpService {
         let options = new RequestOptions({ headers: headers });
 
         return this.http.post(url, body, options)
-            .map((response) => this.parseResponse(response, this.blockUIService, true))
-            .catch((err) => this.handleError(err, this.blockUIService, true));
+            .map(response => this.parseResponse(response, this.blockUIService, true))
+            .catch(err => this.handleError(err, this.blockUIService, true)
+            );
     }
 
 
@@ -52,40 +53,43 @@ export class HttpService {
         let options = new RequestOptions({ headers: headers });
 
         return this.http.post(url, body, options)
-            .map((response) => this.parseResponse(response, this.blockUIService, false))
-            .catch((err) => this.handleError(err, this.blockUIService, false));
+            .map(response => this.parseResponse(response, this.blockUIService, false))
+            .catch(err => this.handleError(err, this.blockUIService, false)
+            );
     }
 
 
     private handleError(err: any, blockUIService: BlockUIService, blocking: Boolean) {
 
+        console.log(err);
+
         if (blocking) {
             blockUIService.stopBlock();
         }
 
-        let body: any;
+        let transaction: any;
 
-        if (err.status === 0) {
-            body = new TransactionalInformation();
-            body.returnStatus = false;
-            if (err.mesage) {
-                body.returnMessage = err.message;
-            } else {
+        if (err.ok !== undefined && !err.ok) {
+            transaction = new TransactionalInformation();   // TODO: change to TransactionInfo
+            if (err.status === 0) {
                 switch (err.type) {
                     case 3:
-                        body.returnMessage = "Server did not respond or general network error. Please try again later.";
+                        transaction.returnMessage = "Server did not respond or general network error. Please try again later.";
                         break;
 
                     default:
-                        body.returnMessage = "Fatal communication error. Contact the administrator.";
+                        transaction.returnMessage = "Fatal communication error type " + err.type + ". Contact the administrator.";
                         break;
                 }
+            } else {
+                let body = err.json();
+                transaction.returnMessage = body ? body.returnMessage || body.messageDeatil || body.message : err.statusText;
             }
         } else {
-            body = err.json();
+            transaction = err.json();
         }
 
-        return Observable.throw(body);
+        return Observable.throw(transaction);
     }
 
     private parseResponse(response: Response, blockUIService: BlockUIService, blocking: Boolean) {

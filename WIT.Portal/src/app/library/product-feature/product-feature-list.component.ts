@@ -4,19 +4,18 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { DataGridColumn, DataGridButton, DataGridEventInformation } from '../../shared/datagrid/datagrid.core';
 import { DataGrid } from '../../shared/datagrid/datagrid.component';
 
-import { AlertService } from '../../services/alert.service';
-import { LibraryService } from '../../services/library.service';
-import { AlertBoxComponent } from '../../shared/alertbox.component';
-//import { Customer } from '../entities/customer.entity';
-//import { TransactionalInformation } from '../entities/transactionalInformation.entity';
-
-//import { CustomerMaintenanceComponent } from '../customers/customer-maintenance.component';
-import { ConfirmYesNoComponent } from '../../shared/confirm-yes-no/confirm-yes-no.component';
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 import { Subscription } from 'rxjs/Subscription';
 
-import { ProductFeature, ProductFeatureList } from '../../entities/product-feature.entity';
+import { AlertService } from '../../services/alert.service';
+import { LibraryService } from '../../services/library.service';
+
+import { AlertBoxComponent } from '../../shared/alertbox.component';
+import { ConfirmYesNoComponent } from '../../shared/confirm-yes-no/confirm-yes-no.component';
+
 import { TransactionInfo } from '../../entities/transaction-info.entity';
+import { ProductFeature, ProductFeatureList } from '../../entities/product-feature.entity';
+import { ProductFeatureComponent } from "./product-feature.component";
 
 
 @Component({
@@ -31,15 +30,15 @@ export class ProductFeatureListComponent implements OnInit {
     public list: ProductFeatureList = new ProductFeatureList();
     public columns = [];
 
-    //public alerts: Array<string> = [];
-    //public messageBox: string;
+    public alerts: Array<string> = [];
+    public messageBox: string;
 
     //public totalRows: number;
     //public currentPageNumber: number = 1;
     //public totalPages: number;
     //public pageSize: number;
-    public name: string;
-    public code: string;
+    //public name: string;
+    //public code: string;
     //private sortDirection: string;
     //private sortExpression: string;
 
@@ -78,11 +77,11 @@ export class ProductFeatureListComponent implements OnInit {
 
             let code: string = params['code'];
             if (code != undefined) {
-                this.code = code;
+                this.list.code = code;
             }
             let name: string = params['name'];
             if (name != undefined) {
-                this.name = name;
+                this.list.name = name;
             }
         });
 
@@ -97,8 +96,12 @@ export class ProductFeatureListComponent implements OnInit {
 
         setTimeout(() => {
 
-            this.libraryService.getProductFeatures(this.list)
-                .subscribe(
+            let list = new ProductFeatureList();
+            list.gridInfo = this.list.gridInfo;
+            list.code = this.list.code;
+            list.name = this.list.name;
+
+            this.libraryService.getProductFeatures(list).subscribe(
                 response => this.getListOnSuccess(response),
                 response => this.getListOnError(response)
                 );
@@ -109,9 +112,12 @@ export class ProductFeatureListComponent implements OnInit {
 
     private getListOnSuccess(response: TransactionInfo): void {
 
-        this.list = new ProductFeatureList(response.data);
-        this.datagrid.databind(this.list.gridInfo);
-        this.alertService.renderSuccessMessage(response.returnMessage);
+        //console.log(response);
+
+        let list = new ProductFeatureList(response.data);
+        this.datagrid.databind(list.gridInfo);
+        this.list = list;
+        this.alertService.renderSuccessMessage("As of " + new Date().toLocaleTimeString());
         this.runningSearch = false;
     }
 
@@ -134,7 +140,7 @@ export class ProductFeatureListComponent implements OnInit {
         }
 
         else if (datagridEvent.EventType == "ItemSelected") {
-            //this.onItemSelected(datagridEvent.ItemSelected);
+            this.onItemSelected(datagridEvent.ItemSelected);
         }
 
         else if (datagridEvent.EventType == "Sorting") {
@@ -172,7 +178,7 @@ export class ProductFeatureListComponent implements OnInit {
         yesNo.message = "About to delete product feature '" + item.code + "'. Proceed?";
     }
 
-    /*private onEdit(index: number) {
+    private onEdit(item?: ProductFeature) {
 
         this.requiresRefresh = false;
         this.modalSubscription = this.modalService.onHidden.subscribe((reason: string) => {
@@ -184,7 +190,7 @@ export class ProductFeatureListComponent implements OnInit {
                 this.executeSearch();
             }
         });
-        let modalRef = this.modalService.show(CustomerMaintenanceComponent,
+        let modalRef = this.modalService.show(ProductFeatureComponent,
             Object.assign({}, {
                 animated: true,
                 keyboard: true,
@@ -192,28 +198,27 @@ export class ProductFeatureListComponent implements OnInit {
                 ignoreBackdropClick: false
             }, { class: 'modal-lg' })
         );
-        let maintComponent: CustomerMaintenanceComponent = modalRef.content;
+        let maintComponent: ProductFeatureComponent = modalRef.content;
         this.updatedEvent = maintComponent.updatedEvent
             .subscribe(updated => this.requiresRefresh = updated)
             ;
-        maintComponent.setCustomerID(customerID);
-    }*/
+        maintComponent.getItem(item.productFeatureId);
+    }
 
-    /*private newCustomer() {
+    private addItem() {
 
-        this.onEdit(0);
+        this.onEdit();
     }
 
     private onItemSelected(itemSelected: number) {
 
         let rowSelected = itemSelected;
-        let row = this.customers[rowSelected];
-        let customerID = row.customerID;
+        let item = this.list.items[rowSelected];
 
-        //this.router.navigate(['/customers/customer-maintenance', { id: customerID }]);
+        //this.router.navigate(['/customers/customer-maintenance', { id: item.ProductFeatureId }]);
 
-        this.onEdit(customerID);
-    }*/
+        this.onEdit(item);
+    }
 
     private onSorting(sortDirection: string, sortExpression: string) {
         this.list.gridInfo.sortDirection = sortDirection;
@@ -237,8 +242,8 @@ export class ProductFeatureListComponent implements OnInit {
     }
 
     public reset(): void {
-        this.code = "";
-        this.name = "";
+        this.list.code = "";
+        this.list.name = "";
         this.list.gridInfo.currentPageNumber = 1;
         this.delaySearch = false;
         this.executeSearch();
@@ -252,21 +257,23 @@ export class ProductFeatureListComponent implements OnInit {
 
     public nameChanged(newValue): void {
 
-        if (!this.autoFilter) return;
-
-        this.name = newValue;
+        this.list.name = newValue;
         this.list.gridInfo.currentPageNumber = 1;
-        this.delaySearch = true;
-        this.executeSearch();
+
+        if (this.autoFilter) {
+            this.delaySearch = true;
+            this.executeSearch();
+        }
     }
 
     public codeChanged(newValue): void {
 
-        if (!this.autoFilter) return;
-
-        this.code = newValue;
+        this.list.code = newValue;
         this.list.gridInfo.currentPageNumber = 1;
-        this.delaySearch = true;
-        this.executeSearch();
+
+        if (this.autoFilter) {
+            this.delaySearch = true;
+            this.executeSearch();
+        }
     }
 }

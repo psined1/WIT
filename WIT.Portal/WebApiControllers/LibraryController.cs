@@ -12,6 +12,8 @@ using WIT.Business.Common;
 using System.Security.Claims;
 using Ninject;
 using WIT.Data.Models;
+using System.Linq.Dynamic;
+
 
 namespace WIT.Portal.WebApiControllers
 {
@@ -30,176 +32,164 @@ namespace WIT.Portal.WebApiControllers
             base.Dispose(disposing);
         }
 
+        #region ProductFeature
+
         /// <summary>
         /// Get ProductFeatures
         /// </summary>
         /// <param name="request"></param>
-        /// <param name="userInformation"></param>
+        /// <param name="list"></param>
         /// <returns></returns>
         [Route("GetProductFeatures")]
         [HttpPost]
-        public HttpResponseMessage GetProductFeatures(HttpRequestMessage request, [FromBody] ProductFeatureInformation customerInformation)
+        public HttpResponseMessage GetProductFeatures(HttpRequestMessage request, [FromBody] ProductFeatureList list)
         {
+            HttpResponseMessage response = null;
+            TransactionInfo transaction = new TransactionInfo();
 
-            TransactionalInformation transaction = new TransactionalInformation();
-
-            string customerCode = customerInformation.ProductFeatureCode;
-            string companyName = customerInformation.CompanyName;
-            int currentPageNumber = customerInformation.CurrentPageNumber;
-            int pageSize = customerInformation.PageSize;
-            string sortExpression = customerInformation.SortExpression;
-            string sortDirection = customerInformation.SortDirection;
-
-            int totalRows = 0;
-
-            ProductFeatureBusinessService customerBusinessService = new ProductFeatureBusinessService(_customerDataService);
-            List<ProductFeature> customers = customerBusinessService.GetProductFeatures(customerCode, companyName, currentPageNumber, pageSize, sortDirection, sortExpression, out totalRows, out transaction);      
-            if (transaction.ReturnStatus == false)
+            try
             {
-                var badResponse = Request.CreateResponse<TransactionalInformation>(HttpStatusCode.BadRequest, transaction);
-                return badResponse;
+                if (string.IsNullOrWhiteSpace(list.GridInfo.SortExpression))
+                    list.GridInfo.SortExpression = "Code";
+
+                if (string.IsNullOrWhiteSpace(list.GridInfo.SortDirection))
+                    list.GridInfo.SortDirection = "ASC";
+
+                var q = _db.ProductFeatures.AsQueryable();
+
+                if (!string.IsNullOrWhiteSpace(list.Code))
+                {
+                    q = q.Where(i => i.Code.StartsWith(list.Code));
+                }
+
+                if (!string.IsNullOrWhiteSpace(list.Name))
+                {
+                    q = q.Where(i => i.Name.StartsWith(list.Name));
+                }
+
+                list.GridInfo.TotalRows = q.Count();
+
+                list.Items = q
+                    .OrderBy(string.Format("{0} {1}", list.GridInfo.SortExpression, list.GridInfo.SortDirection))
+                    .Skip((list.GridInfo.CurrentPageNumber - 1) * list.GridInfo.PageSize)
+                    .Take(list.GridInfo.PageSize)
+                    .ToList()
+                    ;
+
+                transaction.Data = list;
+
+                response = Request.CreateResponse(HttpStatusCode.OK, transaction);
             }
 
-            customerInformation = new ProductFeatureInformation();        
-            customerInformation.ReturnStatus = transaction.ReturnStatus;
-            customerInformation.TotalRows = totalRows;
-            customerInformation.TotalPages = Utilities.CalculateTotalPages(totalRows, pageSize);
-            customerInformation.ReturnMessage.Add("page " + currentPageNumber + " of " + customerInformation.TotalPages + " returned at " + DateTime.Now.ToString());
-            customerInformation.ProductFeatures = customers;
+            catch (HttpResponseException ex)
+            {
+                response = Request.CreateResponse(ex.Response.StatusCode, transaction);
+            }
 
-            var response = Request.CreateResponse<ProductFeatureInformation>(HttpStatusCode.OK, customerInformation);
+            catch (Exception ex)
+            {
+                transaction.ReturnMessage = ex.ToString();
+                response = Request.CreateResponse(HttpStatusCode.BadRequest, transaction);
+            }
+
             return response;
+        }
 
+
+        /// <summary>
+        /// Get ProductFeature
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        [Route("GetProductFeature")]
+        [HttpPost]
+        public HttpResponseMessage GetProductFeature(HttpRequestMessage request, [FromBody] ProductFeature item)
+        {
+            HttpResponseMessage response = null;
+            TransactionInfo transaction = new TransactionInfo();
+
+            try
+            {
+                ProductFeature existingItem = _db.ProductFeatures.Where(i => i.ProductFeatureId == item.ProductFeatureId).FirstOrDefault();
+
+                if (existingItem == null)
+                {
+                    response = new HttpResponseMessage()
+                    {
+                        StatusCode = HttpStatusCode.NotFound,
+                        Content = new StringContent(string.Format("Product feature {0} not found", item.Code))
+                    };
+                    throw new HttpResponseException(response);
+                }
+
+                transaction.Data = existingItem;
+
+                response = Request.CreateResponse(HttpStatusCode.OK, transaction);
+            }
+
+            catch (HttpResponseException ex)
+            {
+                if (response == null)
+                    response = Request.CreateResponse(ex.Response.StatusCode, transaction);
+            }
+
+            catch (Exception ex)
+            {
+                transaction.ReturnMessage = ex.ToString();
+                response = Request.CreateResponse(HttpStatusCode.BadRequest, transaction);
+            }
+
+            return response;
         }
 
         /// <summary>
         /// Get ProductFeature
         /// </summary>
         /// <param name="request"></param>
-        /// <param name="customerInformation"></param>
-        /// <returns></returns>
-        [Route("GetProductFeature")]
-        [HttpPost]
-        public HttpResponseMessage GetProductFeature(HttpRequestMessage request, [FromBody] ProductFeatureInformation customerInformation)
-        {
-
-            TransactionalInformation transaction = new TransactionalInformation();
-
-            int customerID = customerInformation.ProductFeatureID;          
-
-            ProductFeatureBusinessService customerBusinessService = new ProductFeatureBusinessService(_customerDataService);
-            customerInformation = customerBusinessService.GetProductFeature(customerID, out transaction);
-            if (transaction.ReturnStatus == false)
-            {
-                var badResponse = Request.CreateResponse<TransactionalInformation>(HttpStatusCode.BadRequest, transaction);
-                return badResponse;
-            }
-         
-            customerInformation.ReturnStatus = transaction.ReturnStatus;           
-
-            var response = Request.CreateResponse<ProductFeatureInformation>(HttpStatusCode.OK, customerInformation);
-            return response;
-
-        }
-
-
-        /// <summary>
-        /// Update Profile
-        /// </summary>
-        /// <param name="request"></param>
-        /// <param name="customerInformation"></param>
-        /// <returns></returns>
-        [Route("UpdateProductFeature")]
-        [HttpPost]
-        public HttpResponseMessage UpdateProductFeature(HttpRequestMessage request, [FromBody] ProductFeatureInformation customerInformation)
-        {
-
-            TransactionalInformation transaction = new TransactionalInformation();
-
-            try
-            {
-                transaction = this.ValidateToken(request, customerInformation);
-
-                if (!transaction.ReturnStatus)
-                {
-                    throw new HttpResponseException(HttpStatusCode.Unauthorized);
-                }
-
-                ProductFeatureBusinessService customerBusinessService = new ProductFeatureBusinessService(_customerDataService);
-                customerBusinessService.UpdateProductFeature(customerInformation, out transaction);
-
-                if (!transaction.ReturnStatus)
-                {
-                    throw new HttpResponseException(HttpStatusCode.BadRequest);
-                }
-
-                customerInformation.ReturnStatus = true;
-                customerInformation.ReturnMessage = transaction.ReturnMessage;
-
-                return Request.CreateResponse<ProductFeatureInformation>(HttpStatusCode.OK, customerInformation);
-            }
-
-            catch (HttpResponseException ex)
-            {
-                return Request.CreateResponse<TransactionalInformation>(ex.Response.StatusCode, transaction);
-            }
-
-            catch (Exception ex)
-            {
-                transaction.ReturnMessage.Add(ex.ToString());
-                return Request.CreateResponse<TransactionalInformation>(HttpStatusCode.BadRequest, transaction);
-            }
-        }
-
-        /// <summary>
-        /// Delete ProductFeature
-        /// </summary>
-        /// <param name="request"></param>
-        /// <param name="customerInformation"></param>
+        /// <param name="item"></param>
         /// <returns></returns>
         [Route("DeleteProductFeature")]
         [HttpPost]
-        public HttpResponseMessage DeleteProductFeature(HttpRequestMessage request, [FromBody] ProductFeatureInformation customerInformation)
+        public HttpResponseMessage DeleteProductFeature(HttpRequestMessage request, [FromBody] ProductFeature item)
         {
-
-            TransactionalInformation transaction = new TransactionalInformation();
+            HttpResponseMessage response = null;
+            TransactionInfo transaction = new TransactionInfo();
 
             try
             {
-                transaction = this.ValidateToken(request, customerInformation);
+                this.ValidateToken(request, transaction);
 
-                if (!transaction.ReturnStatus)
+                ProductFeature existingItem = _db.ProductFeatures.Where(i => i.ProductFeatureId == item.ProductFeatureId).FirstOrDefault();
+
+                if (existingItem == null)
                 {
-                    throw new HttpResponseException(HttpStatusCode.Unauthorized);
+                    transaction.ReturnMessage = string.Format("Product feature {0} not found", item.Code);
+                    throw new HttpResponseException(HttpStatusCode.NotFound);
                 }
 
-                ProductFeatureBusinessService customerBusinessService = new ProductFeatureBusinessService(_customerDataService);
-                customerBusinessService.DeleteProductFeature(customerInformation, out transaction);
+                _db.ProductFeatures.Remove(existingItem);
+                _db.SaveChanges();
 
-                if (!transaction.ReturnStatus)
-                {
-                    throw new HttpResponseException(HttpStatusCode.BadRequest);
-                }
+                transaction.Data = existingItem;
 
-                customerInformation.ReturnStatus = true;
-                customerInformation.ReturnMessage = transaction.ReturnMessage;
-
-                return Request.CreateResponse<ProductFeatureInformation>(HttpStatusCode.OK, customerInformation);
+                response = Request.CreateResponse(HttpStatusCode.OK, transaction);
             }
 
             catch (HttpResponseException ex)
             {
-                return Request.CreateResponse<TransactionalInformation>(ex.Response.StatusCode, transaction);
+                response = Request.CreateResponse(ex.Response.StatusCode, transaction);
             }
 
             catch (Exception ex)
             {
-                transaction.ReturnMessage.Add(ex.ToString());
-                return Request.CreateResponse<TransactionalInformation>(HttpStatusCode.BadRequest, transaction);
+                transaction.ReturnMessage = ex.ToString();
+                response = Request.CreateResponse(HttpStatusCode.BadRequest, transaction);
             }
+
+            return response;
         }
 
-
-
+        #endregion  // ProductFeature
     }
 }

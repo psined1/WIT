@@ -51,5 +51,32 @@ namespace WIT.Portal.WebApiControllers
 
             return transaction;
         }
+
+        protected void ValidateToken(HttpRequestMessage request, TransactionInfo transaction)
+        {
+            transaction.IsAuthenicated = false;
+
+            if (request.Headers.Authorization != null)
+            {
+                string tokenString = request.Headers.Authorization.ToString();
+                ClaimsPrincipal principal = TokenManager.ValidateToken(tokenString);
+
+                if (principal != null)
+                {
+                    int userID = principal.GetUserID();
+
+                    if (userID != 0)
+                    {
+                        transaction.IsAuthenicated = true;
+                        transaction.CurrentUserID = userID;
+                        transaction.CurrentUserEmail = principal.GetUserEmail();
+                        return;
+                    }
+                }
+            }
+
+            transaction.ReturnMessage = "Your session is invalid. Please re-login.";
+            throw new HttpResponseException(HttpStatusCode.Unauthorized);
+        }
     }
 }
