@@ -21,7 +21,7 @@ export class ProductFeatureComponent implements OnInit {
     public title: string = 'Product Feature Maintenance';
 
     @ViewChild(AlertBoxComponent)
-    private alertBoxComponent: AlertBoxComponent;
+    private alertBox: AlertBoxComponent;
 
     @Input()
     public item: ProductFeature = new ProductFeature();
@@ -72,13 +72,13 @@ export class ProductFeatureComponent implements OnInit {
     private getOnSuccess(response: TransactionInfo) {
 
         let item = new ProductFeature(response.data);
-        this.alertBoxComponent.clear();
+        this.alertBox.clear();
         this.item = item;
     }
 
     private getOnError(response: TransactionInfo) {
 
-        this.alertBoxComponent.renderErrorMessage(response.returnMessage);
+        this.alertBox.renderErrorMessage(response.returnMessage);
         //this.alertService.setValidationErrors(this, response.validationErrors); // TODO
     }
 
@@ -98,14 +98,14 @@ export class ProductFeatureComponent implements OnInit {
         let item = new ProductFeature(response.data);
         this.item = item;
 
-        this.alertBoxComponent.renderSuccessMessage(response.returnMessage);
+        this.alertBox.renderSuccessMessage(response.returnMessage);
 
         this.updatedEvent.emit(true);
     }
 
     private updateOnError(response: TransactionInfo) {
 
-        this.alertBoxComponent.renderErrorMessage(response.returnMessage);
+        this.alertBox.renderErrorMessage(response.returnMessage);
         //this.alertService.setValidationErrors(this, response.validationErrors);   // TODO
     }
 

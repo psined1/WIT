@@ -25,7 +25,7 @@ import { ProductFeatureComponent } from "./product-feature.component";
 export class ProductFeatureListComponent implements OnInit {
 
     @ViewChild(DataGrid) datagrid: DataGrid;
-    @ViewChild(AlertBoxComponent) alertBoxComponent: AlertBoxComponent;
+    @ViewChild(AlertBoxComponent) alertBox: AlertBoxComponent;
 
     public title: string = 'Product Features';
     public list: ProductFeatureList = new ProductFeatureList();
@@ -106,13 +106,13 @@ export class ProductFeatureListComponent implements OnInit {
         this.datagrid.databind(list.gridInfo);
         this.list = list;
 
-        this.alertBoxComponent.renderSuccessMessage("As of " + new Date().toLocaleTimeString());
+        this.alertBox.renderSuccessMessage("As of " + new Date().toLocaleTimeString());
         this.runningSearch = false;
     }
 
     private getListOnError(response: TransactionInfo): void {
 
-        this.alertBoxComponent.renderErrorMessage(response.returnMessage);
+        this.alertBox.renderErrorMessage(response.returnMessage);
         this.runningSearch = false;
     }
 
