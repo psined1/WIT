@@ -10,6 +10,7 @@ import { ConfirmYesNoComponent } from './confirm-yes-no/confirm-yes-no.component
 
 import { ModalModule } from 'ngx-bootstrap';
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
+import { ValidationMessageComponent } from './validation-message.component';
 
 
 @NgModule({
@@ -17,7 +18,8 @@ import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
         AlertBoxComponent,
         AddressComponent,
         DataGrid,
-        ConfirmYesNoComponent
+        ConfirmYesNoComponent,
+        ValidationMessageComponent
     ],   
     imports: [
         FormsModule,      

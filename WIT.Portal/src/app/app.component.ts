@@ -16,7 +16,10 @@ export class AppComponent implements OnInit {
 
     public firstName: string;
     public lastName: string;
-    public isAuthenicated: Boolean = false;
+    //public isAuthenicated: Boolean = false;
+    private get isAuthenicated(): Boolean {
+        return this.sessionService.isAuthenicated;
+    }
     public endDateTime: string;
 
     public blockUI: Boolean;
@@ -53,17 +56,16 @@ export class AppComponent implements OnInit {
 
         this.blockUIService.startBlock();
 
-        /* DEBUG!!!
-        this.userService.authenicate()
-            .subscribe(
+        //////////////////////////////////////// PROD BEGIN ////////////////////////////////////////
+        this.userService.authenicate().subscribe(
             response => this.authenicateOnSuccess(response),
-            response => this.authenicateOnError(response));
-        */
+            response => this.authenicateOnError(response)
+            );
+        ////////////////////////////////////////// PROD END ////////////////////////////////////////
 
-        let usr = new User();
-        usr.isAuthenicated = true;
-        usr.firstName = "Denis";
-        this.authenicateOnSuccess(usr);
+        //////////////////////////////////////// DEBUG BEGIN ///////////////////////////////////////
+        //let usr = new User(); usr.isAuthenicated = true; usr.firstName = "Denis"; this.authenicateOnSuccess(usr);
+        ////////////////////////////////////////// DEBUG END ///////////////////////////////////////
     }
 
     private blockUnBlockUI(event) {
@@ -93,7 +95,7 @@ export class AppComponent implements OnInit {
 
     private authenicateOnError(response) {
 
-        this.isAuthenicated = false;
+        //this.isAuthenicated = false;
         this.blockUIService.stopBlock();
     }
 
@@ -101,7 +103,7 @@ export class AppComponent implements OnInit {
 
         this.firstName = user.firstName;
         this.lastName = user.lastName;
-        this.isAuthenicated = true;
+        //this.isAuthenicated = true;
     }
 
     public logout() {

@@ -4,6 +4,7 @@ export class BaseEntity {
     public createdBy: string;
     public updatedOn: Date;
     public updatedBy: string;
+    public validationErrors?: any[];
 
     constructor()
     constructor(rhs: BaseEntity)

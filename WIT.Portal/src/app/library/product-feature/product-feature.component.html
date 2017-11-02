@@ -17,6 +17,9 @@
                     <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                         <input type="text" class="form-control" [(ngModel)]="item.code" [ngClass]="{'validation-error': false}">
                     </div>
+                    <div class="col-lg-3">
+                        <validation-message></validation-message>
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -24,12 +27,18 @@
                     <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                         <input type="text" class="form-control" [(ngModel)]="item.name" [ngClass]="{'validation-error': false}">
                     </div>
+                    <div class="col-lg-3">
+                        <validation-message></validation-message>
+                    </div>
                 </div>
 
                 <div class="form-group">
                     <label class="col-lg-3 col-sm-2 control-label required">Description</label>
                     <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                         <input type="text" class="form-control" [(ngModel)]="item.description" [ngClass]="{'validation-error': false}">
+                    </div>
+                    <div class="col-lg-3">
+                        <validation-message></validation-message>
                     </div>
                 </div>
 

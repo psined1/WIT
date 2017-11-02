@@ -201,19 +201,21 @@ namespace WIT.Portal.WebApiControllers
         public HttpResponseMessage UpdateProductFeature(HttpRequestMessage request, [FromBody] ProductFeature item)
         {
             HttpResponseMessage response = null;
-            TransactionInfo transaction = new TransactionInfo();
+            TransactionInfo transaction = new TransactionInfo()
+            {
+                Data = item
+            };
 
             try
             {
                 this.ValidateToken(request, transaction);
 
-                ProductFeatureValidator it = new ProductFeatureValidator(_db);
-                ValidationResult results = it.Validate(item);
-                if (!results.IsValid)
+                if (!ProductFeatureValidator.Check(_db, item))
                 {
-                    transaction.PopulateValidationErrors(results.Errors);
+                    transaction.ReturnMessage = "Please correct all validation errors.";
                     throw new HttpResponseException(HttpStatusCode.BadRequest);
                 }
+
                 ProductFeature existingItem = _db.ProductFeatures.Where(i => i.ProductFeatureId == item.ProductFeatureId).FirstOrDefault();
 
                 existingItem.Code = item.Code;
