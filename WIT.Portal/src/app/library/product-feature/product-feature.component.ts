@@ -1,9 +1,9 @@
-import { Component, OnInit, EventEmitter, Input } from '@angular/core';
+import { Component, OnInit, EventEmitter, Input, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 import { AlertBoxComponent } from '../../shared/alertbox.component';
 import { HttpService } from '../../services/http.service';
-import { AlertService } from '../../services/alert.service';
+//import { AlertService } from '../../services/alert.service';
 import { SessionService } from '../../services/session.service';
 
 import { BsModalRef } from 'ngx-bootstrap/modal/modal-options.class';
@@ -20,8 +20,8 @@ export class ProductFeatureComponent implements OnInit {
 
     public title: string = 'Product Feature Maintenance';
 
-    public alerts: Array<string> = [];
-    public messageBox: string;
+    @ViewChild(AlertBoxComponent)
+    private alertBoxComponent: AlertBoxComponent;
 
     @Input()
     public item: ProductFeature = new ProductFeature();
@@ -40,7 +40,7 @@ export class ProductFeatureComponent implements OnInit {
 
         private route: ActivatedRoute,
         private sessionService: SessionService,
-        private alertService: AlertService,
+        //private alertService: AlertService,
         private libraryService: LibraryService
     ) { }
 
@@ -72,15 +72,14 @@ export class ProductFeatureComponent implements OnInit {
     private getOnSuccess(response: TransactionInfo) {
 
         let item = new ProductFeature(response.data);
-        this.messageBox = "";
-        this.alerts = [];
+        this.alertBoxComponent.clear();
         this.item = item;
     }
 
     private getOnError(response: TransactionInfo) {
 
-        [this.messageBox, this.alerts] = this.alertService.renderErrorMessage(response.returnMessage);
-        this.alertService.setValidationErrors(this, response.validationErrors);
+        this.alertBoxComponent.renderErrorMessage(response.returnMessage);
+        //this.alertService.setValidationErrors(this, response.validationErrors); // TODO
     }
 
     public updateItem(): void {
@@ -99,15 +98,15 @@ export class ProductFeatureComponent implements OnInit {
         let item = new ProductFeature(response.data);
         this.item = item;
 
-        [this.messageBox, this.alerts] = this.alertService.renderSuccessMessage(response.returnMessage);
+        this.alertBoxComponent.renderSuccessMessage(response.returnMessage);
 
         this.updatedEvent.emit(true);
     }
 
     private updateOnError(response: TransactionInfo) {
 
-        [this.messageBox, this.alerts] = this.alertService.renderErrorMessage(response.returnMessage);
-        this.alertService.setValidationErrors(this, response.validationErrors);
+        this.alertBoxComponent.renderErrorMessage(response.returnMessage);
+        //this.alertService.setValidationErrors(this, response.validationErrors);   // TODO
     }
 
 

@@ -13,12 +13,12 @@ namespace WIT.Data.Services
    
     public class EntityFrameworkService : IDataRepository, IDisposable
     {
-        private Entities _db = new Entities();
+        private WitEntities _db = new WitEntities();
 
         /// <summary>
         /// Database Context
         /// </summary>
-        protected Entities db
+        protected WitEntities db
         {
             get { return _db; }
         }

@@ -7,7 +7,7 @@ import { DataGrid } from '../../shared/datagrid/datagrid.component';
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 import { Subscription } from 'rxjs/Subscription';
 
-import { AlertService } from '../../services/alert.service';
+//import { AlertService } from '../../services/alert.service';
 import { LibraryService } from '../../services/library.service';
 
 import { AlertBoxComponent } from '../../shared/alertbox.component';
@@ -25,22 +25,11 @@ import { ProductFeatureComponent } from "./product-feature.component";
 export class ProductFeatureListComponent implements OnInit {
 
     @ViewChild(DataGrid) datagrid: DataGrid;
+    @ViewChild(AlertBoxComponent) alertBoxComponent: AlertBoxComponent;
 
     public title: string = 'Product Features';
     public list: ProductFeatureList = new ProductFeatureList();
     public columns = [];
-
-    public alerts: Array<string> = [];
-    public messageBox: string;
-
-    //public totalRows: number;
-    //public currentPageNumber: number = 1;
-    //public totalPages: number;
-    //public pageSize: number;
-    //public name: string;
-    //public code: string;
-    //private sortDirection: string;
-    //private sortExpression: string;
 
     public autoFilter: Boolean = false;
     public delaySearch: Boolean = false;
@@ -53,7 +42,6 @@ export class ProductFeatureListComponent implements OnInit {
 
 
     constructor(
-        private alertService: AlertService,
         private libraryService: LibraryService,
         private router: Router,
         private route: ActivatedRoute,
@@ -117,14 +105,14 @@ export class ProductFeatureListComponent implements OnInit {
         let list = new ProductFeatureList(response.data);
         this.datagrid.databind(list.gridInfo);
         this.list = list;
-        [this.messageBox, this.alerts] = this.alertService.renderSuccessMessage("As of " + new Date().toLocaleTimeString());
+
+        this.alertBoxComponent.renderSuccessMessage("As of " + new Date().toLocaleTimeString());
         this.runningSearch = false;
     }
 
     private getListOnError(response: TransactionInfo): void {
 
-        this.alertService.renderErrorMessage(response.returnMessage);
-        [this.messageBox, this.alerts] = this.alertService.renderErrorMessage(response.returnMessage);
+        this.alertBoxComponent.renderErrorMessage(response.returnMessage);
         this.runningSearch = false;
     }
 

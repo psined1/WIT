@@ -8,7 +8,13 @@ import { Component, OnInit, Input } from '@angular/core';
 
 export class AlertBoxComponent implements OnInit {
 
-    @Input() public alerts: Array<string> = [];
+    @Input()
+    public alerts: {
+        msg: string,
+        type: string,
+        closable: Boolean
+    }[];
+
     @Input() public messageBox: string;
     @Input() public delay: number;
 
@@ -24,6 +30,11 @@ export class AlertBoxComponent implements OnInit {
         this.alerts.splice(i, 1);
     }
 
+    public clear(): void {
+        this.alerts = [];
+        this.messageBox = "";
+    }
+
     public closeAlertBox(): void {
         setTimeout(() => {
             this.alerts.splice(0, 1);
@@ -34,5 +45,44 @@ export class AlertBoxComponent implements OnInit {
         //  this.showSpinner = true;
     }
 
+    public renderErrorMessage(message): void {
+        this.renderMessage(message, 'danger');
+    };
 
+    public renderSuccessMessage(message): void {
+        this.renderMessage(message, 'success');
+    };
+
+    public renderWarningMessage(message): void {
+        this.renderMessage(message, 'warning');
+    };
+
+    public renderInformationalMessage(message): void {
+        this.renderMessage(message, 'info');
+    };
+
+    private renderMessage(message: any, type: string): void {
+
+        let messageBox = this.formatMessage(message);
+
+        this.alerts = [];
+        this.messageBox = messageBox;
+        this.alerts.push({ msg: messageBox, type: type, closable: true });
+    };
+
+    private formatMessage(message):string {
+
+        let messageBox = "";
+
+        if (Array.isArray(message) == true) {
+            for (var i = 0; i < message.length; i++) {
+                messageBox = messageBox + message[i] + "<br/>";
+            }
+        }
+        else {
+            messageBox = message;
+        }
+
+        return messageBox;
+    }
 }

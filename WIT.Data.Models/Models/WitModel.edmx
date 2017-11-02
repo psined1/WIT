@@ -64,7 +64,7 @@
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="WIT.Data.Models" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
-        <EntityContainer Name="Entities" annotation:LazyLoadingEnabled="true" >
+        <EntityContainer Name="WitEntities" annotation:LazyLoadingEnabled="true" >
           <EntitySet Name="Users" EntityType="WIT.Data.Models.User" />
           <EntitySet Name="Customers" EntityType="WIT.Data.Models.Customer" />
           <EntitySet Name="ProductFeatures" EntityType="WIT.Data.Models.ProductFeature" />
@@ -124,7 +124,7 @@
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-        <EntityContainerMapping StorageEntityContainer="WITDataModelsStoreContainer" CdmEntityContainer="Entities" >
+        <EntityContainerMapping StorageEntityContainer="WITDataModelsStoreContainer" CdmEntityContainer="WitEntities" >
           <EntitySetMapping Name="Users">
             <EntityTypeMapping TypeName="WIT.Data.Models.User">
               <MappingFragment StoreEntitySet="User">

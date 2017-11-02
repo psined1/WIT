@@ -13,7 +13,7 @@ using System.Security.Claims;
 using Ninject;
 using WIT.Data.Models;
 using System.Linq.Dynamic;
-
+using FluentValidation.Results;
 
 namespace WIT.Portal.WebApiControllers
 {
@@ -24,7 +24,7 @@ namespace WIT.Portal.WebApiControllers
         //[Inject]
         //public IProductFeatureDataService _customerDataService { get; set; }
 
-        private WIT.Data.Models.Entities _db = new Entities();
+        private WitEntities _db = new WitEntities();
 
         protected override void Dispose(bool disposing)
         {
@@ -35,7 +35,7 @@ namespace WIT.Portal.WebApiControllers
         #region ProductFeature
 
         /// <summary>
-        /// Get ProductFeatures
+        /// GetProductFeatures
         /// </summary>
         /// <param name="request"></param>
         /// <param name="list"></param>
@@ -97,7 +97,7 @@ namespace WIT.Portal.WebApiControllers
 
 
         /// <summary>
-        /// Get ProductFeature
+        /// GetProductFeature
         /// </summary>
         /// <param name="request"></param>
         /// <param name="item"></param>
@@ -144,7 +144,7 @@ namespace WIT.Portal.WebApiControllers
         }
 
         /// <summary>
-        /// Get ProductFeature
+        /// DeleteProductFeature
         /// </summary>
         /// <param name="request"></param>
         /// <param name="item"></param>
@@ -169,6 +169,59 @@ namespace WIT.Portal.WebApiControllers
                 }
 
                 _db.ProductFeatures.Remove(existingItem);
+                _db.SaveChanges();
+
+                transaction.Data = existingItem;
+
+                response = Request.CreateResponse(HttpStatusCode.OK, transaction);
+            }
+
+            catch (HttpResponseException ex)
+            {
+                response = Request.CreateResponse(ex.Response.StatusCode, transaction);
+            }
+
+            catch (Exception ex)
+            {
+                transaction.ReturnMessage = ex.ToString();
+                response = Request.CreateResponse(HttpStatusCode.BadRequest, transaction);
+            }
+
+            return response;
+        }
+
+        /// <summary>
+        /// UpdateProductFeature
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        [Route("UpdateProductFeature")]
+        [HttpPost]
+        public HttpResponseMessage UpdateProductFeature(HttpRequestMessage request, [FromBody] ProductFeature item)
+        {
+            HttpResponseMessage response = null;
+            TransactionInfo transaction = new TransactionInfo();
+
+            try
+            {
+                this.ValidateToken(request, transaction);
+
+                ProductFeatureValidator it = new ProductFeatureValidator(_db);
+                ValidationResult results = it.Validate(item);
+                if (!results.IsValid)
+                {
+                    transaction.PopulateValidationErrors(results.Errors);
+                    throw new HttpResponseException(HttpStatusCode.BadRequest);
+                }
+                ProductFeature existingItem = _db.ProductFeatures.Where(i => i.ProductFeatureId == item.ProductFeatureId).FirstOrDefault();
+
+                existingItem.Code = item.Code;
+                existingItem.Name = item.Name;
+                existingItem.Description = item.Description;
+                existingItem.UpdatedBy = transaction.CurrentUserEmail;
+                existingItem.UpdatedOn = DateTime.Now;
+
                 _db.SaveChanges();
 
                 transaction.Data = existingItem;

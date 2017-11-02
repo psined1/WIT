@@ -47,5 +47,14 @@ namespace WIT.Business.Common
                 transaction.ReturnMessage.Add(error.ErrorMessage);
             }
         }
+
+        public static void PopulateValidationErrors(this TransactionInfo transaction, IList<ValidationFailure> failures)
+        {
+            foreach (ValidationFailure error in failures)
+            {
+                transaction.ValidationErrors.Add(error.PropertyName, error.ErrorMessage);
+            }
+            transaction.ReturnMessage = "Please correct errors";
+        }
     }
 }
