@@ -7,7 +7,6 @@ import { DataGrid } from '../../shared/datagrid/datagrid.component';
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 import { Subscription } from 'rxjs/Subscription';
 
-//import { AlertService } from '../../services/alert.service';
 import { LibraryService } from '../../services/library.service';
 
 import { AlertBoxComponent } from '../../shared/alertbox.component';
