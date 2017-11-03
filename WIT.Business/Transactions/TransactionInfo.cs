@@ -10,7 +10,7 @@ namespace WIT.Business.Entities
     public class TransactionInfo
     {
         public string ReturnMessage { get; set; }
-        public Hashtable ValidationErrors { get; set; }
+        //public Hashtable ValidationErrors { get; set; }
         public Boolean IsAuthenicated { get; set; }
 
         //[JsonIgnore]
@@ -22,7 +22,7 @@ namespace WIT.Business.Entities
 
         public TransactionInfo()
         {
-            ValidationErrors = new Hashtable();
+            //ValidationErrors = new Hashtable();
             IsAuthenicated = false;
             CurrentUserID = 0;
         }

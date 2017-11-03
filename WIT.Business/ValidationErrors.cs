@@ -48,13 +48,13 @@ namespace WIT.Business.Common
             }
         }
 
-        public static void PopulateValidationErrors(this TransactionInfo transaction, IList<ValidationFailure> failures)
+        /*public static void PopulateValidationErrors(this TransactionInfo transaction, IList<ValidationFailure> failures)
         {
             foreach (ValidationFailure error in failures)
             {
                 transaction.ValidationErrors.Add(error.PropertyName, error.ErrorMessage);
             }
             transaction.ReturnMessage = "Please correct errors";
-        }
+        }*/
     }
 }

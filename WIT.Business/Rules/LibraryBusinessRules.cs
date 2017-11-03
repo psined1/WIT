@@ -8,6 +8,7 @@ using WIT.Business.Entities;
 using System.Configuration;
 using WIT.Interfaces;
 using WIT.Data.Models;
+using FluentValidation.Results;
 
 namespace WIT.Business
 {
@@ -15,7 +16,7 @@ namespace WIT.Business
     {
         private WitEntities _db = null;
 
-        public ProductFeatureValidator(WitEntities db)
+        private ProductFeatureValidator(WitEntities db)
         {
             _db = db;
 
@@ -31,6 +32,23 @@ namespace WIT.Business
         private bool NotExist(string code)
         {
             return _db.ProductFeatures.FirstOrDefault(a => a.Code == code) == null;
+        }
+
+        public static bool Check(WitEntities db, ProductFeature item)
+        {
+            ValidationResult results = new ProductFeatureValidator(db).Validate(item);
+
+            if (!results.IsValid)
+            {
+                item.ValidationErrors = new Dictionary<string, string>();
+                foreach (ValidationFailure error in results.Errors)
+                {
+                    if (!item.ValidationErrors.ContainsKey(error.PropertyName))
+                        item.ValidationErrors.Add(error.PropertyName, error.ErrorMessage);
+                }
+            }
+
+            return item.ValidationErrors.Count == 0;
         }
     }
 }
