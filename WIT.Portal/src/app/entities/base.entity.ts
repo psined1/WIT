@@ -4,11 +4,12 @@ export class BaseEntity {
     public createdBy: string;
     public updatedOn: Date;
     public updatedBy: string;
-    public validationErrors?: any[];
+    public validationErrors: any;
 
     constructor()
     constructor(rhs: BaseEntity)
     constructor(rhs?: BaseEntity) {
+
         if (rhs) {
             this.createdOn = rhs.updatedOn;
             this.createdBy = rhs.createdBy;
@@ -18,6 +19,8 @@ export class BaseEntity {
             // copy all properties
             for (let k in rhs) this[k] = rhs[k];
         }
+
+        this.validationErrors = this.validationErrors || {};
     }
 }
 

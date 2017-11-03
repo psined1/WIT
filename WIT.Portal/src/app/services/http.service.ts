@@ -83,7 +83,12 @@ export class HttpService {
                 }
             } else {
                 let body = err.json();
-                transaction.returnMessage = body ? body.returnMessage || body.messageDeatil || body.message : err.statusText;
+                if (body) {
+                    transaction.returnMessage = body.returnMessage || body.messageDeatil || body.message;
+                    transaction.data = body.data;
+                } else {
+                    transaction.returnMessage = err.statusText;
+                }
             }
         } else {
             transaction = err.json();
@@ -101,6 +106,10 @@ export class HttpService {
         }
      
         let body = response.json();
+
+        if (!body.returnMessage) {
+            body.returnMessage = "As of " + new Date().toLocaleTimeString();
+        }
 
         return body;
     }

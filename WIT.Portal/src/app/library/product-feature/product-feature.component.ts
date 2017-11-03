@@ -24,7 +24,7 @@ export class ProductFeatureComponent implements OnInit {
     private alertBox: AlertBoxComponent;
 
     @Input()
-    public item: ProductFeature = new ProductFeature();
+    public item: ProductFeature;
 
     public get showUpdateButton(): Boolean {
         return this.item.productFeatureId > 0;
@@ -32,21 +32,19 @@ export class ProductFeatureComponent implements OnInit {
 
     public updatedEvent: EventEmitter<Boolean> = new EventEmitter();
 
-    //public customerCodeInputError: Boolean;
-    //public companyNameInputError: Boolean;
-
     constructor(
         public bsModalRef: BsModalRef,
 
         private route: ActivatedRoute,
         private sessionService: SessionService,
-        //private alertService: AlertService,
         private libraryService: LibraryService
     ) { }
 
     public getItem(id: number): void {
 
         if (id > 0) {
+
+            this.clearStatus();
 
             let item = new ProductFeature();
             item.productFeatureId = id;
@@ -60,6 +58,9 @@ export class ProductFeatureComponent implements OnInit {
 
     public ngOnInit() {
 
+        if (!this.item)
+            this.item = new ProductFeature();
+
         this.route.params.subscribe(params => {
 
             let id: string = params['id'];
@@ -72,20 +73,24 @@ export class ProductFeatureComponent implements OnInit {
     private getOnSuccess(response: TransactionInfo) {
 
         let item = new ProductFeature(response.data);
-        this.alertBox.clear();
-        this.item = item;
+        if (item) {
+            this.item = item;
+        }
     }
 
     private getOnError(response: TransactionInfo) {
 
+        let item = new ProductFeature(response.data);
+        if (item) {
+            this.item = item;
+        }
+
         this.alertBox.renderErrorMessage(response.returnMessage);
-        //this.alertService.setValidationErrors(this, response.validationErrors); // TODO
     }
 
     public updateItem(): void {
 
-        this.clearInputErrors();
-
+        this.clearStatus();
         this.libraryService.updateProductFeature(this.item)
             .subscribe(
             response => this.updateOnSuccess(response),
@@ -105,15 +110,17 @@ export class ProductFeatureComponent implements OnInit {
 
     private updateOnError(response: TransactionInfo) {
 
+        let item = new ProductFeature(response.data);
+        if (item) {
+            this.item.validationErrors = item.validationErrors;
+        }
         this.alertBox.renderErrorMessage(response.returnMessage);
-        //this.alertService.setValidationErrors(this, response.validationErrors);   // TODO
     }
 
+    private clearStatus() {
 
-
-    private clearInputErrors() {
-        //this.customerCodeInputError = false;
-        //this.companyNameInputError = false;
+        this.item.validationErrors = {};
+        this.alertBox.clear();
     }
 }
 

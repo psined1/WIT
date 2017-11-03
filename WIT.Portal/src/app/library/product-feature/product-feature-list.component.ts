@@ -100,13 +100,13 @@ export class ProductFeatureListComponent implements OnInit {
 
     private getListOnSuccess(response: TransactionInfo): void {
 
-        //console.log(response);
-
         let list = new ProductFeatureList(response.data);
-        this.datagrid.databind(list.gridInfo);
-        this.list = list;
+        if (list) {
+            this.datagrid.databind(list.gridInfo);
+            this.list = list;
+        }
 
-        this.alertBox.renderSuccessMessage("As of " + new Date().toLocaleTimeString());
+        this.alertBox.renderSuccessMessage(response.returnMessage);
         this.runningSearch = false;
     }
 

@@ -450,7 +450,6 @@
     <TypeScriptCompile Include="src\app\shared\footer.component.spec.ts" />
     <TypeScriptCompile Include="src\app\shared\footer.component.ts" />
     <TypeScriptCompile Include="src\app\shared\shared.module.ts" />
-    <TypeScriptCompile Include="src\app\shared\validation-message.component.ts" />
     <TypeScriptCompile Include="src\app\User\user-profile.component.ts" />
     <TypeScriptCompile Include="src\environments\environment.prod.ts" />
     <TypeScriptCompile Include="src\environments\environment.ts" />

@@ -212,15 +212,27 @@ namespace WIT.Portal.WebApiControllers
 
                 if (!ProductFeatureValidator.Check(_db, item))
                 {
-                    transaction.ReturnMessage = "Please correct all validation errors.";
+                    transaction.ReturnMessage = "Please correct all errors.";
                     throw new HttpResponseException(HttpStatusCode.BadRequest);
                 }
 
                 ProductFeature existingItem = _db.ProductFeatures.Where(i => i.ProductFeatureId == item.ProductFeatureId).FirstOrDefault();
 
-                existingItem.Code = item.Code;
-                existingItem.Name = item.Name;
-                existingItem.Description = item.Description;
+                if (existingItem == null)
+                {
+                    existingItem = _db.ProductFeatures.Add(item);
+
+                    existingItem.CreatedBy = transaction.CurrentUserEmail;
+                    existingItem.CreatedOn = DateTime.Now;
+                }
+
+                else
+                {
+                    existingItem.Code = item.Code;
+                    existingItem.Name = item.Name;
+                    existingItem.Description = item.Description;
+                }
+
                 existingItem.UpdatedBy = transaction.CurrentUserEmail;
                 existingItem.UpdatedOn = DateTime.Now;
 

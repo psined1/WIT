@@ -21,7 +21,11 @@ namespace WIT.Business
             _db = db;
 
             RuleFor(a => a.Code).NotEmpty().WithMessage("Code is required.");
-            RuleFor(a => a.Code).Must(NotExist).WithMessage("Code already exists.");
+
+            RuleSet("new", () =>
+            {
+                RuleFor(a => a.Code).Must(NotExist).WithMessage("Code already exists.");
+            });
         }
 
         /// <summary>
@@ -36,7 +40,9 @@ namespace WIT.Business
 
         public static bool Check(WitEntities db, ProductFeature item)
         {
-            ValidationResult results = new ProductFeatureValidator(db).Validate(item);
+            string ruleSet = item.ProductFeatureId == 0 ? "default,new" : "default";
+
+            ValidationResult results = new ProductFeatureValidator(db).Validate(item, ruleSet: ruleSet);
 
             if (!results.IsValid)
             {
