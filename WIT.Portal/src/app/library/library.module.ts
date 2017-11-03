@@ -10,14 +10,20 @@ import { LibraryService } from '../services/library.service';
 import { LibraryRoutingModule } from './library-routing.module';
 
 import { ConfirmYesNoComponent } from '../shared/confirm-yes-no/confirm-yes-no.component';
+
 import { ProductFeatureListComponent } from "./product-feature/product-feature-list.component";
 import { ProductFeatureComponent } from "./product-feature/product-feature.component";
+
+import { CustomerListComponent } from "./customer/customer-list.component";
+import { CustomerComponent } from "./customer/customer.component";
 
 
 @NgModule({
     declarations: [
         ProductFeatureListComponent,
-        ProductFeatureComponent
+        ProductFeatureComponent,
+        CustomerListComponent,
+        CustomerComponent
     ],
     imports: [
         CommonModule,
@@ -29,7 +35,8 @@ import { ProductFeatureComponent } from "./product-feature/product-feature.compo
     ],
     entryComponents: [
         ConfirmYesNoComponent,
-        ProductFeatureComponent
+        ProductFeatureComponent,
+        CustomerComponent
     ],
     providers: [
         BsModalService,

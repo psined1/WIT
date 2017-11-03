@@ -310,10 +310,6 @@
     <Content Include="src\app\app.component.css" />
     <Content Include="src\app\app.component.html" />
     <Content Include="src\app\content\images\loading-spinner-grey.gif" />
-    <Content Include="src\app\customers\customer-inquiry.component.css" />
-    <Content Include="src\app\customers\customer-inquiry.component.html" />
-    <Content Include="src\app\customers\customer-maintenance.component.css" />
-    <Content Include="src\app\customers\customer-maintenance.component.html" />
     <Content Include="src\app\data-collection\observation-sheet\step-maintenance.component.html" />
     <Content Include="src\app\home\about.component.css" />
     <Content Include="src\app\home\about.component.html" />
@@ -327,6 +323,8 @@
     <Content Include="src\app\home\register.component.html" />
     <Content Include="src\app\images\loading-spinner-grey.gif" />
     <Content Include="src\app\data-collection\observation-sheet\observation-sheet.component.html" />
+    <Content Include="src\app\library\customer\customer-list.component.html" />
+    <Content Include="src\app\library\customer\customer.component.html" />
     <Content Include="src\app\library\product-feature\product-feature.component.html" />
     <Content Include="src\app\library\product-feature\product-feature-list.component.html" />
     <Content Include="src\app\products\product-inquiry.component.css" />
@@ -393,12 +391,6 @@
     <TypeScriptCompile Include="src\app\app.module.ts" />
     <TypeScriptCompile Include="src\app\application-routes.ts" />
     <TypeScriptCompile Include="src\app\authorization-guard.ts" />
-    <TypeScriptCompile Include="src\app\customers\customer-inquiry.component.spec.ts" />
-    <TypeScriptCompile Include="src\app\customers\customer-inquiry.component.ts" />
-    <TypeScriptCompile Include="src\app\customers\customer-maintenance.component.spec.ts" />
-    <TypeScriptCompile Include="src\app\customers\customer-maintenance.component.ts" />
-    <TypeScriptCompile Include="src\app\customers\customers.module.ts" />
-    <TypeScriptCompile Include="src\app\customers\customers-routing.module.ts" />
     <TypeScriptCompile Include="src\app\data-collection\data-collection-routing.module.ts" />
     <TypeScriptCompile Include="src\app\data-collection\data-collection.module.ts" />
     <TypeScriptCompile Include="src\app\data-collection\observation-sheet\step-maintenance.component.ts" />
@@ -424,8 +416,10 @@
     <TypeScriptCompile Include="src\app\home\register.component.spec.ts" />
     <TypeScriptCompile Include="src\app\home\register.component.ts" />
     <TypeScriptCompile Include="src\app\data-collection\observation-sheet\observation-sheet.component.ts" />
-    <TypeScriptCompile Include="src\app\library\library.module.ts" />
+    <TypeScriptCompile Include="src\app\library\customer\customer-list.component.ts" />
+    <TypeScriptCompile Include="src\app\library\customer\customer.component.ts" />
     <TypeScriptCompile Include="src\app\library\library-routing.module.ts" />
+    <TypeScriptCompile Include="src\app\library\library.module.ts" />
     <TypeScriptCompile Include="src\app\library\product-feature\product-feature.component.ts" />
     <TypeScriptCompile Include="src\app\library\product-feature\product-feature-list.component.ts" />
     <TypeScriptCompile Include="src\app\products\product-inquiry.component.spec.ts" />
@@ -437,7 +431,6 @@
     <TypeScriptCompile Include="src\app\services\alert.service.ts" />
     <TypeScriptCompile Include="src\app\services\blockui.service.ts" />
     <TypeScriptCompile Include="src\app\services\library.service.ts" />
-    <TypeScriptCompile Include="src\app\services\customer.service.ts" />
     <TypeScriptCompile Include="src\app\services\http.service.ts" />
     <TypeScriptCompile Include="src\app\services\session.service.ts" />
     <TypeScriptCompile Include="src\app\services\user.service.ts" />

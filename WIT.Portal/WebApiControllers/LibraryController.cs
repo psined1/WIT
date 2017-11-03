@@ -258,5 +258,237 @@ namespace WIT.Portal.WebApiControllers
         }
 
         #endregion  // ProductFeature
+
+        #region Customer
+
+        /// <summary>
+        /// GetCustomers
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        [Route("GetCustomers")]
+        [HttpPost]
+        public HttpResponseMessage GetCustomers(HttpRequestMessage request, [FromBody] CustomerList list)
+        {
+            HttpResponseMessage response = null;
+            TransactionInfo transaction = new TransactionInfo();
+
+            try
+            {
+                if (string.IsNullOrWhiteSpace(list.GridInfo.SortExpression))
+                    list.GridInfo.SortExpression = "CustomerCode";
+
+                if (string.IsNullOrWhiteSpace(list.GridInfo.SortDirection))
+                    list.GridInfo.SortDirection = "ASC";
+
+                var q = _db.Customers.AsQueryable();
+
+                if (!string.IsNullOrWhiteSpace(list.CustomerCode))
+                {
+                    q = q.Where(i => i.CustomerCode.StartsWith(list.CustomerCode));
+                }
+
+                if (!string.IsNullOrWhiteSpace(list.CompanyName))
+                {
+                    q = q.Where(i => i.CompanyName.StartsWith(list.CompanyName));
+                }
+
+                list.GridInfo.TotalRows = q.Count();
+
+                list.Items = q
+                    .OrderBy(string.Format("{0} {1}", list.GridInfo.SortExpression, list.GridInfo.SortDirection))
+                    .Skip((list.GridInfo.CurrentPageNumber - 1) * list.GridInfo.PageSize)
+                    .Take(list.GridInfo.PageSize)
+                    .ToList()
+                    ;
+
+                transaction.Data = list;
+
+                response = Request.CreateResponse(HttpStatusCode.OK, transaction);
+            }
+
+            catch (HttpResponseException ex)
+            {
+                response = Request.CreateResponse(ex.Response.StatusCode, transaction);
+            }
+
+            catch (Exception ex)
+            {
+                transaction.ReturnMessage = ex.ToString();
+                response = Request.CreateResponse(HttpStatusCode.BadRequest, transaction);
+            }
+
+            return response;
+        }
+
+
+        /// <summary>
+        /// GetCustomer
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        [Route("GetCustomer")]
+        [HttpPost]
+        public HttpResponseMessage GetCustomer(HttpRequestMessage request, [FromBody] Customer item)
+        {
+            HttpResponseMessage response = null;
+            TransactionInfo transaction = new TransactionInfo();
+
+            try
+            {
+                Customer existingItem = _db.Customers.Where(i => i.CustomerID == item.CustomerID).FirstOrDefault();
+
+                if (existingItem == null)
+                {
+                    response = new HttpResponseMessage()
+                    {
+                        StatusCode = HttpStatusCode.NotFound,
+                        Content = new StringContent(string.Format("Customer {0} not found", item.CustomerCode))
+                    };
+                    throw new HttpResponseException(response);
+                }
+
+                transaction.Data = existingItem;
+
+                response = Request.CreateResponse(HttpStatusCode.OK, transaction);
+            }
+
+            catch (HttpResponseException ex)
+            {
+                if (response == null)
+                    response = Request.CreateResponse(ex.Response.StatusCode, transaction);
+            }
+
+            catch (Exception ex)
+            {
+                transaction.ReturnMessage = ex.ToString();
+                response = Request.CreateResponse(HttpStatusCode.BadRequest, transaction);
+            }
+
+            return response;
+        }
+
+        /// <summary>
+        /// DeleteCustomer
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        [Route("DeleteCustomer")]
+        [HttpPost]
+        public HttpResponseMessage DeleteCustomer(HttpRequestMessage request, [FromBody] Customer item)
+        {
+            HttpResponseMessage response = null;
+            TransactionInfo transaction = new TransactionInfo();
+
+            try
+            {
+                this.ValidateToken(request, transaction);
+
+                Customer existingItem = _db.Customers.Where(i => i.CustomerID == item.CustomerID).FirstOrDefault();
+
+                if (existingItem == null)
+                {
+                    transaction.ReturnMessage = string.Format("Customer {0} not found", item.CustomerCode);
+                    throw new HttpResponseException(HttpStatusCode.NotFound);
+                }
+
+                _db.Customers.Remove(existingItem);
+                _db.SaveChanges();
+
+                transaction.Data = existingItem;
+
+                response = Request.CreateResponse(HttpStatusCode.OK, transaction);
+            }
+
+            catch (HttpResponseException ex)
+            {
+                response = Request.CreateResponse(ex.Response.StatusCode, transaction);
+            }
+
+            catch (Exception ex)
+            {
+                transaction.ReturnMessage = ex.ToString();
+                response = Request.CreateResponse(HttpStatusCode.BadRequest, transaction);
+            }
+
+            return response;
+        }
+
+        /// <summary>
+        /// UpdateCustomer
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        [Route("UpdateCustomer")]
+        [HttpPost]
+        public HttpResponseMessage UpdateCustomer(HttpRequestMessage request, [FromBody] Customer item)
+        {
+            HttpResponseMessage response = null;
+            TransactionInfo transaction = new TransactionInfo()
+            {
+                Data = item
+            };
+
+            try
+            {
+                this.ValidateToken(request, transaction);
+
+                if (!CustomerValidator.Check(_db, item))
+                {
+                    transaction.ReturnMessage = "Please correct all errors.";
+                    throw new HttpResponseException(HttpStatusCode.BadRequest);
+                }
+
+                Customer existingItem = _db.Customers.Where(i => i.CustomerID == item.CustomerID).FirstOrDefault();
+
+                if (existingItem == null)
+                {
+                    existingItem = _db.Customers.Add(item);
+
+                    existingItem.CreatedBy = transaction.CurrentUserEmail;
+                    existingItem.CreatedOn = DateTime.Now;
+                }
+
+                else
+                {
+                    existingItem.CustomerCode = item.CustomerCode;
+                    existingItem.CompanyName = item.CompanyName;
+                    existingItem.AddressLine1 = item.AddressLine1;
+                    existingItem.AddressLine2 = item.AddressLine2;
+                    existingItem.City = item.City;
+                    existingItem.State = item.State;
+                    existingItem.ZipCode = item.ZipCode;
+                    existingItem.PhoneNumber = item.PhoneNumber;
+                }
+
+                existingItem.UpdatedBy = transaction.CurrentUserEmail;
+                existingItem.UpdatedOn = DateTime.Now;
+
+                _db.SaveChanges();
+
+                transaction.Data = existingItem;
+
+                response = Request.CreateResponse(HttpStatusCode.OK, transaction);
+            }
+
+            catch (HttpResponseException ex)
+            {
+                response = Request.CreateResponse(ex.Response.StatusCode, transaction);
+            }
+
+            catch (Exception ex)
+            {
+                transaction.ReturnMessage = ex.ToString();
+                response = Request.CreateResponse(HttpStatusCode.BadRequest, transaction);
+            }
+
+            return response;
+        }
+
+        #endregion  // Customer
     }
 }

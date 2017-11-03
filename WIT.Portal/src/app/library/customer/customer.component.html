@@ -1,0 +1,77 @@
+<div class="modal-header">
+
+    <h4 class="modal-title pull-left">{{title}}</h4>
+
+</div>
+
+<div class="modal-body">
+
+    <div class="panel panel-default">
+
+        <div class="form-horizontal" role="form">
+
+            <div style="padding:10px;margin:10px; ">
+
+                <div class="form-group">
+                    <label class="col-lg-3 col-sm-2 control-label required">Customer Code</label>
+                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                        <input type="text" class="form-control" [(ngModel)]="item.customerCode" [ngClass]="{'validation-error': !!item.validationErrors['customerCode']}">
+                    </div>
+                    <div class="col-lg-3" *ngIf="!!item.validationErrors['customerCode']">
+                        <small class="text-danger">
+                            {{item.validationErrors['customerCode']}}
+                        </small>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-lg-3 col-sm-2 control-label required">Company Name</label>
+                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                        <input type="text" class="form-control" [(ngModel)]="item.companyName" [ngClass]="{'validation-error': !!item.validationErrors['companyName']}">
+                    </div>
+                    <div class="col-lg-3" *ngIf="!!item.validationErrors['companyName']">
+                        <small class="text-danger">
+                            {{item.validationErrors['companyName']}}
+                        </small>
+                    </div>
+                </div>
+
+                <address-form [(address)]="address" [validationErrors]="item.validationErrors"></address-form>
+
+                <div class="form-group">
+                    <label class="col-lg-3 col-sm-2 control-label">Phone Number</label>
+                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                        <input type="text" class="form-control" [(ngModel)]="item.phoneNumber" [ngClass]="{'validation-error': !!item.validationErrors['phoneNumber']}">
+                    </div>
+                    <div class="col-lg-3" *ngIf="!!item.validationErrors['phoneNumber']">
+                        <small class="text-danger">
+                            {{item.validationErrors['phoneNumber']}}
+                        </small>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <alertbox></alertbox>
+
+</div>
+
+<div class="modal-footer">
+    <div class="pull-left">
+        <content *ngIf="showUpdateButton">
+            <button (click)="updateItem()" class="btn btn-primary">
+                Update
+            </button>
+        </content>
+        <content *ngIf="!showUpdateButton">
+            <button (click)="updateItem()" class="btn btn-primary">
+                Create
+            </button>
+        </content>
+        <button type="button" class="btn btn-default" (click)="bsModalRef.hide()">Close</button>
+    </div>
+</div>

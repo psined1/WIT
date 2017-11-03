@@ -3,11 +3,12 @@ import { Routes, RouterModule } from '@angular/router';
 import { AuthorizationGuard } from "../authorization-guard";
 
 import { ProductFeatureListComponent } from "./product-feature/product-feature-list.component";
+import { CustomerListComponent } from "./customer/customer-list.component";
 
 const libraryRoutes: Routes = [
-    { path: '', component: ProductFeatureListComponent },
-    { path: 'product-features', component: ProductFeatureListComponent, canActivate: [AuthorizationGuard]  }
-    //{ path: 'product-maintenance', component: ProductMaintenanceComponent, canActivate: [AuthorizationGuard]  }
+    { path: 'product-features', component: ProductFeatureListComponent, canActivate: [AuthorizationGuard] },
+    { path: 'customers', component: CustomerListComponent, canActivate: [AuthorizationGuard] },
+    { path: '', component: ProductFeatureListComponent }
 ]
 
 @NgModule({
