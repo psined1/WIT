@@ -10,19 +10,29 @@
             <div class="form-group">
                 <label class="col-sm-2 control-label">First Name</label>
                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                    <input type="text" class="form-control" [(ngModel)]="firstName" [ngClass]="{'validation-error': firstNameInputError}">
+                    <input type="text" class="form-control" [(ngModel)]="item.firstName" [ngClass]="{'validation-error': !!item.validationErrors['firstName']}">
+                </div>
+                <div class="col-lg-3" *ngIf="!!item.validationErrors['firstName']">
+                    <small class="text-danger">
+                        {{item.validationErrors['firstName']}}
+                    </small>
                 </div>
             </div>
 
             <div class="form-group">
                 <label class="col-sm-2 control-label">Last Name</label>
                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                    <input type="text" class="form-control" [(ngModel)]="lastName" [ngClass]="{'validation-error': lastNameInputError}">
+                    <input type="text" class="form-control" [(ngModel)]="item.lastName" [ngClass]="{'validation-error': !!item.validationErrors['lastName']}">
+                </div>
+                <div class="col-lg-3" *ngIf="!!item.validationErrors['lastName']">
+                    <small class="text-danger">
+                        {{item.validationErrors['lastName']}}
+                    </small>
                 </div>
             </div>
 
 
-            <address-form [address]="address"></address-form>
+            <address-form [(address)]="address" [validationErrors]="item.validationErrors"></address-form>
 
         </div>
 
@@ -34,7 +44,7 @@
 
 <button (click)="updateProfile()" class="btn btn-primary">Update Profile</button>
 
-<alertbox [alerts]="alerts" [messageBox]="messageBox"></alertbox>
+<alertbox></alertbox>
 
 
 

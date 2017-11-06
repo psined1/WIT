@@ -14,7 +14,7 @@ namespace WIT.Portal.WebApiControllers
 {
     public abstract class BaseApiController : ApiController
     {
-        protected TransactionalInformation ValidateToken(HttpRequestMessage request, TransactionalInformation info)
+        /*protected TransactionalInformation ValidateToken(HttpRequestMessage request, TransactionalInformation info)
         {
             TransactionalInformation transaction = new TransactionalInformation()
             {
@@ -50,11 +50,13 @@ namespace WIT.Portal.WebApiControllers
             transaction.ReturnStatus = true;
 
             return transaction;
-        }
+        }*/
 
         protected void ValidateToken(HttpRequestMessage request, TransactionInfo transaction)
         {
-            transaction.IsAuthenicated = false;
+            //transaction.IsAuthenicated = false;
+            transaction.CurrentUserID = 0;
+            transaction.CurrentUserEmail = null;
 
             if (request.Headers.Authorization != null)
             {
@@ -67,7 +69,7 @@ namespace WIT.Portal.WebApiControllers
 
                     if (userID != 0)
                     {
-                        transaction.IsAuthenicated = true;
+                        //transaction.IsAuthenicated = true;
                         transaction.CurrentUserID = userID;
                         transaction.CurrentUserEmail = principal.GetUserEmail();
                         return;
@@ -77,6 +79,37 @@ namespace WIT.Portal.WebApiControllers
 
             transaction.ReturnMessage = "Your session is invalid. Please re-login.";
             throw new HttpResponseException(HttpStatusCode.Unauthorized);
+        }
+
+        protected HttpResponseMessage BaseAction(HttpRequestMessage request, Action<TransactionInfo> controllerAction)
+        {
+            HttpResponseMessage response = null;
+            TransactionInfo transaction = new TransactionInfo();
+
+            try
+            {
+                controllerAction(transaction);
+
+                response = Request.CreateResponse(HttpStatusCode.OK, transaction);
+            }
+
+            catch (HttpResponseException ex)
+            {
+                response = request.CreateResponse(ex.Response.StatusCode, transaction);
+                if (ex.Response.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    response.Headers.Add("Access-Control-Expose-Headers", "Authorization");
+                    response.Headers.Add("Authorization", "");
+                }
+            }
+
+            catch (Exception ex)
+            {
+                transaction.ReturnMessage = ex.ToString();
+                response = request.CreateResponse(HttpStatusCode.BadRequest, transaction);
+            }
+
+            return response;
         }
     }
 }

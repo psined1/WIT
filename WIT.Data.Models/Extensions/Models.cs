@@ -10,7 +10,13 @@ namespace WIT.Data.Models
     public partial class ProductFeature
     {
         [NotMapped]
-        public Dictionary<string,string> ValidationErrors { get; set; }
+        public Dictionary<string, string> ValidationErrors { get; set; }
+    }
+
+    public partial class ProductClass
+    {
+        [NotMapped]
+        public Dictionary<string, string> ValidationErrors { get; set; }
     }
 
     public partial class Customer

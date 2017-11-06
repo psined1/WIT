@@ -4,11 +4,12 @@ import { User } from '../entities/user.entity';
 import { UserService } from '../services/user.service';
 import { HttpService } from '../services/http.service';
 import { SessionService } from '../services/session.service';
-import { AlertService } from '../services/alert.service';
 import { Router } from '@angular/router';
 import { AlertBoxComponent } from '../shared/alertbox.component';
 
-declare var NotificationFx: any;
+import { TransactionInfo } from '../entities/transaction-info.entity';
+
+//declare var NotificationFx: any;
 
 @Component({
     templateUrl: './register.component.html',
@@ -17,85 +18,65 @@ declare var NotificationFx: any;
 
 export class RegisterComponent implements OnInit {
 
-    public title: string = "";
-    public fullName: string = "";
-    public firstName: string = "";
-    public lastName: string = "";
-    public emailAddress: string = "";
-    public password: string = "";
-    public passwordConfirmation: string = "";
-    public alerts: Array<string> = [];
-    public messageBox: string;
+    public title: string = "Register User Account";
 
-    public testMessages: Array<string> = [];
+    @ViewChild(AlertBoxComponent)
+    private alertBox: AlertBoxComponent;
 
-    public firstNameInputError: Boolean;
-    public lastNameInputError: Boolean;
-    public emailAddressInputError: Boolean;
-    public passwordInputError: Boolean;
-    public passwordConfirmationInputError: Boolean;
-    public showSpinner = false;
-    public selectedCar: string;
+    private item: User;
 
-    @ViewChild(AlertBoxComponent) alertBoxComponent: AlertBoxComponent;
-
-    constructor(private userService: UserService, private sessionService: SessionService, private alertService: AlertService, private router: Router, private zone: NgZone) { }
+    constructor(
+        private userService: UserService,
+        private sessionService: SessionService,
+        private router: Router,
+        private zone: NgZone
+    ) { }
 
     public ngOnInit() {
-        this.clearInputErrors();
-        this.title = "Register";
-        this.firstName = "William";
-        this.lastName = "Gates";
-        this.emailAddress = "wgates@microsoft.com";
-        this.password = "microsoft";
-        this.passwordConfirmation = "microsoft";
-    }  
 
-    public registerUser($event): void {
+        this.item = new User();
 
-        let user: User = new User();
-        user.emailAddress = this.emailAddress;
-        user.firstName = this.firstName;
-        user.lastName = this.lastName;
-        user.password = this.password;
-        user.passwordConfirmation = this.passwordConfirmation;
+        //////////////////////////////////////// DEBUG BEGIN ///////////////////////////////////////
+        this.item.firstName = "Denis";
+        this.item.lastName = "Pavlichenko";
+        this.item.emailAddress = "psined1@gmail.com";
+        this.item.password = "test";
+        this.item.passwordConfirmation = "test";
+        ////////////////////////////////////////// DEBUG END ///////////////////////////////////////
 
-        this.clearInputErrors();
+        this.clearStatus();
+    }
 
-        this.userService.registerUser(user)
-            .subscribe(
+    public registerUser(): void {
+
+        this.clearStatus();
+
+        this.userService.registerUser(this.item).subscribe(
             response => this.registerUserOnSuccess(response),
-            response => this.registerUserOnError(response));
-
+            response => this.registerUserOnError(response)
+        );
     }
 
-    private clearInputErrors() {
-        this.firstNameInputError = false;
-        this.lastNameInputError = false;
-        this.emailAddressInputError = false;
-        this.passwordInputError = false;
-        this.passwordConfirmationInputError = false;
+    private clearStatus() {
+        this.item.validationErrors = {};
+        this.alertBox.clear();
     }
 
-    private registerUserOnSuccess(response): void {
+    private registerUserOnSuccess(response: TransactionInfo): void {
 
-        let user: User = new User();
-        user.userID = response.userID;
-        user.emailAddress = response.emailAddress;
-        user.firstName = response.firstName;
-        user.lastName = response.lastName;
-
-        this.sessionService.authenicated(user);
+        this.sessionService.authenicated(response.data);
 
         this.router.navigate(['/home/home']);
-
     }
 
     private registerUserOnError(response): void {        
-        this.alertService.renderErrorMessage(response.returnMessage);
-        this.messageBox = this.alertService.returnFormattedMessage();       
-        this.alerts = this.alertService.returnAlerts();        
-        this.alertService.setValidationErrors(this, response.validationErrors);
+
+        let item = new User(response.data);
+        if (item) {
+            this.item.validationErrors = item.validationErrors;
+        }
+
+        this.alertBox.renderErrorMessage(response.returnMessage);
     }
 }
 

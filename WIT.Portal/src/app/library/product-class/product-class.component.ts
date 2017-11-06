@@ -9,24 +9,24 @@ import { BsModalRef } from 'ngx-bootstrap/modal/modal-options.class';
 
 import { TransactionInfo } from '../../entities/transaction-info.entity';
 import { LibraryService } from '../../services/library.service';
-import { ProductFeature } from '../../entities/product-feature.entity';
+import { ProductClass } from '../../entities/product-class.entity';
 
 @Component({
-    templateUrl: './product-feature.component.html'
+    templateUrl: './product-class.component.html'
 })
 
-export class ProductFeatureComponent implements OnInit {
+export class ProductClassComponent implements OnInit {
 
-    public title: string = 'Product Feature Maintenance';
+    public title: string = 'Product Class Maintenance';
 
     @ViewChild(AlertBoxComponent)
     private alertBox: AlertBoxComponent;
 
     @Input()
-    public item: ProductFeature;
+    public item: ProductClass;
 
     public get showUpdateButton(): Boolean {
-        return this.item.productFeatureId > 0;
+        return this.item.productClassID > 0;
     }
 
     public updatedEvent: EventEmitter<Boolean> = new EventEmitter();
@@ -45,9 +45,9 @@ export class ProductFeatureComponent implements OnInit {
 
             this.clearStatus();
 
-            let item = new ProductFeature();
-            item.productFeatureId = id;
-            this.libraryService.getProductFeature(item)
+            let item = new ProductClass();
+            item.productClassID = id;
+            this.libraryService.getProductClass(item)
                 .subscribe(
                 response => this.getOnSuccess(response),
                 response => this.getOnError(response)
@@ -58,7 +58,7 @@ export class ProductFeatureComponent implements OnInit {
     public ngOnInit() {
 
         if (!this.item)
-            this.item = new ProductFeature();
+            this.item = new ProductClass();
 
         this.route.params.subscribe(params => {
 
@@ -71,7 +71,7 @@ export class ProductFeatureComponent implements OnInit {
 
     private getOnSuccess(response: TransactionInfo) {
 
-        let item = new ProductFeature(response.data);
+        let item = new ProductClass(response.data);
         if (item) {
             this.item = item;
         }
@@ -79,7 +79,7 @@ export class ProductFeatureComponent implements OnInit {
 
     private getOnError(response: TransactionInfo) {
 
-        let item = new ProductFeature(response.data);
+        let item = new ProductClass(response.data);
         if (item) {
             this.item = item;
         }
@@ -90,7 +90,7 @@ export class ProductFeatureComponent implements OnInit {
     public updateItem(): void {
 
         this.clearStatus();
-        this.libraryService.updateProductFeature(this.item)
+        this.libraryService.updateProductClass(this.item)
             .subscribe(
             response => this.updateOnSuccess(response),
             response => this.updateOnError(response)
@@ -99,7 +99,7 @@ export class ProductFeatureComponent implements OnInit {
 
     private updateOnSuccess(response: TransactionInfo) {
 
-        let item = new ProductFeature(response.data);
+        let item = new ProductClass(response.data);
         this.item = item;
 
         this.alertBox.renderSuccessMessage(response.returnMessage);
@@ -109,7 +109,7 @@ export class ProductFeatureComponent implements OnInit {
 
     private updateOnError(response: TransactionInfo) {
 
-        let item = new ProductFeature(response.data);
+        let item = new ProductClass(response.data);
         if (item) {
             this.item.validationErrors = item.validationErrors;
         }

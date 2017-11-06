@@ -6,7 +6,7 @@ import { ObservationSheetStep } from '../../entities/observation-sheet-step.enti
 import { AlertBoxComponent } from '../../shared/alertbox.component';
 //import { CustomerService } from '../../services/customer.service';
 import { HttpService } from '../../services/http.service';
-import { AlertService } from '../../services/alert.service';
+//import { AlertService } from '../../services/alert.service';
 import { SessionService } from '../../services/session.service';
 //import { AddressComponent } from '../../shared/address.component';
 
@@ -33,8 +33,8 @@ export class StepMaintenanceComponent implements OnInit {
 
         private route: ActivatedRoute,
         //private customerService: CustomerService,
-        private sessionService: SessionService,
-        private alertService: AlertService
+        private sessionService: SessionService
+        //private alertService: AlertService
     ) { }
 
 

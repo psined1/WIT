@@ -14,6 +14,9 @@ import { ConfirmYesNoComponent } from '../shared/confirm-yes-no/confirm-yes-no.c
 import { ProductFeatureListComponent } from "./product-feature/product-feature-list.component";
 import { ProductFeatureComponent } from "./product-feature/product-feature.component";
 
+import { ProductClassListComponent } from "./product-class/product-class-list.component";
+import { ProductClassComponent } from "./product-class/product-class.component";
+
 import { CustomerListComponent } from "./customer/customer-list.component";
 import { CustomerComponent } from "./customer/customer.component";
 
@@ -22,6 +25,8 @@ import { CustomerComponent } from "./customer/customer.component";
     declarations: [
         ProductFeatureListComponent,
         ProductFeatureComponent,
+        ProductClassListComponent,
+        ProductClassComponent,
         CustomerListComponent,
         CustomerComponent
     ],
@@ -36,6 +41,7 @@ import { CustomerComponent } from "./customer/customer.component";
     entryComponents: [
         ConfirmYesNoComponent,
         ProductFeatureComponent,
+        ProductClassComponent,
         CustomerComponent
     ],
     providers: [

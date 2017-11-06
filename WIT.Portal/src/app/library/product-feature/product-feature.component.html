@@ -15,7 +15,11 @@
                 <div class="form-group">
                     <label class="col-lg-3 col-sm-2 control-label required">Code</label>
                     <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                        <input type="text" class="form-control" [(ngModel)]="item.code" [ngClass]="{'validation-error': !!item.validationErrors['code']}">
+                        <input type="text" class="form-control" 
+                               [ngModel]="item.code | uppercase" 
+                               (ngModelChange)="item.code=$event" 
+                               [ngClass]="{'validation-error': !!item.validationErrors['code']}" 
+                               [disabled]="!!item.productFeatureId">
                     </div>
                     <div class="col-lg-3" *ngIf="!!item.validationErrors['code']">
                         <small class="text-danger">

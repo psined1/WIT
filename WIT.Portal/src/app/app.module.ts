@@ -19,7 +19,6 @@ import { AuthorizationGuard } from "./authorization-guard";
 import { SessionService } from "./services/session.service";
 import { HttpService } from './services/http.service';
 import { BlockUIService } from './services/blockui.service';
-import { AlertService } from './services/alert.service';
 
 import { BsDropdownModule } from 'ngx-bootstrap';
 
@@ -42,7 +41,12 @@ import { BsDropdownModule } from 'ngx-bootstrap';
         RouterModule.forRoot(AppRoutes),
         BsDropdownModule.forRoot()
     ],     
-    providers: [HttpService, BlockUIService, AlertService, SessionService, AuthorizationGuard],
+    providers: [
+        HttpService,
+        BlockUIService,
+        SessionService,
+        AuthorizationGuard
+    ],
     bootstrap: [AppComponent]
 })
 export class AppModule { }

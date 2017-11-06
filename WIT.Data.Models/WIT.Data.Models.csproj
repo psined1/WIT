@@ -54,6 +54,9 @@
     <Compile Include="Models\Customer.cs">
       <DependentUpon>WitModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\ProductClass.cs">
+      <DependentUpon>WitModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\ProductFeature.cs">
       <DependentUpon>WitModel.tt</DependentUpon>
     </Compile>

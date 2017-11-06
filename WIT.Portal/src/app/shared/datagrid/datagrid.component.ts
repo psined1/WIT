@@ -1,6 +1,5 @@
 ﻿import { Component, EventEmitter, Injectable, Output, Input, OnChanges, OnInit, Host} from '@angular/core';
 import { DataGridColumn, DataGridSorter, DataGridButton, DataGridSortInformation, DataGridEventInformation } from './datagrid.core';
-import { TransactionalInformation } from '../../entities/transactionalinformation.entity';
 import { GridInfo } from '../../entities/grid-info.entity';
 
 @Component({
@@ -63,7 +62,7 @@ export class DataGrid implements OnInit {
 
     public ngOnInit() {}
 
-    public databind(gridInfo: TransactionalInformation | GridInfo) {
+    public databind(gridInfo: GridInfo) {
     
         this.currentPageNumber = gridInfo.currentPageNumber;
         this.totalPages = gridInfo.totalPages;

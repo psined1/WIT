@@ -6,6 +6,7 @@ import { HttpService } from './http.service';
 import { SessionService } from './session.service';
 
 import { ProductFeature, ProductFeatureList } from '../entities/product-feature.entity';
+import { ProductClass, ProductClassList } from '../entities/product-class.entity';
 import { Customer, CustomerList } from '../entities/customer.entity';
 
 
@@ -19,7 +20,7 @@ export class LibraryService {
         let url = this.sessionService.apiServer + "library/getProductFeatures";
         return this.httpService.httpPostNonblocking(url, list);
     }
-   
+
     public getProductFeature(item: ProductFeature): Observable<any> {
         let url = this.sessionService.apiServer + "library/getProductFeature";
         return this.httpService.httpPostNonblocking(url, item);
@@ -32,6 +33,27 @@ export class LibraryService {
 
     public deleteProductFeature(item: ProductFeature): Observable<any> {
         let url = this.sessionService.apiServer + "library/deleteProductFeature";
+        return this.httpService.httpPost(url, item);
+    }
+
+    // Product Classes
+    public getProductClasses(list: ProductClassList): Observable<any> {
+        let url = this.sessionService.apiServer + "library/getProductClasses";
+        return this.httpService.httpPostNonblocking(url, list);
+    }
+
+    public getProductClass(item: ProductClass): Observable<any> {
+        let url = this.sessionService.apiServer + "library/getProductClass";
+        return this.httpService.httpPostNonblocking(url, item);
+    }
+
+    public updateProductClass(item: ProductClass): Observable<any> {
+        let url = this.sessionService.apiServer + "library/updateProductClass";
+        return this.httpService.httpPost(url, item);
+    }
+
+    public deleteProductClass(item: ProductClass): Observable<any> {
+        let url = this.sessionService.apiServer + "library/deleteProductClass";
         return this.httpService.httpPost(url, item);
     }
 

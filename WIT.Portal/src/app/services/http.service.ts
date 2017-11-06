@@ -8,7 +8,7 @@ import { BlockUIService } from './blockui.service';
 import { Observable } from 'rxjs';
 import 'rxjs/add/operator/map';
 
-import { TransactionalInformation } from '../entities/transactionalInformation.entity';
+import { TransactionInfo } from '../entities/transaction-info.entity';
 
 
 @Injectable()
@@ -69,7 +69,7 @@ export class HttpService {
         let transaction: any;
 
         if (err.ok !== undefined && !err.ok) {
-            transaction = new TransactionalInformation();   // TODO: change to TransactionInfo
+            transaction = new TransactionInfo();
             if (err.status === 0) {
                 switch (err.type) {
                     case 3:
@@ -87,6 +87,10 @@ export class HttpService {
                     transaction.data = body.data;
                 } else {
                     transaction.returnMessage = err.statusText;
+                }
+
+                if (err.status === 404) {
+                    this.sessionService.updateToken(err.headers);
                 }
             }
         } else {

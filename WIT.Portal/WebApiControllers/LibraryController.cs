@@ -44,11 +44,8 @@ namespace WIT.Portal.WebApiControllers
         [HttpPost]
         public HttpResponseMessage GetProductFeatures(HttpRequestMessage request, [FromBody] ProductFeatureList list)
         {
-            HttpResponseMessage response = null;
-            TransactionInfo transaction = new TransactionInfo();
+            return BaseAction(request, (transaction) => {
 
-            try
-            {
                 if (string.IsNullOrWhiteSpace(list.GridInfo.SortExpression))
                     list.GridInfo.SortExpression = "Code";
 
@@ -77,22 +74,7 @@ namespace WIT.Portal.WebApiControllers
                     ;
 
                 transaction.Data = list;
-
-                response = Request.CreateResponse(HttpStatusCode.OK, transaction);
-            }
-
-            catch (HttpResponseException ex)
-            {
-                response = Request.CreateResponse(ex.Response.StatusCode, transaction);
-            }
-
-            catch (Exception ex)
-            {
-                transaction.ReturnMessage = ex.ToString();
-                response = Request.CreateResponse(HttpStatusCode.BadRequest, transaction);
-            }
-
-            return response;
+            });
         }
 
 
@@ -106,11 +88,8 @@ namespace WIT.Portal.WebApiControllers
         [HttpPost]
         public HttpResponseMessage GetProductFeature(HttpRequestMessage request, [FromBody] ProductFeature item)
         {
-            HttpResponseMessage response = null;
-            TransactionInfo transaction = new TransactionInfo();
+            return BaseAction(request, (transaction) => {
 
-            try
-            {
                 ProductFeature existingItem = _db.ProductFeatures.Where(i => i.ProductFeatureId == item.ProductFeatureId).FirstOrDefault();
 
                 if (existingItem == null)
@@ -120,22 +99,7 @@ namespace WIT.Portal.WebApiControllers
                 }
 
                 transaction.Data = existingItem;
-
-                response = Request.CreateResponse(HttpStatusCode.OK, transaction);
-            }
-
-            catch (HttpResponseException ex)
-            {
-                response = Request.CreateResponse(ex.Response.StatusCode, transaction);
-            }
-
-            catch (Exception ex)
-            {
-                transaction.ReturnMessage = ex.ToString();
-                response = Request.CreateResponse(HttpStatusCode.BadRequest, transaction);
-            }
-
-            return response;
+            });
         }
 
         /// <summary>
@@ -148,11 +112,8 @@ namespace WIT.Portal.WebApiControllers
         [HttpPost]
         public HttpResponseMessage DeleteProductFeature(HttpRequestMessage request, [FromBody] ProductFeature item)
         {
-            HttpResponseMessage response = null;
-            TransactionInfo transaction = new TransactionInfo();
+            return BaseAction(request, (transaction) => {
 
-            try
-            {
                 this.ValidateToken(request, transaction);
 
                 ProductFeature existingItem = _db.ProductFeatures.Where(i => i.ProductFeatureId == item.ProductFeatureId).FirstOrDefault();
@@ -167,22 +128,7 @@ namespace WIT.Portal.WebApiControllers
                 _db.SaveChanges();
 
                 transaction.Data = existingItem;
-
-                response = Request.CreateResponse(HttpStatusCode.OK, transaction);
-            }
-
-            catch (HttpResponseException ex)
-            {
-                response = Request.CreateResponse(ex.Response.StatusCode, transaction);
-            }
-
-            catch (Exception ex)
-            {
-                transaction.ReturnMessage = ex.ToString();
-                response = Request.CreateResponse(HttpStatusCode.BadRequest, transaction);
-            }
-
-            return response;
+            });
         }
 
         /// <summary>
@@ -195,14 +141,10 @@ namespace WIT.Portal.WebApiControllers
         [HttpPost]
         public HttpResponseMessage UpdateProductFeature(HttpRequestMessage request, [FromBody] ProductFeature item)
         {
-            HttpResponseMessage response = null;
-            TransactionInfo transaction = new TransactionInfo()
-            {
-                Data = item
-            };
+            return BaseAction(request, (transaction) => {
 
-            try
-            {
+                transaction.Data = item;
+
                 this.ValidateToken(request, transaction);
 
                 if (!ProductFeatureValidator.Check(_db, item))
@@ -223,7 +165,7 @@ namespace WIT.Portal.WebApiControllers
 
                 else
                 {
-                    existingItem.Code = item.Code;
+                    //existingItem.Code = item.Code;
                     existingItem.Name = item.Name;
                     existingItem.Description = item.Description;
                 }
@@ -234,25 +176,159 @@ namespace WIT.Portal.WebApiControllers
                 _db.SaveChanges();
 
                 transaction.Data = existingItem;
-
-                response = Request.CreateResponse(HttpStatusCode.OK, transaction);
-            }
-
-            catch (HttpResponseException ex)
-            {
-                response = Request.CreateResponse(ex.Response.StatusCode, transaction);
-            }
-
-            catch (Exception ex)
-            {
-                transaction.ReturnMessage = ex.ToString();
-                response = Request.CreateResponse(HttpStatusCode.BadRequest, transaction);
-            }
-
-            return response;
+            });
         }
 
         #endregion  // ProductFeature
+
+        #region ProductClass
+
+        /// <summary>
+        /// GetProductClasss
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        [Route("GetProductClasses")]
+        [HttpPost]
+        public HttpResponseMessage GetProductClasses(HttpRequestMessage request, [FromBody] ProductClassList list)
+        {
+            return BaseAction(request, (transaction) => {
+
+                if (string.IsNullOrWhiteSpace(list.GridInfo.SortExpression))
+                    list.GridInfo.SortExpression = "Code";
+
+                if (string.IsNullOrWhiteSpace(list.GridInfo.SortDirection))
+                    list.GridInfo.SortDirection = "ASC";
+
+                var q = _db.ProductClasses.AsQueryable();
+
+                if (!string.IsNullOrWhiteSpace(list.Code))
+                {
+                    q = q.Where(i => i.Code.StartsWith(list.Code));
+                }
+
+                if (!string.IsNullOrWhiteSpace(list.Name))
+                {
+                    q = q.Where(i => i.Name.StartsWith(list.Name));
+                }
+
+                list.GridInfo.TotalRows = q.Count();
+
+                list.Items = q
+                    .OrderBy(string.Format("{0} {1}", list.GridInfo.SortExpression, list.GridInfo.SortDirection))
+                    .Skip((list.GridInfo.CurrentPageNumber - 1) * list.GridInfo.PageSize)
+                    .Take(list.GridInfo.PageSize)
+                    .ToList()
+                    ;
+
+                transaction.Data = list;
+            });
+        }
+
+
+        /// <summary>
+        /// GetProductClass
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        [Route("GetProductClass")]
+        [HttpPost]
+        public HttpResponseMessage GetProductClass(HttpRequestMessage request, [FromBody] ProductClass item)
+        {
+            return BaseAction(request, (transaction) => {
+
+                ProductClass existingItem = _db.ProductClasses.Where(i => i.ProductClassID == item.ProductClassID).FirstOrDefault();
+
+                if (existingItem == null)
+                {
+                    transaction.ReturnMessage = string.Format("Product class {0} not found", item.Code);
+                    throw new HttpResponseException(HttpStatusCode.NotFound);
+                }
+
+                transaction.Data = existingItem;
+            });
+        }
+
+        /// <summary>
+        /// DeleteProductClass
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        [Route("DeleteProductClass")]
+        [HttpPost]
+        public HttpResponseMessage DeleteProductClass(HttpRequestMessage request, [FromBody] ProductClass item)
+        {
+            return BaseAction(request, (transaction) => {
+
+                this.ValidateToken(request, transaction);
+
+                ProductClass existingItem = _db.ProductClasses.Where(i => i.ProductClassID == item.ProductClassID).FirstOrDefault();
+
+                if (existingItem == null)
+                {
+                    transaction.ReturnMessage = string.Format("Product class {0} not found", item.Code);
+                    throw new HttpResponseException(HttpStatusCode.NotFound);
+                }
+
+                _db.ProductClasses.Remove(existingItem);
+                _db.SaveChanges();
+
+                transaction.Data = existingItem;
+            });
+        }
+
+        /// <summary>
+        /// UpdateProductClass
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        [Route("UpdateProductClass")]
+        [HttpPost]
+        public HttpResponseMessage UpdateProductClass(HttpRequestMessage request, [FromBody] ProductClass item)
+        {
+            return BaseAction(request, (transaction) => {
+
+                transaction.Data = item;
+
+                this.ValidateToken(request, transaction);
+
+                if (!ProductClassValidator.Check(_db, item))
+                {
+                    transaction.ReturnMessage = "Please correct all errors.";
+                    throw new HttpResponseException(HttpStatusCode.BadRequest);
+                }
+
+                ProductClass existingItem = _db.ProductClasses.Where(i => i.ProductClassID == item.ProductClassID).FirstOrDefault();
+
+                if (existingItem == null)
+                {
+                    existingItem = _db.ProductClasses.Add(item);
+
+                    existingItem.CreatedBy = transaction.CurrentUserEmail;
+                    existingItem.CreatedOn = DateTime.Now;
+                }
+
+                else
+                {
+                    //existingItem.Code = item.Code;
+                    existingItem.Name = item.Name;
+                    existingItem.Description = item.Description;
+                }
+
+                existingItem.UpdatedBy = transaction.CurrentUserEmail;
+                existingItem.UpdatedOn = DateTime.Now;
+
+                _db.SaveChanges();
+
+                transaction.Data = existingItem;
+            });
+        }
+
+        #endregion  // ProductClass
 
         #region Customer
 
@@ -266,11 +342,8 @@ namespace WIT.Portal.WebApiControllers
         [HttpPost]
         public HttpResponseMessage GetCustomers(HttpRequestMessage request, [FromBody] CustomerList list)
         {
-            HttpResponseMessage response = null;
-            TransactionInfo transaction = new TransactionInfo();
+            return BaseAction(request, (transaction) => {
 
-            try
-            {
                 if (string.IsNullOrWhiteSpace(list.GridInfo.SortExpression))
                     list.GridInfo.SortExpression = "CustomerCode";
 
@@ -299,22 +372,7 @@ namespace WIT.Portal.WebApiControllers
                     ;
 
                 transaction.Data = list;
-
-                response = Request.CreateResponse(HttpStatusCode.OK, transaction);
-            }
-
-            catch (HttpResponseException ex)
-            {
-                response = Request.CreateResponse(ex.Response.StatusCode, transaction);
-            }
-
-            catch (Exception ex)
-            {
-                transaction.ReturnMessage = ex.ToString();
-                response = Request.CreateResponse(HttpStatusCode.BadRequest, transaction);
-            }
-
-            return response;
+            });
         }
 
 
@@ -328,11 +386,8 @@ namespace WIT.Portal.WebApiControllers
         [HttpPost]
         public HttpResponseMessage GetCustomer(HttpRequestMessage request, [FromBody] Customer item)
         {
-            HttpResponseMessage response = null;
-            TransactionInfo transaction = new TransactionInfo();
+            return BaseAction(request, (transaction) => {
 
-            try
-            {
                 Customer existingItem = _db.Customers.Where(i => i.CustomerID == item.CustomerID).FirstOrDefault();
 
                 if (existingItem == null)
@@ -342,22 +397,7 @@ namespace WIT.Portal.WebApiControllers
                 }
 
                 transaction.Data = existingItem;
-
-                response = Request.CreateResponse(HttpStatusCode.OK, transaction);
-            }
-
-            catch (HttpResponseException ex)
-            {
-                response = Request.CreateResponse(ex.Response.StatusCode, transaction);
-            }
-
-            catch (Exception ex)
-            {
-                transaction.ReturnMessage = ex.ToString();
-                response = Request.CreateResponse(HttpStatusCode.BadRequest, transaction);
-            }
-
-            return response;
+            });
         }
 
         /// <summary>
@@ -370,11 +410,8 @@ namespace WIT.Portal.WebApiControllers
         [HttpPost]
         public HttpResponseMessage DeleteCustomer(HttpRequestMessage request, [FromBody] Customer item)
         {
-            HttpResponseMessage response = null;
-            TransactionInfo transaction = new TransactionInfo();
+            return BaseAction(request, (transaction) => {
 
-            try
-            {
                 this.ValidateToken(request, transaction);
 
                 Customer existingItem = _db.Customers.Where(i => i.CustomerID == item.CustomerID).FirstOrDefault();
@@ -389,22 +426,7 @@ namespace WIT.Portal.WebApiControllers
                 _db.SaveChanges();
 
                 transaction.Data = existingItem;
-
-                response = Request.CreateResponse(HttpStatusCode.OK, transaction);
-            }
-
-            catch (HttpResponseException ex)
-            {
-                response = Request.CreateResponse(ex.Response.StatusCode, transaction);
-            }
-
-            catch (Exception ex)
-            {
-                transaction.ReturnMessage = ex.ToString();
-                response = Request.CreateResponse(HttpStatusCode.BadRequest, transaction);
-            }
-
-            return response;
+            });
         }
 
         /// <summary>
@@ -417,14 +439,10 @@ namespace WIT.Portal.WebApiControllers
         [HttpPost]
         public HttpResponseMessage UpdateCustomer(HttpRequestMessage request, [FromBody] Customer item)
         {
-            HttpResponseMessage response = null;
-            TransactionInfo transaction = new TransactionInfo()
-            {
-                Data = item
-            };
+            return BaseAction(request, (transaction) => {
 
-            try
-            {
+                transaction.Data = item;
+
                 this.ValidateToken(request, transaction);
 
                 if (!CustomerValidator.Check(_db, item))
@@ -445,7 +463,7 @@ namespace WIT.Portal.WebApiControllers
 
                 else
                 {
-                    existingItem.CustomerCode = item.CustomerCode;
+                    //existingItem.CustomerCode = item.CustomerCode;
                     existingItem.CompanyName = item.CompanyName;
                     existingItem.AddressLine1 = item.AddressLine1;
                     existingItem.AddressLine2 = item.AddressLine2;
@@ -461,22 +479,7 @@ namespace WIT.Portal.WebApiControllers
                 _db.SaveChanges();
 
                 transaction.Data = existingItem;
-
-                response = Request.CreateResponse(HttpStatusCode.OK, transaction);
-            }
-
-            catch (HttpResponseException ex)
-            {
-                response = Request.CreateResponse(ex.Response.StatusCode, transaction);
-            }
-
-            catch (Exception ex)
-            {
-                transaction.ReturnMessage = ex.ToString();
-                response = Request.CreateResponse(HttpStatusCode.BadRequest, transaction);
-            }
-
-            return response;
+            });
         }
 
         #endregion  // Customer

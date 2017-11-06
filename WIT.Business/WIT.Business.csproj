@@ -64,13 +64,10 @@
     <Compile Include="Rules\UserBusinessRules.cs" />
     <Compile Include="Transactions\CustomerList.cs" />
     <Compile Include="Transactions\GridInfo.cs" />
+    <Compile Include="Transactions\ProductClassList.cs" />
     <Compile Include="Transactions\ProductFeatureList.cs" />
     <Compile Include="Transactions\TransactionInfo.cs" />
-    <Compile Include="Transactions\TransactionalInformation.cs" />
-    <Compile Include="Transactions\CustomerInformation.cs" />
-    <Compile Include="Transactions\UserInformation.cs" />
     <Compile Include="Utilities.cs" />
-    <Compile Include="ValidationErrors.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

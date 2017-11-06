@@ -1,12 +1,13 @@
-import { Component } from '@angular/core';
-import { User } from '../entities/user.entity';
+import { Component, ViewChild } from '@angular/core';
 
 import { AlertBoxComponent } from '../shared/alertbox.component';
 import { UserService } from '../services/user.service';
 import { HttpService } from '../services/http.service';
-import { AlertService } from '../services/alert.service';
 import { SessionService } from '../services/session.service';
 import { Router } from '@angular/router';
+
+import { User } from '../entities/user.entity';
+import { TransactionInfo } from '../entities/transaction-info.entity';
 
 @Component({
     templateUrl: './login.component.html'
@@ -15,43 +16,43 @@ import { Router } from '@angular/router';
 export class LoginComponent {
 
     public title: string = 'Login';
-    public emailAddress: string = "";
-    public password: string = "";
-    public messageBox: string;
-    public alerts: Array<string> = [];
 
-    constructor(private userService: UserService, private sessionService: SessionService, private alertService: AlertService, private router: Router) {
-        this.emailAddress = "wgates@microsoft.com";
-        this.password = "microsoft";
+    @ViewChild(AlertBoxComponent)
+    private alertBox: AlertBoxComponent;
+
+    private item: User;
+
+    constructor(
+        private userService: UserService,
+        private sessionService: SessionService,
+        private router: Router
+    ) {
+        this.item = new User();
+
+        //////////////////////////////////////// DEBUG BEGIN ///////////////////////////////////////
+        this.item.emailAddress = "psined1@gmail.com";
+        this.item.password = "test";
+        ////////////////////////////////////////// DEBUG END ///////////////////////////////////////
     }
 
-    public login($event) {
+    public login() : void {
 
-        let user: User = new User();
-        user.emailAddress = this.emailAddress;
-        user.password = this.password;
-
-        let email = user.emailAddress;
-
-        this.userService.login(user)
+        this.userService.login(this.item)
             .subscribe(
             response => this.loginOnSuccess(response),
-            response => this.loginOnError(response));
-
+            response => this.loginOnError(response)
+            );
     }
 
-    private loginOnSuccess(response: User) {
+    private loginOnSuccess(response: TransactionInfo) {
 
-        this.sessionService.authenicated(response);
+        this.sessionService.authenicated(response.data);
 
         this.router.navigate(['/home/home']);
-
     }
 
     private loginOnError(response: any) {
-        //console.log(response);
-        this.alertService.renderErrorMessage(response.returnMessage);
-        this.messageBox = this.alertService.returnFormattedMessage();
-        this.alerts = this.alertService.returnAlerts();
+
+        this.alertBox.renderErrorMessage(response.returnMessage);
     }
 } 

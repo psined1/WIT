@@ -19,15 +19,15 @@ namespace WIT.Business
             _db = db;
 
             RuleFor(a => a.Code).NotEmpty().WithMessage("Code is required.");
-            RuleFor(a => a.Code).Must(NotExist).WithMessage("Code already exists.");
 
             RuleSet("new", () =>
             {
+                RuleFor(a => a.Code).Must(NotExist).WithMessage("Code already exists.");
             });
         }
 
         /// <summary>
-        /// Validate Duplicate Customer Code
+        /// Validate Duplicate Code
         /// </summary>
         /// <param name="customerCode"></param>
         /// <returns></returns>
@@ -44,6 +44,38 @@ namespace WIT.Business
         }
     }
 
+    public class ProductClassValidator : WitEntityValidator<ProductClass>
+    {
+        private ProductClassValidator(WitEntities db)
+        {
+            _db = db;
+
+            RuleFor(a => a.Code).NotEmpty().WithMessage("Code is required.");
+
+            RuleSet("new", () =>
+            {
+                RuleFor(a => a.Code).Must(NotExist).WithMessage("Code already exists.");
+            });
+        }
+
+        /// <summary>
+        /// Validate Duplicate Code
+        /// </summary>
+        /// <param name="customerCode"></param>
+        /// <returns></returns>
+        private bool NotExist(string code)
+        {
+            return !_db.ProductFeatures.Any(a => a.Code == code);
+        }
+
+        public static bool Check(WitEntities db, ProductClass item)
+        {
+            string ruleSet = item.ProductClassID == 0 ? "default,new" : "default";
+            item.ValidationErrors = new ProductClassValidator(db).CheckErrors(item, ruleSet);
+            return item.ValidationErrors.Count == 0;
+        }
+    }
+
     public class CustomerValidator : WitEntityValidator<Customer>
     {
         private CustomerValidator(WitEntities db)
@@ -52,15 +84,15 @@ namespace WIT.Business
 
             RuleFor(a => a.CustomerCode).NotEmpty().WithMessage("Code is required.");
             RuleFor(a => a.CompanyName).NotEmpty().WithMessage("Name is required.");
-            RuleFor(a => a.CustomerCode).Must(NotExist).WithMessage("Code already exists.");
 
             RuleSet("new", () =>
             {
+                RuleFor(a => a.CustomerCode).Must(NotExist).WithMessage("Code already exists.");
             });
         }
 
         /// <summary>
-        /// Validate Duplicate Customer Code
+        /// Validate Duplicate Code
         /// </summary>
         /// <param name="customerCode"></param>
         /// <returns></returns>

@@ -12,14 +12,24 @@
                 <div class="form-group">
                     <label class="col-sm-3 control-label required">First Name</label>
                     <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                        <input type="text" class="form-control" [(ngModel)]="firstName" name="firstName" [ngClass]="{'validation-error': firstNameInputError}">
+                        <input type="text" class="form-control" [(ngModel)]="item.firstName" name="firstName" [ngClass]="{'validation-error': !!item.validationErrors['firstName']}">
+                    </div>
+                    <div class="col-lg-3" *ngIf="!!item.validationErrors['firstName']">
+                        <small class="text-danger">
+                            {{item.validationErrors['firstName']}}
+                        </small>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label class="col-sm-3 control-label required">Last Name</label>
                     <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                        <input type="text" class="form-control" [(ngModel)]="lastName" name="lastName" [ngClass]="{'validation-error': lastNameInputError}">
+                        <input type="text" class="form-control" [(ngModel)]="item.lastName" name="lastName" [ngClass]="{'validation-error': !!item.validationErrors['lastName']}">
+                    </div>
+                    <div class="col-lg-3" *ngIf="!!item.validationErrors['lastName']">
+                        <small class="text-danger">
+                            {{item.validationErrors['lastName']}}
+                        </small>
                     </div>
                 </div>
 
@@ -27,7 +37,12 @@
                 <div class="form-group">
                     <label class="col-sm-3 control-label required">Email Address</label>
                     <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                        <input type="text" class="form-control"  [(ngModel)]="emailAddress" name="emailAddress" [ngClass]="{'validation-error': emailAddressInputError}" >
+                        <input type="text" class="form-control"  [(ngModel)]="item.emailAddress" name="emailAddress" [ngClass]="{'validation-error': !!item.validationErrors['emailAddress']}" >
+                    </div>
+                    <div class="col-lg-3" *ngIf="!!item.validationErrors['emailAddress']">
+                        <small class="text-danger">
+                            {{item.validationErrors['emailAddress']}}
+                        </small>
                     </div>
                 </div>
 
@@ -35,7 +50,12 @@
                 <div class="form-group">
                     <label class="col-sm-3 control-label required">Password</label>
                     <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                        <input type="password" class="form-control" [(ngModel)]="password" name="password" [ngClass]="{'validation-error': passwordInputError}">
+                        <input type="password" class="form-control" [(ngModel)]="item.password" name="password" [ngClass]="{'validation-error': !!item.validationErrors['password']}">
+                    </div>
+                    <div class="col-lg-3" *ngIf="!!item.validationErrors['password']">
+                        <small class="text-danger">
+                            {{item.validationErrors['password']}}
+                        </small>
                     </div>
                 </div>
 
@@ -43,7 +63,12 @@
                 <div class="form-group">
                     <label class="col-sm-3 control-label required">Password Confirmation</label>
                     <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                        <input type="password" class="form-control" [(ngModel)]="passwordConfirmation" name="passwordConfirmation" [ngClass]="{'validation-error': passwordConfirmationInputError}">
+                        <input type="password" class="form-control" [(ngModel)]="item.passwordConfirmation" name="passwordConfirmation" [ngClass]="{'validation-error': !!item.validationErrors['passwordConfirmation']}">
+                    </div>
+                    <div class="col-lg-3" *ngIf="!!item.validationErrors['passwordConfirmation']">
+                        <small class="text-danger">
+                            {{item.validationErrors['passwordConfirmation']}}
+                        </small>
                     </div>
                 </div>
 
@@ -56,9 +81,9 @@
 
 </div>
 
-<button value="Register" class="btn btn-primary" (click)="registerUser($event)">Register</button>
+<button value="Register" class="btn btn-primary" (click)="registerUser()">Register</button>
 
-<alertbox [alerts]="alerts" [messageBox]="messageBox"></alertbox>
+<alertbox></alertbox>
 
 
 

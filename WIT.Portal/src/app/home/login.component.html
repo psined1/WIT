@@ -12,14 +12,14 @@
                 <div class="form-group">
                     <label class="col-sm-2 control-label">Email Address</label>
                     <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                        <input type="text" class="form-control" [(ngModel)]="emailAddress" name="emailAddress">
+                        <input type="text" class="form-control" [(ngModel)]="item.emailAddress" name="emailAddress">
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label class="col-sm-2 control-label">Password</label>
                     <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                        <input type="password" class="form-control" [(ngModel)]="password" name="password">
+                        <input type="password" class="form-control" [(ngModel)]="item.password" name="password">
                     </div>
                 </div>
 
@@ -31,9 +31,9 @@
 
 </div>
 
-<button value="Login" class="btn btn-primary" (click)="login($event)">Login</button>
+<button value="Login" class="btn btn-primary" (click)="login()">Login</button>
 
-<alertbox [alerts]="alerts" [messageBox]="messageBox"></alertbox>
+<alertbox></alertbox>
 
 
 

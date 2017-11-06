@@ -52,11 +52,7 @@ namespace WIT.Portal.WebApiControllers
         [HttpPost]
         public HttpResponseMessage GetProfile(HttpRequestMessage request)
         {
-            HttpResponseMessage response = null;
-            TransactionInfo transaction = new TransactionInfo();
-
-            try
-            {
+            return BaseAction(request, (transaction) => {
                 this.ValidateToken(request, transaction);
 
                 User existingItem = _db.Users.Where(i => i.UserID == transaction.CurrentUserID).FirstOrDefault();
@@ -67,23 +63,11 @@ namespace WIT.Portal.WebApiControllers
                     throw new HttpResponseException(HttpStatusCode.NotFound);
                 }
 
+                existingItem.Password = null;
+                existingItem.PasswordConfirmation = null;
+
                 transaction.Data = existingItem;
-
-                response = Request.CreateResponse(HttpStatusCode.OK, transaction);
-            }
-
-            catch (HttpResponseException ex)
-            {
-                response = Request.CreateResponse(ex.Response.StatusCode, transaction);
-            }
-
-            catch (Exception ex)
-            {
-                transaction.ReturnMessage = ex.ToString();
-                response = Request.CreateResponse(HttpStatusCode.BadRequest, transaction);
-            }
-
-            return response;
+            });
         }
 
         /// <summary>
@@ -96,15 +80,9 @@ namespace WIT.Portal.WebApiControllers
         [HttpPost]
         public HttpResponseMessage RegisterUser(HttpRequestMessage request, [FromBody] User item)
         {
-            HttpResponseMessage response = null;
-            TransactionInfo transaction = new TransactionInfo()
-            {
-                Data = item
-            };
+            return BaseAction(request, (transaction) => {
 
-            try
-            {
-                //this.ValidateToken(request, transaction);
+                transaction.Data = item;
 
                 if (!UserValidator.Check(_db, item))
                 {
@@ -120,38 +98,11 @@ namespace WIT.Portal.WebApiControllers
                 _db.Users.Add(item);
                 _db.SaveChanges();
 
+                item.Password = null;
+                item.PasswordConfirmation = null;
+
                 transaction.Data = item;
-
-                response = Request.CreateResponse(HttpStatusCode.OK, transaction);
-
-                /*
-                 * UserBusinessService userBusinessService = new UserBusinessService(_userDataService);
-                userBusinessService.RegisterUser(userInformation, out transaction);
-                if (!transaction.ReturnStatus)
-                {
-                    throw new HttpResponseException(HttpStatusCode.BadRequest);
-                }
-
-                string tokenString = TokenManager.CreateToken(userInformation);
-
-                response = Request.CreateResponse<UserInformation>(HttpStatusCode.OK, userInformation);
-                response.Headers.Add("Access-Control-Expose-Headers", "Authorization");
-                response.Headers.Add("Authorization", tokenString);
-                */
-            }
-
-            catch (HttpResponseException ex)
-            {
-                response = Request.CreateResponse(ex.Response.StatusCode, transaction);
-            }
-
-            catch (Exception ex)
-            {
-                transaction.ReturnMessage = ex.ToString();
-                response = Request.CreateResponse(HttpStatusCode.BadRequest, transaction);
-            }
-
-            return response;
+            });
         }
 
         /// <summary>
@@ -164,26 +115,11 @@ namespace WIT.Portal.WebApiControllers
         [HttpPost]
         public HttpResponseMessage UpdateProfile(HttpRequestMessage request, [FromBody] User item)
         {
-            HttpResponseMessage response = null;
-            TransactionInfo transaction = new TransactionInfo()
-            {
-                Data = item
-            };
+            return BaseAction(request, (transaction) => {
 
-            try
-            {
+                transaction.Data = item;
+
                 this.ValidateToken(request, transaction);
-
-                /*
-                 * UserBusinessService userBusinessService = new UserBusinessService(_userDataService);
-                userBusinessService.UpdateProfile(userInformation, out transaction);
-                if (transaction.ReturnStatus == false)
-                {
-                    throw new HttpResponseException(HttpStatusCode.BadRequest);
-                }
-
-                response = Request.CreateResponse<UserInformation>(HttpStatusCode.OK, userInformation);
-                */
 
                 if (!UserValidator.Check(_db, item))
                 {
@@ -212,23 +148,11 @@ namespace WIT.Portal.WebApiControllers
 
                 _db.SaveChanges();
 
+                existingItem.Password = null;
+                existingItem.PasswordConfirmation = null;
+
                 transaction.Data = existingItem;
-
-                response = Request.CreateResponse(HttpStatusCode.OK, transaction);
-            }
-
-            catch (HttpResponseException ex)
-            {
-                response = Request.CreateResponse(ex.Response.StatusCode, transaction);
-            }
-
-            catch (Exception ex)
-            {
-                transaction.ReturnMessage = ex.ToString();
-                response = Request.CreateResponse(HttpStatusCode.BadRequest, transaction);
-            }
-
-            return response;
+            });
         }
 
         /// <summary>
@@ -241,19 +165,9 @@ namespace WIT.Portal.WebApiControllers
         [HttpPost]
         public HttpResponseMessage Login(HttpRequestMessage request, [FromBody] User item)
         {
-            HttpResponseMessage response = null;
-            TransactionInfo transaction = new TransactionInfo();
+            string token = "";
 
-            try
-            {
-                /*
-                 * UserBusinessService userBusinessService = new UserBusinessService(_userDataService);
-                userBusinessService.Login(userInformation, out transaction);
-                if (!transaction.ReturnStatus)
-                {
-                    throw new HttpResponseException(HttpStatusCode.BadRequest);
-                }
-                */
+            HttpResponseMessage response = BaseAction(request, (transaction) => {
 
                 User existingItem = _db.Users.Where(i => i.EmailAddress == item.EmailAddress).FirstOrDefault();
 
@@ -263,24 +177,22 @@ namespace WIT.Portal.WebApiControllers
                     throw new HttpResponseException(HttpStatusCode.Unauthorized);
                 }
 
+                existingItem.Password = null;
+                existingItem.PasswordConfirmation = null;
+
+                transaction.Data = existingItem;
                 transaction.CurrentUserID = existingItem.UserID;
                 transaction.CurrentUserEmail = existingItem.EmailAddress;
-                transaction.IsAuthenicated = true;
 
-                response = Request.CreateResponse(HttpStatusCode.OK, transaction);
+                //transaction.IsAuthenicated = true;
+
+                token = TokenManager.CreateToken(transaction);
+            });
+
+            if (response.StatusCode == HttpStatusCode.OK)
+            {
                 response.Headers.Add("Access-Control-Expose-Headers", "Authorization");
-                response.Headers.Add("Authorization", TokenManager.CreateToken(transaction));
-            }
-
-            catch (HttpResponseException ex)
-            {
-                response = Request.CreateResponse(ex.Response.StatusCode, transaction);
-            }
-
-            catch (Exception ex)
-            {
-                transaction.ReturnMessage = ex.ToString();
-                response = Request.CreateResponse(HttpStatusCode.BadRequest, transaction);
+                response.Headers.Add("Authorization", token);
             }
 
             return response;
@@ -295,24 +207,9 @@ namespace WIT.Portal.WebApiControllers
         [HttpPost]
         public HttpResponseMessage Authenicate(HttpRequestMessage request)
         {
-            HttpResponseMessage response = null;
-            TransactionInfo transaction = new TransactionInfo();
+            HttpResponseMessage response = BaseAction(request, (transaction) => {
 
-            try
-            {
                 this.ValidateToken(request, transaction);
-
-                /*
-                 * 
-                 * UserBusinessService userBusinessService = new UserBusinessService(_userDataService);
-                userBusinessService.Authenicate(userInformation, out transaction);
-                if (transaction.ReturnStatus == false)
-                {
-                    throw new HttpResponseException(HttpStatusCode.BadRequest);
-                }
-
-                string tokenString = request.Headers.Authorization.ToString();
-                */
 
                 User existingItem = _db.Users.Where(i => i.UserID == transaction.CurrentUserID && i.EmailAddress == transaction.CurrentUserEmail).FirstOrDefault();
 
@@ -321,24 +218,16 @@ namespace WIT.Portal.WebApiControllers
                     throw new HttpResponseException(HttpStatusCode.Unauthorized);
                 }
 
-                transaction.CurrentUserID = existingItem.UserID;
-                transaction.CurrentUserEmail = existingItem.EmailAddress;
-                transaction.IsAuthenicated = true;
+                existingItem.Password = null;
+                existingItem.PasswordConfirmation = null;
 
-                response = Request.CreateResponse(HttpStatusCode.OK, transaction);
+                transaction.Data = existingItem;
+            });
+
+            if (response.StatusCode == HttpStatusCode.OK)
+            {
                 response.Headers.Add("Access-Control-Expose-Headers", "Authorization");
                 response.Headers.Add("Authorization", request.Headers.Authorization.ToString());
-            }
-
-            catch (HttpResponseException ex)
-            {
-                response = Request.CreateResponse(ex.Response.StatusCode, transaction);
-            }
-
-            catch (Exception ex)
-            {
-                transaction.ReturnMessage = ex.ToString();
-                response = Request.CreateResponse(HttpStatusCode.BadRequest, transaction);
             }
 
             return response;

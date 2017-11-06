@@ -1,10 +1,12 @@
 import { Component, EventEmitter, OnInit, Input, ElementRef, ApplicationRef } from '@angular/core';
 import { SessionService } from './services/session.service';
-import { User } from './entities/user.entity';
 import { UserService } from './services/user.service';
 import { BlockUIService } from './services/blockui.service';
 import { Router } from '@angular/router';
-import { environment } from '../environments/environment';
+//import { environment } from '../environments/environment';
+
+import { User } from './entities/user.entity';
+import { TransactionInfo } from './entities/transaction-info.entity';
 
 @Component({
     selector: 'app-root',
@@ -16,11 +18,10 @@ export class AppComponent implements OnInit {
 
     public firstName: string;
     public lastName: string;
-    //public isAuthenicated: Boolean = false;
+
     private get isAuthenicated(): Boolean {
         return this.sessionService.isAuthenicated;
     }
-    public endDateTime: string;
 
     public blockUI: Boolean;
 
@@ -72,15 +73,11 @@ export class AppComponent implements OnInit {
         this.blockUI = event.value;
     }
 
-    private authenicateOnSuccess(response: User) {
+    private authenicateOnSuccess(response: TransactionInfo) {
 
         this.blockUIService.stopBlock();
 
-        if (response.returnStatus == false) {
-            return;
-        }
-
-        this.sessionService.authenicated(response);
+        this.sessionService.authenicated(response.data);
 
         let currentRoute = this.router.url;
 
@@ -93,17 +90,17 @@ export class AppComponent implements OnInit {
         }
     }
 
-    private authenicateOnError(response) {
+    private authenicateOnError(response: TransactionInfo) {
 
-        //this.isAuthenicated = false;
         this.blockUIService.stopBlock();
+
+        this.sessionService.authenicated(response.data);
     }
 
     private onAuthenication(user: User): void {
 
         this.firstName = user.firstName;
         this.lastName = user.lastName;
-        //this.isAuthenicated = true;
     }
 
     public logout() {
