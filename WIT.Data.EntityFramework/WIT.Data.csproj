@@ -59,8 +59,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Services\CustomerDataService.cs" />
-    <Compile Include="Services\UserDataService.cs" />
     <Compile Include="Services\EntityFrameworkService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

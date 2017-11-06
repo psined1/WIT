@@ -64,8 +64,8 @@ namespace WIT.Portal.App_Start
         /// <param name="kernel">The kernel.</param>
         private static void RegisterServices(IKernel kernel)
         {
-            kernel.Bind<IUserDataService>().To<UserDataService>();
-            kernel.Bind<ICustomerDataService>().To<CustomerDataService>();
+            //kernel.Bind<IUserDataService>().To<UserDataService>();
+            //kernel.Bind<ICustomerDataService>().To<CustomerDataService>();
         }
     }
 }

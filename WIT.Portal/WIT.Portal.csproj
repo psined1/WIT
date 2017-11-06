@@ -269,7 +269,6 @@
     <Compile Include="Settings.cs" />
     <Compile Include="TokenManagement\TokenManagement.cs" />
     <Compile Include="WebApiControllers\BaseApiController.cs" />
-    <Compile Include="WebApiControllers\CustomersController.cs" />
     <Compile Include="WebApiControllers\LibraryController.cs" />
     <Compile Include="WebApiControllers\UsersController.cs" />
   </ItemGroup>

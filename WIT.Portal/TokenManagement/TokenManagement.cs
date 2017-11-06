@@ -15,11 +15,11 @@ namespace WIT.Portal.TokenManagement
         /// </summary>
         /// <param name="userInformation"></param>
         /// <returns></returns>
-        public static string CreateToken(UserInformation userInformation)
+        public static string CreateToken(TransactionInfo transaction)
         {
             var claims = new List<Claim>();
-            claims.Add(new Claim("UserID", userInformation.CurrentUserID.ToString()));
-            claims.Add(new Claim("UserEmail", userInformation.CurrentUserEmail));
+            claims.Add(new Claim("UserID", transaction.CurrentUserID.ToString()));
+            claims.Add(new Claim("UserEmail", transaction.CurrentUserEmail));
 
             var tokenHandler = new JwtSecurityTokenHandler();
 

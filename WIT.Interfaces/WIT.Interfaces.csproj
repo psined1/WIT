@@ -44,7 +44,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ICustomerDataService.cs" />
     <Compile Include="IDataRepository.cs" />
     <Compile Include="IUserDataService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

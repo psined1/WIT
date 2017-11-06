@@ -58,12 +58,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Rules\CustomerBusinessRules.cs" />
     <Compile Include="Rules\LibraryBusinessRules.cs" />
-    <Compile Include="Services\CustomerBusinessService.cs" />
+    <Compile Include="Rules\WitEntityValidator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rules\UserBusinessRules.cs" />
-    <Compile Include="Services\UserBusinessService.cs" />
     <Compile Include="Transactions\CustomerList.cs" />
     <Compile Include="Transactions\GridInfo.cs" />
     <Compile Include="Transactions\ProductFeatureList.cs" />
@@ -90,6 +88,9 @@
       <Project>{58a014b0-f141-4fbd-bb82-14e614eb900e}</Project>
       <Name>WIT.Interfaces</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Services\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

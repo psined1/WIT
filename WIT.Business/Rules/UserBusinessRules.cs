@@ -12,20 +12,14 @@ using FluentValidation.Results;
 
 namespace WIT.Business
 {
-    public class UserBusinessRules : AbstractValidator<UserInformation>
+    public class UserValidator : WitEntityValidator<User>
     {
-        private UserInformation _userInformation = null;
-        private IUserDataService _userDataService = null;
-
         /// <summary>
         /// Account Business Rules
         /// </summary>
-        public UserBusinessRules(IUserDataService userDataService, UserInformation userInformation)
+        public UserValidator(WitEntities db)
         {
-            _userInformation = userInformation;
-            _userDataService = userDataService;
-
-            _userInformation.PasswordConfirmation = (_userInformation.PasswordConfirmation ?? String.Empty).Trim();
+            _db = db;
 
             // default rules
             RuleFor(a => a.FirstName).NotEmpty().WithMessage("First Name is required.");
@@ -35,41 +29,28 @@ namespace WIT.Business
                 RuleFor(a => a.EmailAddress)
                     .NotEmpty().WithMessage("Email Address is required.")
                     .EmailAddress().WithMessage("Invalid Email Address.")
-                    .Must(e => ValidateDuplicateEmailAddress(e)).WithMessage("Email Address already exists.")
+                    .Must(NotExist).WithMessage("Email Address already exists.")
                     ;
 
                 RuleFor(a => a.PasswordConfirmation).NotEmpty().WithMessage("Password Confirmation is required.");
 
                 RuleFor(a => a.Password)
                     .NotEmpty().WithMessage("Password is required.")
-                    .Matches(_userInformation.PasswordConfirmation).WithMessage("Passwords do not match")
+                    .Matches(a => (a.PasswordConfirmation ?? String.Empty).Trim()).WithMessage("Passwords do not match")
                     ;
             });
         }
 
-
-        
-        /// <summary>
-        /// Validate Duplicate Email Address
-        /// </summary>
-        /// <param name="emailAddress"></param>
-        /// <returns></returns>
-        private bool ValidateDuplicateEmailAddress(string emailAddress)
+        private bool NotExist(string emailAddress)
         {
-            return (
-                string.IsNullOrWhiteSpace(_userInformation.EmailAddress) || 
-                _userDataService.GetUser(_userInformation.EmailAddress) == null
-                );
+            return !_db.Users.Any(a => a.EmailAddress == emailAddress);
         }
 
-        public ValidationResult ValidateRegisterUser()
+        public static bool Check(WitEntities db, User item)
         {
-            return this.Validate(_userInformation, ruleSet: "default,register");
-        }
-
-        public ValidationResult ValidateUpdateProfile()
-        {
-            return this.Validate(_userInformation, ruleSet: "default");
+            string ruleSet = item.UserID == 0 ? "default,register" : "default";
+            item.ValidationErrors = new UserValidator(db).CheckErrors(item, ruleSet);
+            return item.ValidationErrors.Count == 0;
         }
     }
 }

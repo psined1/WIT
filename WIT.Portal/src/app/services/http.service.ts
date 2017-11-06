@@ -18,8 +18,7 @@ export class HttpService {
         private http: Http,
         private blockUIService: BlockUIService,
         private sessionService: SessionService
-    ) {
-    }
+    ) { }
 
     private makeHeaders(): Headers {
         let headers = new Headers();
@@ -31,11 +30,11 @@ export class HttpService {
         return headers;
     }
 
-    public httpPost(object: any, url: string): Observable<any> {
+    public httpPost(url: string, object?: any): Observable<any> {
 
         this.blockUIService.startBlock();
      
-        let body = JSON.stringify(object);
+        let body = JSON.stringify(object || {});
         let headers = this.makeHeaders();
         let options = new RequestOptions({ headers: headers });
 
@@ -46,9 +45,9 @@ export class HttpService {
     }
 
 
-    public httpPostNonblocking(object: any, url: string): Observable<any> {
+    public httpPostNonblocking(url: string, object?: any): Observable<any> {
 
-        let body = JSON.stringify(object);
+        let body = JSON.stringify(object || {});
         let headers = this.makeHeaders();
         let options = new RequestOptions({ headers: headers });
 

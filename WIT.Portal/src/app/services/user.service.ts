@@ -15,38 +15,36 @@ export class UserService {
     public registerUser(user: User): Observable<any> {
 
         let url = this.sessionService.apiServer +  "users/registerUser";     
-        return this.httpService.httpPost(user, url);
+        return this.httpService.httpPost(url, user);
     }
 
-    public Ping(user: User): Observable<any> {
+    /*public ping(user: User): Observable<any> {
 
-        let url = this.sessionService.apiServer + "users/Ping";     
+        let url = this.sessionService.apiServer + "users/ping";     
         return this.httpService.httpPost(user, url);
-    }
+    }*/
 
     public login(user: User): Observable<any> {
 
         let url = this.sessionService.apiServer +  "users/login";
-        return this.httpService.httpPost(user, url);
+        return this.httpService.httpPost(url, user);
     }
 
     public authenicate(): Observable<any> {
     
-        let user : User = new User();
-        let url = this.sessionService.apiServer + "users/Authenicate";
-        return this.httpService.httpPostNonblocking(user, url);
+        let url = this.sessionService.apiServer + "users/authenicate";
+        return this.httpService.httpPostNonblocking(url);
     }
 
     public getProfile(): Observable<any> {
 
-        let user : User = new User();
-        let url = this.sessionService.apiServer + "users/GetProfile";
-        return this.httpService.httpPost(user, url);
+        let url = this.sessionService.apiServer + "users/getProfile";
+        return this.httpService.httpPost(url);
     }
 
     public updateProfile(user: User): Observable<any> {
 
-        let url = this.sessionService.apiServer + "users/UpdateProfile";
-        return this.httpService.httpPost(user, url);
+        let url = this.sessionService.apiServer + "users/updateProfile";
+        return this.httpService.httpPost(url, user);
     }
 }

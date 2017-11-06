@@ -18,4 +18,13 @@ namespace WIT.Data.Models
         [NotMapped]
         public Dictionary<string, string> ValidationErrors { get; set; }
     }
+
+    public partial class User
+    {
+        [NotMapped]
+        public Dictionary<string, string> ValidationErrors { get; set; }
+
+        [NotMapped]
+        public string PasswordConfirmation { get; set; }
+    }
 }

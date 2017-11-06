@@ -115,12 +115,8 @@ namespace WIT.Portal.WebApiControllers
 
                 if (existingItem == null)
                 {
-                    response = new HttpResponseMessage()
-                    {
-                        StatusCode = HttpStatusCode.NotFound,
-                        Content = new StringContent(string.Format("Product feature {0} not found", item.Code))
-                    };
-                    throw new HttpResponseException(response);
+                    transaction.ReturnMessage = string.Format("Product feature {0} not found", item.Code);
+                    throw new HttpResponseException(HttpStatusCode.NotFound);
                 }
 
                 transaction.Data = existingItem;
@@ -130,8 +126,7 @@ namespace WIT.Portal.WebApiControllers
 
             catch (HttpResponseException ex)
             {
-                if (response == null)
-                    response = Request.CreateResponse(ex.Response.StatusCode, transaction);
+                response = Request.CreateResponse(ex.Response.StatusCode, transaction);
             }
 
             catch (Exception ex)
@@ -342,12 +337,8 @@ namespace WIT.Portal.WebApiControllers
 
                 if (existingItem == null)
                 {
-                    response = new HttpResponseMessage()
-                    {
-                        StatusCode = HttpStatusCode.NotFound,
-                        Content = new StringContent(string.Format("Customer {0} not found", item.CustomerCode))
-                    };
-                    throw new HttpResponseException(response);
+                    transaction.ReturnMessage = string.Format("Customer {0} not found", item.CustomerCode);
+                    throw new HttpResponseException(HttpStatusCode.NotFound);
                 }
 
                 transaction.Data = existingItem;
@@ -357,8 +348,7 @@ namespace WIT.Portal.WebApiControllers
 
             catch (HttpResponseException ex)
             {
-                if (response == null)
-                    response = Request.CreateResponse(ex.Response.StatusCode, transaction);
+                response = Request.CreateResponse(ex.Response.StatusCode, transaction);
             }
 
             catch (Exception ex)
