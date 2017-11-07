@@ -9,6 +9,9 @@
         <EntityTypeShape EntityType="WIT.Data.Models.Customer" Width="1.5" PointX="3.375" PointY="0.75" />
         <EntityTypeShape EntityType="WIT.Data.Models.ProductFeature" Width="1.5" PointX="0.75" PointY="4.75" />
         <EntityTypeShape EntityType="WIT.Data.Models.ProductClass" Width="1.5" PointX="3.375" PointY="4.75" />
+        <EntityTypeShape EntityType="WIT.Data.Models.Product" Width="1.5" PointX="5.625" PointY="4.5" />
+        <AssociationConnector Association="WIT.Data.Models.FK_Product_ProductClass" />
+        <AssociationConnector Association="WIT.Data.Models.FK_Product_ProductFeature" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

@@ -65,6 +65,7 @@
     <Compile Include="Transactions\CustomerList.cs" />
     <Compile Include="Transactions\GridInfo.cs" />
     <Compile Include="Transactions\ProductClassList.cs" />
+    <Compile Include="Transactions\ProductList.cs" />
     <Compile Include="Transactions\ProductFeatureList.cs" />
     <Compile Include="Transactions\TransactionInfo.cs" />
     <Compile Include="Utilities.cs" />

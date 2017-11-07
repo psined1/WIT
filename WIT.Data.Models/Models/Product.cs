@@ -12,24 +12,20 @@ namespace WIT.Data.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class ProductFeature
+    public partial class Product
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public ProductFeature()
-        {
-            this.Products = new HashSet<Product>();
-        }
-    
-        public int ProductFeatureID { get; set; }
-        public string Code { get; set; }
-        public string Name { get; set; }
+        public int ProductID { get; set; }
+        public string ProductCode { get; set; }
+        public string ProductName { get; set; }
         public string Description { get; set; }
+        public Nullable<int> ProductFeatureID { get; set; }
+        public Nullable<int> ProductClassID { get; set; }
         public Nullable<System.DateTime> CreatedOn { get; set; }
         public Nullable<System.DateTime> UpdatedOn { get; set; }
         public string CreatedBy { get; set; }
         public string UpdatedBy { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Product> Products { get; set; }
+        public virtual ProductClass ProductClass { get; set; }
+        public virtual ProductFeature ProductFeature { get; set; }
     }
 }

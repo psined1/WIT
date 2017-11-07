@@ -66,12 +66,20 @@ namespace WIT.Portal.WebApiControllers
 
                 list.GridInfo.TotalRows = q.Count();
 
-                list.Items = q
-                    .OrderBy(string.Format("{0} {1}", list.GridInfo.SortExpression, list.GridInfo.SortDirection))
-                    .Skip((list.GridInfo.CurrentPageNumber - 1) * list.GridInfo.PageSize)
-                    .Take(list.GridInfo.PageSize)
-                    .ToList()
+                q = q.OrderBy(string.Format("{0} {1}", list.GridInfo.SortExpression, list.GridInfo.SortDirection));
+
+                if (list.GridInfo.PageSize > 0)
+                {
+                    if (list.GridInfo.CurrentPageNumber < 1)
+                        list.GridInfo.CurrentPageNumber = 1;
+
+                    q = q
+                        .Skip((list.GridInfo.CurrentPageNumber - 1) * list.GridInfo.PageSize)
+                        .Take(list.GridInfo.PageSize)
                     ;
+                }
+
+                list.Items = q.ToList();
 
                 transaction.Data = list;
             });
@@ -90,7 +98,7 @@ namespace WIT.Portal.WebApiControllers
         {
             return BaseAction(request, (transaction) => {
 
-                ProductFeature existingItem = _db.ProductFeatures.Where(i => i.ProductFeatureId == item.ProductFeatureId).FirstOrDefault();
+                ProductFeature existingItem = _db.ProductFeatures.Where(i => i.ProductFeatureID == item.ProductFeatureID).FirstOrDefault();
 
                 if (existingItem == null)
                 {
@@ -116,7 +124,7 @@ namespace WIT.Portal.WebApiControllers
 
                 this.ValidateToken(request, transaction);
 
-                ProductFeature existingItem = _db.ProductFeatures.Where(i => i.ProductFeatureId == item.ProductFeatureId).FirstOrDefault();
+                ProductFeature existingItem = _db.ProductFeatures.Where(i => i.ProductFeatureID == item.ProductFeatureID).FirstOrDefault();
 
                 if (existingItem == null)
                 {
@@ -153,7 +161,7 @@ namespace WIT.Portal.WebApiControllers
                     throw new HttpResponseException(HttpStatusCode.BadRequest);
                 }
 
-                ProductFeature existingItem = _db.ProductFeatures.Where(i => i.ProductFeatureId == item.ProductFeatureId).FirstOrDefault();
+                ProductFeature existingItem = _db.ProductFeatures.Where(i => i.ProductFeatureID == item.ProductFeatureID).FirstOrDefault();
 
                 if (existingItem == null)
                 {
@@ -215,12 +223,20 @@ namespace WIT.Portal.WebApiControllers
 
                 list.GridInfo.TotalRows = q.Count();
 
-                list.Items = q
-                    .OrderBy(string.Format("{0} {1}", list.GridInfo.SortExpression, list.GridInfo.SortDirection))
-                    .Skip((list.GridInfo.CurrentPageNumber - 1) * list.GridInfo.PageSize)
-                    .Take(list.GridInfo.PageSize)
-                    .ToList()
+                q = q.OrderBy(string.Format("{0} {1}", list.GridInfo.SortExpression, list.GridInfo.SortDirection));
+
+                if (list.GridInfo.PageSize > 0)
+                {
+                    if (list.GridInfo.CurrentPageNumber < 1)
+                        list.GridInfo.CurrentPageNumber = 1;
+
+                    q = q
+                        .Skip((list.GridInfo.CurrentPageNumber - 1) * list.GridInfo.PageSize)
+                        .Take(list.GridInfo.PageSize)
                     ;
+                }
+
+                list.Items = q.ToList();
 
                 transaction.Data = list;
             });
@@ -329,6 +345,163 @@ namespace WIT.Portal.WebApiControllers
         }
 
         #endregion  // ProductClass
+
+        #region Product
+
+        /// <summary>
+        /// GetProducts
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        [Route("GetProducts")]
+        [HttpPost]
+        public HttpResponseMessage GetProducts(HttpRequestMessage request, [FromBody] ProductList list)
+        {
+            return BaseAction(request, (transaction) => {
+
+                if (string.IsNullOrWhiteSpace(list.GridInfo.SortExpression))
+                    list.GridInfo.SortExpression = "ProductCode";
+
+                if (string.IsNullOrWhiteSpace(list.GridInfo.SortDirection))
+                    list.GridInfo.SortDirection = "ASC";
+
+                var q = _db.Products.AsQueryable();
+
+                if (!string.IsNullOrWhiteSpace(list.Code))
+                {
+                    q = q.Where(i => i.ProductCode.StartsWith(list.Code));
+                }
+
+                if (!string.IsNullOrWhiteSpace(list.Name))
+                {
+                    q = q.Where(i => i.ProductName.StartsWith(list.Name));
+                }
+
+                list.GridInfo.TotalRows = q.Count();
+
+                q = q.OrderBy(string.Format("{0} {1}", list.GridInfo.SortExpression, list.GridInfo.SortDirection));
+
+                if (list.GridInfo.PageSize > 0)
+                {
+                    if (list.GridInfo.CurrentPageNumber < 1)
+                        list.GridInfo.CurrentPageNumber = 1;
+
+                    q = q
+                        .Skip((list.GridInfo.CurrentPageNumber - 1) * list.GridInfo.PageSize)
+                        .Take(list.GridInfo.PageSize)
+                    ;
+                }
+
+                list.Items = q.ToList();
+
+                transaction.Data = list;
+            });
+        }
+
+
+        /// <summary>
+        /// GetProduct
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        [Route("GetProduct")]
+        [HttpPost]
+        public HttpResponseMessage GetProduct(HttpRequestMessage request, [FromBody] Product item)
+        {
+            return BaseAction(request, (transaction) => {
+
+                Product existingItem = _db.Products.Where(i => i.ProductID == item.ProductID).FirstOrDefault();
+
+                if (existingItem == null)
+                {
+                    transaction.ReturnMessage = string.Format("Product {0} not found", item.ProductCode);
+                    throw new HttpResponseException(HttpStatusCode.NotFound);
+                }
+
+                transaction.Data = existingItem;
+            });
+        }
+
+        /// <summary>
+        /// DeleteProduct
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        [Route("DeleteProduct")]
+        [HttpPost]
+        public HttpResponseMessage DeleteProduct(HttpRequestMessage request, [FromBody] Product item)
+        {
+            return BaseAction(request, (transaction) => {
+
+                this.ValidateToken(request, transaction);
+
+                Product existingItem = _db.Products.Where(i => i.ProductID == item.ProductID).FirstOrDefault();
+
+                if (existingItem == null)
+                {
+                    transaction.ReturnMessage = string.Format("Product {0} not found", item.ProductCode);
+                    throw new HttpResponseException(HttpStatusCode.NotFound);
+                }
+
+                _db.Products.Remove(existingItem);
+                _db.SaveChanges();
+
+                transaction.Data = existingItem;
+            });
+        }
+
+        /// <summary>
+        /// UpdateProduct
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        [Route("UpdateProduct")]
+        [HttpPost]
+        public HttpResponseMessage UpdateProduct(HttpRequestMessage request, [FromBody] Product item)
+        {
+            return BaseAction(request, (transaction) => {
+
+                transaction.Data = item;
+
+                this.ValidateToken(request, transaction);
+
+                if (!ProductValidator.Check(_db, item))
+                {
+                    transaction.ReturnMessage = "Please correct all errors.";
+                    throw new HttpResponseException(HttpStatusCode.BadRequest);
+                }
+
+                Product existingItem = _db.Products.Where(i => i.ProductID == item.ProductID).FirstOrDefault();
+
+                if (existingItem == null)
+                {
+                    existingItem = _db.Products.Add(item);
+
+                    existingItem.CreatedBy = transaction.CurrentUserEmail;
+                    existingItem.CreatedOn = DateTime.Now;
+                }
+
+                else
+                {
+                    //existingItem.ProductCode = item.ProductCode;
+                    existingItem.ProductName = item.ProductName;
+                    existingItem.Description = item.Description;
+                }
+
+                existingItem.UpdatedBy = transaction.CurrentUserEmail;
+                existingItem.UpdatedOn = DateTime.Now;
+
+                _db.SaveChanges();
+
+                transaction.Data = existingItem;
+            });
+        }
+
+        #endregion  // Product
 
         #region Customer
 

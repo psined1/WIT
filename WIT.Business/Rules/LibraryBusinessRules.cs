@@ -38,7 +38,7 @@ namespace WIT.Business
 
         public static bool Check(WitEntities db, ProductFeature item)
         {
-            string ruleSet = item.ProductFeatureId == 0 ? "default,new" : "default";
+            string ruleSet = item.ProductFeatureID == 0 ? "default,new" : "default";
             item.ValidationErrors = new ProductFeatureValidator(db).CheckErrors(item, ruleSet);
             return item.ValidationErrors.Count == 0;
         }
@@ -72,6 +72,38 @@ namespace WIT.Business
         {
             string ruleSet = item.ProductClassID == 0 ? "default,new" : "default";
             item.ValidationErrors = new ProductClassValidator(db).CheckErrors(item, ruleSet);
+            return item.ValidationErrors.Count == 0;
+        }
+    }
+
+    public class ProductValidator : WitEntityValidator<Product>
+    {
+        private ProductValidator(WitEntities db)
+        {
+            _db = db;
+
+            RuleFor(a => a.ProductCode).NotEmpty().WithMessage("Code is required.");
+
+            RuleSet("new", () =>
+            {
+                RuleFor(a => a.ProductCode).Must(NotExist).WithMessage("Code already exists.");
+            });
+        }
+
+        /// <summary>
+        /// Validate Duplicate Code
+        /// </summary>
+        /// <param name="customerCode"></param>
+        /// <returns></returns>
+        private bool NotExist(string code)
+        {
+            return !_db.Products.Any(a => a.ProductCode == code);
+        }
+
+        public static bool Check(WitEntities db, Product item)
+        {
+            string ruleSet = item.ProductID == 0 ? "default,new" : "default";
+            item.ValidationErrors = new ProductValidator(db).CheckErrors(item, ruleSet);
             return item.ValidationErrors.Count == 0;
         }
     }

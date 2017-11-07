@@ -29,5 +29,6 @@ namespace WIT.Data.Models
         public virtual DbSet<Customer> Customers { get; set; }
         public virtual DbSet<ProductFeature> ProductFeatures { get; set; }
         public virtual DbSet<ProductClass> ProductClasses { get; set; }
+        public virtual DbSet<Product> Products { get; set; }
     }
 }

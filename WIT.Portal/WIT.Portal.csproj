@@ -326,6 +326,8 @@
     <Content Include="src\app\library\customer\customer.component.html" />
     <Content Include="src\app\library\product-class\product-class-list.component.html" />
     <Content Include="src\app\library\product-class\product-class.component.html" />
+    <Content Include="src\app\library\product\product-list.component.html" />
+    <Content Include="src\app\library\product\product.component.html" />
     <Content Include="src\app\library\product-feature\product-feature.component.html" />
     <Content Include="src\app\library\product-feature\product-feature-list.component.html" />
     <Content Include="src\app\shared\address.component.html" />
@@ -419,6 +421,8 @@
     <TypeScriptCompile Include="src\app\library\library.module.ts" />
     <TypeScriptCompile Include="src\app\library\product-class\product-class-list.component.ts" />
     <TypeScriptCompile Include="src\app\library\product-class\product-class.component.ts" />
+    <TypeScriptCompile Include="src\app\library\product\product-list.component.ts" />
+    <TypeScriptCompile Include="src\app\library\product\product.component.ts" />
     <TypeScriptCompile Include="src\app\library\product-feature\product-feature.component.ts" />
     <TypeScriptCompile Include="src\app\library\product-feature\product-feature-list.component.ts" />
     <TypeScriptCompile Include="src\app\services\blockui.service.ts" />

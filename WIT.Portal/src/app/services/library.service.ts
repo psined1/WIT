@@ -7,6 +7,7 @@ import { SessionService } from './session.service';
 
 import { ProductFeature, ProductFeatureList } from '../entities/product-feature.entity';
 import { ProductClass, ProductClassList } from '../entities/product-class.entity';
+import { Product, ProductList } from '../entities/product.entity';
 import { Customer, CustomerList } from '../entities/customer.entity';
 
 
@@ -54,6 +55,27 @@ export class LibraryService {
 
     public deleteProductClass(item: ProductClass): Observable<any> {
         let url = this.sessionService.apiServer + "library/deleteProductClass";
+        return this.httpService.httpPost(url, item);
+    }
+
+    // Products
+    public getProducts(list: ProductList): Observable<any> {
+        let url = this.sessionService.apiServer + "library/getProducts";
+        return this.httpService.httpPostNonblocking(url, list);
+    }
+
+    public getProduct(item: Product): Observable<any> {
+        let url = this.sessionService.apiServer + "library/getProduct";
+        return this.httpService.httpPostNonblocking(url, item);
+    }
+
+    public updateProduct(item: Product): Observable<any> {
+        let url = this.sessionService.apiServer + "library/updateProduct";
+        return this.httpService.httpPost(url, item);
+    }
+
+    public deleteProduct(item: Product): Observable<any> {
+        let url = this.sessionService.apiServer + "library/deleteProduct";
         return this.httpService.httpPost(url, item);
     }
 

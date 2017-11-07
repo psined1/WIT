@@ -23,6 +23,21 @@
           <Property Name="CreatedBy" Type="varchar" MaxLength="100" />
           <Property Name="UpdatedBy" Type="varchar" MaxLength="100" />
         </EntityType>
+        <EntityType Name="Product">
+          <Key>
+            <PropertyRef Name="ProductID" />
+          </Key>
+          <Property Name="ProductID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ProductCode" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="ProductName" Type="varchar" MaxLength="100" />
+          <Property Name="Description" Type="varchar" MaxLength="250" />
+          <Property Name="ProductFeatureID" Type="int" />
+          <Property Name="ProductClassID" Type="int" />
+          <Property Name="CreatedOn" Type="datetime" />
+          <Property Name="UpdatedOn" Type="datetime" />
+          <Property Name="CreatedBy" Type="varchar" MaxLength="50" />
+          <Property Name="UpdatedBy" Type="varchar" MaxLength="50" />
+        </EntityType>
         <EntityType Name="ProductClass">
           <Key>
             <PropertyRef Name="ProductClassID" />
@@ -38,9 +53,9 @@
         </EntityType>
         <EntityType Name="ProductFeature">
           <Key>
-            <PropertyRef Name="ProductFeatureId" />
+            <PropertyRef Name="ProductFeatureID" />
           </Key>
-          <Property Name="ProductFeatureId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ProductFeatureID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Code" Type="varchar" MaxLength="10" Nullable="false" />
           <Property Name="Name" Type="varchar" MaxLength="100" />
           <Property Name="Description" Type="varchar" MaxLength="250" />
@@ -68,11 +83,44 @@
           <Property Name="CreatedBy" Type="varchar" MaxLength="100" />
           <Property Name="UpdatedBy" Type="varchar" MaxLength="100" />
         </EntityType>
+        <Association Name="FK_Product_ProductClass">
+          <End Role="ProductClass" Type="Self.ProductClass" Multiplicity="0..1" />
+          <End Role="Product" Type="Self.Product" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ProductClass">
+              <PropertyRef Name="ProductClassID" />
+            </Principal>
+            <Dependent Role="Product">
+              <PropertyRef Name="ProductClassID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Product_ProductFeature">
+          <End Role="ProductFeature" Type="Self.ProductFeature" Multiplicity="0..1" />
+          <End Role="Product" Type="Self.Product" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ProductFeature">
+              <PropertyRef Name="ProductFeatureID" />
+            </Principal>
+            <Dependent Role="Product">
+              <PropertyRef Name="ProductFeatureID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityContainer Name="WITDataModelsStoreContainer">
           <EntitySet Name="Customer" EntityType="Self.Customer" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Product" EntityType="Self.Product" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ProductClass" EntityType="Self.ProductClass" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ProductFeature" EntityType="Self.ProductFeature" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="User" EntityType="Self.User" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_Product_ProductClass" Association="Self.FK_Product_ProductClass">
+            <End Role="ProductClass" EntitySet="ProductClass" />
+            <End Role="Product" EntitySet="Product" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Product_ProductFeature" Association="Self.FK_Product_ProductFeature">
+            <End Role="ProductFeature" EntitySet="ProductFeature" />
+            <End Role="Product" EntitySet="Product" />
+          </AssociationSet>
         </EntityContainer>
       </Schema></edmx:StorageModels>
     <!-- CSDL content -->
@@ -83,6 +131,15 @@
           <EntitySet Name="Customers" EntityType="WIT.Data.Models.Customer" />
           <EntitySet Name="ProductFeatures" EntityType="WIT.Data.Models.ProductFeature" />
           <EntitySet Name="ProductClasses" EntityType="WIT.Data.Models.ProductClass" />
+          <EntitySet Name="Products" EntityType="WIT.Data.Models.Product" />
+          <AssociationSet Name="FK_Product_ProductClass" Association="WIT.Data.Models.FK_Product_ProductClass">
+            <End Role="ProductClass" EntitySet="ProductClasses" />
+            <End Role="Product" EntitySet="Products" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Product_ProductFeature" Association="WIT.Data.Models.FK_Product_ProductFeature">
+            <End Role="ProductFeature" EntitySet="ProductFeatures" />
+            <End Role="Product" EntitySet="Products" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="User">
           <Key>
@@ -123,9 +180,9 @@
         </EntityType>
         <EntityType Name="ProductFeature">
           <Key>
-            <PropertyRef Name="ProductFeatureId" />
+            <PropertyRef Name="ProductFeatureID" />
           </Key>
-          <Property Name="ProductFeatureId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ProductFeatureID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns="http://schemas.microsoft.com/ado/2009/11/edm" />
           <Property Name="Code" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
           <Property Name="Name" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
           <Property Name="Description" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
@@ -133,6 +190,7 @@
           <Property Name="UpdatedOn" Type="DateTime" Precision="3" />
           <Property Name="CreatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="UpdatedBy" Type="String" MaxLength="50" Unicode="false" FixedLength="false" />
+          <NavigationProperty Name="Products" Relationship="WIT.Data.Models.FK_Product_ProductFeature" FromRole="ProductFeature" ToRole="Product" />
         </EntityType>
         <EntityType Name="ProductClass">
           <Key>
@@ -146,7 +204,49 @@
           <Property Name="UpdatedOn" Type="DateTime" Precision="3" />
           <Property Name="CreatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="UpdatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Products" Relationship="WIT.Data.Models.FK_Product_ProductClass" FromRole="ProductClass" ToRole="Product" />
         </EntityType>
+        <EntityType Name="Product">
+          <Key>
+            <PropertyRef Name="ProductID" />
+          </Key>
+          <Property Name="ProductID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ProductCode" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="ProductName" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Description" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="ProductFeatureID" Type="Int32" />
+          <Property Name="ProductClassID" Type="Int32" />
+          <Property Name="CreatedOn" Type="DateTime" Precision="3" />
+          <Property Name="UpdatedOn" Type="DateTime" Precision="3" />
+          <Property Name="CreatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="UpdatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="ProductClass" Relationship="WIT.Data.Models.FK_Product_ProductClass" FromRole="Product" ToRole="ProductClass" />
+          <NavigationProperty Name="ProductFeature" Relationship="WIT.Data.Models.FK_Product_ProductFeature" FromRole="Product" ToRole="ProductFeature" />
+        </EntityType>
+        <Association Name="FK_Product_ProductClass">
+          <End Type="WIT.Data.Models.ProductClass" Role="ProductClass" Multiplicity="0..1" />
+          <End Type="WIT.Data.Models.Product" Role="Product" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ProductClass">
+              <PropertyRef Name="ProductClassID" />
+            </Principal>
+            <Dependent Role="Product">
+              <PropertyRef Name="ProductClassID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Product_ProductFeature">
+          <End Type="WIT.Data.Models.ProductFeature" Role="ProductFeature" Multiplicity="0..1" />
+          <End Type="WIT.Data.Models.Product" Role="Product" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ProductFeature">
+              <PropertyRef Name="ProductFeatureID" />
+            </Principal>
+            <Dependent Role="Product">
+              <PropertyRef Name="ProductFeatureID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -195,6 +295,7 @@
           <EntitySetMapping Name="ProductFeatures">
             <EntityTypeMapping TypeName="WIT.Data.Models.ProductFeature">
               <MappingFragment StoreEntitySet="ProductFeature">
+                <ScalarProperty Name="ProductFeatureID" ColumnName="ProductFeatureID" />
                 <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
                 <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
                 <ScalarProperty Name="UpdatedOn" ColumnName="UpdatedOn" />
@@ -202,7 +303,6 @@
                 <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Code" ColumnName="Code" />
-                <ScalarProperty Name="ProductFeatureId" ColumnName="ProductFeatureId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -217,6 +317,22 @@
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Code" ColumnName="Code" />
                 <ScalarProperty Name="ProductClassID" ColumnName="ProductClassID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Products">
+            <EntityTypeMapping TypeName="WIT.Data.Models.Product">
+              <MappingFragment StoreEntitySet="Product">
+                <ScalarProperty Name="ProductName" ColumnName="ProductName" />
+                <ScalarProperty Name="ProductCode" ColumnName="ProductCode" />
+                <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="UpdatedOn" ColumnName="UpdatedOn" />
+                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+                <ScalarProperty Name="ProductClassID" ColumnName="ProductClassID" />
+                <ScalarProperty Name="ProductFeatureID" ColumnName="ProductFeatureID" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="ProductID" ColumnName="ProductID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

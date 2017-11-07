@@ -2,7 +2,7 @@
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
-import { ModalModule, TabsModule, BsModalService, BsModalRef } from 'ngx-bootstrap';
+import { ModalModule, TabsModule, BsModalService, BsModalRef, TypeaheadModule } from 'ngx-bootstrap';
 
 import { SharedModule } from '../shared/shared.module';
 import { LibraryService } from '../services/library.service';
@@ -17,6 +17,9 @@ import { ProductFeatureComponent } from "./product-feature/product-feature.compo
 import { ProductClassListComponent } from "./product-class/product-class-list.component";
 import { ProductClassComponent } from "./product-class/product-class.component";
 
+import { ProductListComponent } from "./product/product-list.component";
+import { ProductComponent } from "./product/product.component";
+
 import { CustomerListComponent } from "./customer/customer-list.component";
 import { CustomerComponent } from "./customer/customer.component";
 
@@ -27,6 +30,8 @@ import { CustomerComponent } from "./customer/customer.component";
         ProductFeatureComponent,
         ProductClassListComponent,
         ProductClassComponent,
+        ProductListComponent,
+        ProductComponent,
         CustomerListComponent,
         CustomerComponent
     ],
@@ -36,12 +41,14 @@ import { CustomerComponent } from "./customer/customer.component";
         FormsModule,
         SharedModule,
         ModalModule.forRoot(),
-        TabsModule.forRoot()
+        TabsModule.forRoot(),
+        TypeaheadModule.forRoot()
     ],
     entryComponents: [
         ConfirmYesNoComponent,
         ProductFeatureComponent,
         ProductClassComponent,
+        ProductComponent,
         CustomerComponent
     ],
     providers: [

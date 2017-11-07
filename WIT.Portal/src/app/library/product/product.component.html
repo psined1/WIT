@@ -16,14 +16,14 @@
                     <label class="col-lg-3 col-sm-2 control-label required">Code</label>
                     <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                         <input type="text" class="form-control" 
-                               [ngModel]="item.code | uppercase" 
-                               (ngModelChange)="item.code=$event" 
-                               [ngClass]="{'validation-error': !!item.validationErrors['code']}" 
-                               [disabled]="!!item.productFeatureID">
+                               [ngModel]="item.productCode | uppercase" 
+                               (ngModelChange)="item.productCode=$event" 
+                               [ngClass]="{'validation-error': !!item.validationErrors['productCode']}" 
+                               [disabled]="!!item.productID">
                     </div>
-                    <div class="col-lg-3" *ngIf="!!item.validationErrors['code']">
+                    <div class="col-lg-3" *ngIf="!!item.validationErrors['productCode']">
                         <small class="text-danger">
-                           {{item.validationErrors['code']}}
+                           {{item.validationErrors['productCode']}}
                         </small>
                     </div>
                 </div>
@@ -31,11 +31,11 @@
                 <div class="form-group">
                     <label class="col-lg-3 col-sm-2 control-label">Name</label>
                     <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                        <input type="text" class="form-control" [(ngModel)]="item.name" [ngClass]="{'validation-error': !!item.validationErrors['name']}">
+                        <input type="text" class="form-control" [(ngModel)]="item.productName" [ngClass]="{'validation-error': !!item.validationErrors['productName']}">
                     </div>
-                    <div class="col-lg-3" *ngIf="!!item.validationErrors['name']">
+                    <div class="col-lg-3" *ngIf="!!item.validationErrors['productName']">
                         <small class="text-danger">
-                            {{item.validationErrors['name']}}
+                            {{item.validationErrors['productName']}}
                         </small>
                     </div>
                 </div>
@@ -48,6 +48,20 @@
                     <div class="col-lg-3" *ngIf="!!item.validationErrors['description']">
                         <small class="text-danger">
                             {{item.validationErrors['description']}}
+                        </small>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-lg-3 col-sm-2 control-label">Product Class</label>
+                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                        <select class="form-control" [(ngModel)]="item.productClassID" [ngClass]="{'validation-error': !!item.validationErrors['productClassID']}">
+                            <option *ngFor="let c of productClasses()" [value]="c."></option>
+                        </select>
+                    </div>
+                    <div class="col-lg-3" *ngIf="!!item.validationErrors['productClassID']">
+                        <small class="text-danger">
+                            {{item.validationErrors['productClassID']}}
                         </small>
                     </div>
                 </div>

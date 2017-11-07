@@ -14,6 +14,12 @@ namespace WIT.Data.Models
     
     public partial class ProductClass
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public ProductClass()
+        {
+            this.Products = new HashSet<Product>();
+        }
+    
         public int ProductClassID { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
@@ -22,5 +28,8 @@ namespace WIT.Data.Models
         public Nullable<System.DateTime> UpdatedOn { get; set; }
         public string CreatedBy { get; set; }
         public string UpdatedBy { get; set; }
+    
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Product> Products { get; set; }
     }
 }

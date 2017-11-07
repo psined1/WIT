@@ -2,7 +2,7 @@
 import { ListBase, GridInfo } from './grid-info.entity';
 
 export class ProductFeature extends BaseEntity {
-    public productFeatureId: number;
+    public productFeatureID: number;
     public code: string;
     public name: string;
     public description: string;
@@ -12,7 +12,7 @@ export class ProductFeature extends BaseEntity {
     constructor(rhs?: ProductFeature) {
         super(rhs);
         if (!rhs) {
-            this.productFeatureId = 0;
+            this.productFeatureID = 0;
         }
     }
 
