@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Collections;
+using System.Linq.Dynamic;
 
 namespace WIT.Business.Entities
 {
@@ -22,6 +23,31 @@ namespace WIT.Business.Entities
             TotalPages = 0;
             PageSize = 0;
             CurrentPageNumber = 0;
+            SortDirection = "ASC";
+        }
+    }
+
+    public static class GridPagingExtension
+    {
+        public static IQueryable<T> Paged<T>(this IQueryable<T> q, GridInfo gridInfo)
+        {
+            if (!string.IsNullOrWhiteSpace(gridInfo.SortExpression))
+                q = q.OrderBy(string.Format("{0} {1}", gridInfo.SortExpression, gridInfo.SortDirection));
+
+            if (gridInfo.PageSize > 0)
+            {
+                int currentPage = gridInfo.CurrentPageNumber;
+
+                if (currentPage < 1)
+                    currentPage = 1;
+
+                q = q
+                    .Skip((currentPage - 1) * gridInfo.PageSize)
+                    .Take(gridInfo.PageSize)
+                ;
+            }
+
+            return q;
         }
     }
 }

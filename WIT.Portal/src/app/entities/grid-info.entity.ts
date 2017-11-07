@@ -18,7 +18,7 @@
             this.sortDirection = rhs.sortDirection;
         } else {
             this.totalRows = 0;
-            this.pageSize = 20;
+            this.pageSize = 0;
             this.reset();
         }
 

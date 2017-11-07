@@ -1,6 +1,9 @@
 import { Component, OnInit, EventEmitter, Input, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
+import { Observer, Observable } from 'rxjs';
+//import 'rxjs/add/operator/map';
+
 import { AlertBoxComponent } from '../../shared/alertbox.component';
 import { HttpService } from '../../services/http.service';
 import { SessionService } from '../../services/session.service';
@@ -11,7 +14,7 @@ import { LibraryService } from '../../services/library.service';
 
 import { TransactionInfo } from '../../entities/transaction-info.entity';
 import { ProductFeature } from '../../entities/product-feature.entity';
-import { ProductClass } from '../../entities/product-class.entity';
+import { ProductClass, ProductClassList } from '../../entities/product-class.entity';
 import { Product } from '../../entities/product.entity';
 
 @Component({
@@ -31,6 +34,9 @@ export class ProductComponent implements OnInit {
     public get showUpdateButton(): Boolean {
         return this.item.productID > 0;
     }
+
+    private productClasses: Observable<string[]>;
+    private productClass: string;
 
     public updatedEvent: EventEmitter<Boolean> = new EventEmitter();
 
@@ -70,6 +76,21 @@ export class ProductComponent implements OnInit {
                 this.getItem(parseInt(id));
             }
         });
+
+        this.productClasses = Observable
+            .create((observer: Observer<string>) => observer.next(this.productClass))
+            .mergeMap((filter: string) => {
+
+                console.log(filter);
+
+                let list = new ProductClassList();
+                list.gridInfo.sortExpression = "Code";
+                list.gridInfo.pageSize = 10;
+                list.code = filter;
+                return this.libraryService.getProductClasses(list)
+                    .map((response: TransactionInfo) => response.data.items)
+                    ;
+            });
     }
 
     private getOnSuccess(response: TransactionInfo) {
@@ -93,8 +114,7 @@ export class ProductComponent implements OnInit {
     public updateItem(): void {
 
         this.clearStatus();
-        this.libraryService.updateProduct(this.item)
-            .subscribe(
+        this.libraryService.updateProduct(this.item).subscribe(
             response => this.updateOnSuccess(response),
             response => this.updateOnError(response)
             );

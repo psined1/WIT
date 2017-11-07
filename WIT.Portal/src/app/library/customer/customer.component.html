@@ -18,7 +18,7 @@
                         <input type="text" class="form-control" 
                                [disabled]="!!item.customerID" 
                                [ngModel]="item.customerCode | uppercase" 
-                               (ngModelChanged)="item.customerCode=$event" 
+                               (ngModelChange)="item.customerCode=$event" 
                                [ngClass]="{'validation-error': !!item.validationErrors['customerCode']}">
                     </div>
                     <div class="col-lg-3" *ngIf="!!item.validationErrors['customerCode']">

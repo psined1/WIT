@@ -55,14 +55,14 @@
                 <div class="form-group">
                     <label class="col-lg-3 col-sm-2 control-label">Product Class</label>
                     <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                        <select class="form-control" [(ngModel)]="item.productClassID" [ngClass]="{'validation-error': !!item.validationErrors['productClassID']}">
-                            <option *ngFor="let c of productClasses()" [value]="c."></option>
-                        </select>
-                    </div>
-                    <div class="col-lg-3" *ngIf="!!item.validationErrors['productClassID']">
-                        <small class="text-danger">
-                            {{item.validationErrors['productClassID']}}
-                        </small>
+                        <input class="form-control"
+                               [ngModel]="productClass | uppercase"
+                               (ngModelChange)="productClass=$event"
+                               [typeahead]="productClasses"
+                               [typeaheadItemTemplate]="productClassTemplate"
+                               typeaheadOptionField="code"
+                               placeholder="Locations loaded with timeout"
+                        />
                     </div>
                 </div>
 
@@ -91,3 +91,8 @@
         <button type="button" class="btn btn-default" (click)="bsModalRef.hide()">Close</button>
     </div>
 </div>
+
+<ng-template #productClassTemplate let-model="item" let-index="index">
+   {{model.code}}, {{model.name}}
+</ng-template>
+

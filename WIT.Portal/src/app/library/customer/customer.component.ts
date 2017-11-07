@@ -102,6 +102,8 @@ export class CustomerComponent implements OnInit {
 
         this.item.address = this.address;
 
+        console.log(this.item);
+
         this.libraryService.updateCustomer(this.item)
             .subscribe(
             response => this.updateOnSuccess(response),

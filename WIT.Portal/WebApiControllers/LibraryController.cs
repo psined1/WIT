@@ -12,8 +12,6 @@ using WIT.Business.Common;
 using System.Security.Claims;
 using Ninject;
 using WIT.Data.Models;
-using System.Linq.Dynamic;
-using FluentValidation.Results;
 
 namespace WIT.Portal.WebApiControllers
 {
@@ -65,21 +63,7 @@ namespace WIT.Portal.WebApiControllers
                 }
 
                 list.GridInfo.TotalRows = q.Count();
-
-                q = q.OrderBy(string.Format("{0} {1}", list.GridInfo.SortExpression, list.GridInfo.SortDirection));
-
-                if (list.GridInfo.PageSize > 0)
-                {
-                    if (list.GridInfo.CurrentPageNumber < 1)
-                        list.GridInfo.CurrentPageNumber = 1;
-
-                    q = q
-                        .Skip((list.GridInfo.CurrentPageNumber - 1) * list.GridInfo.PageSize)
-                        .Take(list.GridInfo.PageSize)
-                    ;
-                }
-
-                list.Items = q.ToList();
+                list.Items = q.Paged(list.GridInfo).ToList();
 
                 transaction.Data = list;
             });
@@ -222,21 +206,7 @@ namespace WIT.Portal.WebApiControllers
                 }
 
                 list.GridInfo.TotalRows = q.Count();
-
-                q = q.OrderBy(string.Format("{0} {1}", list.GridInfo.SortExpression, list.GridInfo.SortDirection));
-
-                if (list.GridInfo.PageSize > 0)
-                {
-                    if (list.GridInfo.CurrentPageNumber < 1)
-                        list.GridInfo.CurrentPageNumber = 1;
-
-                    q = q
-                        .Skip((list.GridInfo.CurrentPageNumber - 1) * list.GridInfo.PageSize)
-                        .Take(list.GridInfo.PageSize)
-                    ;
-                }
-
-                list.Items = q.ToList();
+                list.Items = q.Paged(list.GridInfo).ToList();
 
                 transaction.Data = list;
             });
@@ -379,21 +349,7 @@ namespace WIT.Portal.WebApiControllers
                 }
 
                 list.GridInfo.TotalRows = q.Count();
-
-                q = q.OrderBy(string.Format("{0} {1}", list.GridInfo.SortExpression, list.GridInfo.SortDirection));
-
-                if (list.GridInfo.PageSize > 0)
-                {
-                    if (list.GridInfo.CurrentPageNumber < 1)
-                        list.GridInfo.CurrentPageNumber = 1;
-
-                    q = q
-                        .Skip((list.GridInfo.CurrentPageNumber - 1) * list.GridInfo.PageSize)
-                        .Take(list.GridInfo.PageSize)
-                    ;
-                }
-
-                list.Items = q.ToList();
+                list.Items = q.Paged(list.GridInfo).ToList();
 
                 transaction.Data = list;
             });
@@ -536,13 +492,7 @@ namespace WIT.Portal.WebApiControllers
                 }
 
                 list.GridInfo.TotalRows = q.Count();
-
-                list.Items = q
-                    .OrderBy(string.Format("{0} {1}", list.GridInfo.SortExpression, list.GridInfo.SortDirection))
-                    .Skip((list.GridInfo.CurrentPageNumber - 1) * list.GridInfo.PageSize)
-                    .Take(list.GridInfo.PageSize)
-                    .ToList()
-                    ;
+                list.Items = q.Paged(list.GridInfo).ToList();
 
                 transaction.Data = list;
             });
