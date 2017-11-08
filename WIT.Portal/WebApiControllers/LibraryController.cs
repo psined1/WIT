@@ -12,6 +12,7 @@ using WIT.Business.Common;
 using System.Security.Claims;
 using Ninject;
 using WIT.Data.Models;
+using System.Data.Entity;
 
 namespace WIT.Portal.WebApiControllers
 {
@@ -54,16 +55,21 @@ namespace WIT.Portal.WebApiControllers
 
                 if (!string.IsNullOrWhiteSpace(list.Code))
                 {
-                    q = q.Where(i => i.Code.StartsWith(list.Code));
+                    q = q.Where(i => i.Code.Contains(list.Code));
                 }
 
                 if (!string.IsNullOrWhiteSpace(list.Name))
                 {
-                    q = q.Where(i => i.Name.StartsWith(list.Name));
+                    q = q.Where(i => i.Name.Contains(list.Name));
                 }
 
                 list.GridInfo.TotalRows = q.Count();
-                list.Items = q.Paged(list.GridInfo).ToList();
+                list.Items = q
+                    .Paged(list.GridInfo)
+                    .ToList()
+                    .Select(i => new ProductFeatureItem(i))
+                    .ToList()
+                    ;
 
                 transaction.Data = list;
             });
@@ -78,11 +84,11 @@ namespace WIT.Portal.WebApiControllers
         /// <returns></returns>
         [Route("GetProductFeature")]
         [HttpPost]
-        public HttpResponseMessage GetProductFeature(HttpRequestMessage request, [FromBody] ProductFeature item)
+        public HttpResponseMessage GetProductFeature(HttpRequestMessage request, [FromBody] ProductFeatureItem item)
         {
             return BaseAction(request, (transaction) => {
 
-                ProductFeature existingItem = _db.ProductFeatures.Where(i => i.ProductFeatureID == item.ProductFeatureID).FirstOrDefault();
+                ProductFeature existingItem = _db.ProductFeatures.FirstOrDefault(i => i.ProductFeatureID == item.ProductFeatureID);
 
                 if (existingItem == null)
                 {
@@ -90,7 +96,7 @@ namespace WIT.Portal.WebApiControllers
                     throw new HttpResponseException(HttpStatusCode.NotFound);
                 }
 
-                transaction.Data = existingItem;
+                transaction.Data = new ProductFeatureItem(existingItem);
             });
         }
 
@@ -102,13 +108,13 @@ namespace WIT.Portal.WebApiControllers
         /// <returns></returns>
         [Route("DeleteProductFeature")]
         [HttpPost]
-        public HttpResponseMessage DeleteProductFeature(HttpRequestMessage request, [FromBody] ProductFeature item)
+        public HttpResponseMessage DeleteProductFeature(HttpRequestMessage request, [FromBody] ProductFeatureItem item)
         {
             return BaseAction(request, (transaction) => {
 
                 this.ValidateToken(request, transaction);
 
-                ProductFeature existingItem = _db.ProductFeatures.Where(i => i.ProductFeatureID == item.ProductFeatureID).FirstOrDefault();
+                ProductFeature existingItem = _db.ProductFeatures.FirstOrDefault(i => i.ProductFeatureID == item.ProductFeatureID);
 
                 if (existingItem == null)
                 {
@@ -119,7 +125,7 @@ namespace WIT.Portal.WebApiControllers
                 _db.ProductFeatures.Remove(existingItem);
                 _db.SaveChanges();
 
-                transaction.Data = existingItem;
+                transaction.Data = new ProductFeatureItem(existingItem);
             });
         }
 
@@ -131,7 +137,7 @@ namespace WIT.Portal.WebApiControllers
         /// <returns></returns>
         [Route("UpdateProductFeature")]
         [HttpPost]
-        public HttpResponseMessage UpdateProductFeature(HttpRequestMessage request, [FromBody] ProductFeature item)
+        public HttpResponseMessage UpdateProductFeature(HttpRequestMessage request, [FromBody] ProductFeatureItem item)
         {
             return BaseAction(request, (transaction) => {
 
@@ -145,29 +151,27 @@ namespace WIT.Portal.WebApiControllers
                     throw new HttpResponseException(HttpStatusCode.BadRequest);
                 }
 
-                ProductFeature existingItem = _db.ProductFeatures.Where(i => i.ProductFeatureID == item.ProductFeatureID).FirstOrDefault();
+                ProductFeature existingItem = _db.ProductFeatures.FirstOrDefault(i => i.ProductFeatureID == item.ProductFeatureID);
 
                 if (existingItem == null)
                 {
-                    existingItem = _db.ProductFeatures.Add(item);
+                    existingItem = _db.ProductFeatures.Add(new ProductFeature());
+
+                    existingItem.Code = item.Code;
 
                     existingItem.CreatedBy = transaction.CurrentUserEmail;
                     existingItem.CreatedOn = DateTime.Now;
                 }
 
-                else
-                {
-                    //existingItem.Code = item.Code;
-                    existingItem.Name = item.Name;
-                    existingItem.Description = item.Description;
-                }
+                existingItem.Name = item.Name;
+                existingItem.Description = item.Description;
 
                 existingItem.UpdatedBy = transaction.CurrentUserEmail;
                 existingItem.UpdatedOn = DateTime.Now;
 
                 _db.SaveChanges();
 
-                transaction.Data = existingItem;
+                transaction.Data = new ProductFeatureItem(existingItem);
             });
         }
 
@@ -197,16 +201,21 @@ namespace WIT.Portal.WebApiControllers
 
                 if (!string.IsNullOrWhiteSpace(list.Code))
                 {
-                    q = q.Where(i => i.Code.StartsWith(list.Code));
+                    q = q.Where(i => i.Code.Contains(list.Code));
                 }
 
                 if (!string.IsNullOrWhiteSpace(list.Name))
                 {
-                    q = q.Where(i => i.Name.StartsWith(list.Name));
+                    q = q.Where(i => i.Name.Contains(list.Name));
                 }
 
                 list.GridInfo.TotalRows = q.Count();
-                list.Items = q.Paged(list.GridInfo).ToList();
+                list.Items = q
+                    .Paged(list.GridInfo)
+                    .ToList()
+                    .Select(i => new ProductClassItem(i))
+                    .ToList()
+                    ;
 
                 transaction.Data = list;
             });
@@ -221,11 +230,11 @@ namespace WIT.Portal.WebApiControllers
         /// <returns></returns>
         [Route("GetProductClass")]
         [HttpPost]
-        public HttpResponseMessage GetProductClass(HttpRequestMessage request, [FromBody] ProductClass item)
+        public HttpResponseMessage GetProductClass(HttpRequestMessage request, [FromBody] ProductClassItem item)
         {
             return BaseAction(request, (transaction) => {
 
-                ProductClass existingItem = _db.ProductClasses.Where(i => i.ProductClassID == item.ProductClassID).FirstOrDefault();
+                ProductClass existingItem = _db.ProductClasses.FirstOrDefault(i => i.ProductClassID == item.ProductClassID);
 
                 if (existingItem == null)
                 {
@@ -233,7 +242,7 @@ namespace WIT.Portal.WebApiControllers
                     throw new HttpResponseException(HttpStatusCode.NotFound);
                 }
 
-                transaction.Data = existingItem;
+                transaction.Data = new ProductClassItem(existingItem);
             });
         }
 
@@ -245,13 +254,13 @@ namespace WIT.Portal.WebApiControllers
         /// <returns></returns>
         [Route("DeleteProductClass")]
         [HttpPost]
-        public HttpResponseMessage DeleteProductClass(HttpRequestMessage request, [FromBody] ProductClass item)
+        public HttpResponseMessage DeleteProductClass(HttpRequestMessage request, [FromBody] ProductClassItem item)
         {
             return BaseAction(request, (transaction) => {
 
                 this.ValidateToken(request, transaction);
 
-                ProductClass existingItem = _db.ProductClasses.Where(i => i.ProductClassID == item.ProductClassID).FirstOrDefault();
+                ProductClass existingItem = _db.ProductClasses.FirstOrDefault(i => i.ProductClassID == item.ProductClassID);
 
                 if (existingItem == null)
                 {
@@ -262,7 +271,7 @@ namespace WIT.Portal.WebApiControllers
                 _db.ProductClasses.Remove(existingItem);
                 _db.SaveChanges();
 
-                transaction.Data = existingItem;
+                transaction.Data = new ProductClassItem(existingItem);
             });
         }
 
@@ -274,7 +283,7 @@ namespace WIT.Portal.WebApiControllers
         /// <returns></returns>
         [Route("UpdateProductClass")]
         [HttpPost]
-        public HttpResponseMessage UpdateProductClass(HttpRequestMessage request, [FromBody] ProductClass item)
+        public HttpResponseMessage UpdateProductClass(HttpRequestMessage request, [FromBody] ProductClassItem item)
         {
             return BaseAction(request, (transaction) => {
 
@@ -288,29 +297,26 @@ namespace WIT.Portal.WebApiControllers
                     throw new HttpResponseException(HttpStatusCode.BadRequest);
                 }
 
-                ProductClass existingItem = _db.ProductClasses.Where(i => i.ProductClassID == item.ProductClassID).FirstOrDefault();
+                ProductClass existingItem = _db.ProductClasses.FirstOrDefault(i => i.ProductClassID == item.ProductClassID);
 
                 if (existingItem == null)
                 {
-                    existingItem = _db.ProductClasses.Add(item);
+                    existingItem = _db.ProductClasses.Add(new ProductClass());
 
+                    existingItem.Code = item.Code;
                     existingItem.CreatedBy = transaction.CurrentUserEmail;
                     existingItem.CreatedOn = DateTime.Now;
                 }
 
-                else
-                {
-                    //existingItem.Code = item.Code;
-                    existingItem.Name = item.Name;
-                    existingItem.Description = item.Description;
-                }
+                existingItem.Name = item.Name;
+                existingItem.Description = item.Description;
 
                 existingItem.UpdatedBy = transaction.CurrentUserEmail;
                 existingItem.UpdatedOn = DateTime.Now;
 
                 _db.SaveChanges();
 
-                transaction.Data = existingItem;
+                transaction.Data = new ProductClassItem(existingItem);
             });
         }
 
@@ -340,16 +346,21 @@ namespace WIT.Portal.WebApiControllers
 
                 if (!string.IsNullOrWhiteSpace(list.Code))
                 {
-                    q = q.Where(i => i.ProductCode.StartsWith(list.Code));
+                    q = q.Where(i => i.ProductCode.Contains(list.Code));
                 }
 
                 if (!string.IsNullOrWhiteSpace(list.Name))
                 {
-                    q = q.Where(i => i.ProductName.StartsWith(list.Name));
+                    q = q.Where(i => i.ProductName.Contains(list.Name));
                 }
 
                 list.GridInfo.TotalRows = q.Count();
-                list.Items = q.Paged(list.GridInfo).ToList();
+                list.Items = q
+                    .Paged(list.GridInfo)
+                    .ToList()
+                    .Select(i => new ProductItem(i))
+                    .ToList()
+                    ;
 
                 transaction.Data = list;
             });
@@ -364,11 +375,11 @@ namespace WIT.Portal.WebApiControllers
         /// <returns></returns>
         [Route("GetProduct")]
         [HttpPost]
-        public HttpResponseMessage GetProduct(HttpRequestMessage request, [FromBody] Product item)
+        public HttpResponseMessage GetProduct(HttpRequestMessage request, [FromBody] ProductItem item)
         {
             return BaseAction(request, (transaction) => {
 
-                Product existingItem = _db.Products.Where(i => i.ProductID == item.ProductID).FirstOrDefault();
+                Product existingItem = _db.Products.FirstOrDefault(i => i.ProductID == item.ProductID);
 
                 if (existingItem == null)
                 {
@@ -376,7 +387,7 @@ namespace WIT.Portal.WebApiControllers
                     throw new HttpResponseException(HttpStatusCode.NotFound);
                 }
 
-                transaction.Data = existingItem;
+                transaction.Data = new ProductItem(existingItem);
             });
         }
 
@@ -388,13 +399,13 @@ namespace WIT.Portal.WebApiControllers
         /// <returns></returns>
         [Route("DeleteProduct")]
         [HttpPost]
-        public HttpResponseMessage DeleteProduct(HttpRequestMessage request, [FromBody] Product item)
+        public HttpResponseMessage DeleteProduct(HttpRequestMessage request, [FromBody] ProductItem item)
         {
             return BaseAction(request, (transaction) => {
 
                 this.ValidateToken(request, transaction);
 
-                Product existingItem = _db.Products.Where(i => i.ProductID == item.ProductID).FirstOrDefault();
+                Product existingItem = _db.Products.FirstOrDefault(i => i.ProductID == item.ProductID);
 
                 if (existingItem == null)
                 {
@@ -405,7 +416,7 @@ namespace WIT.Portal.WebApiControllers
                 _db.Products.Remove(existingItem);
                 _db.SaveChanges();
 
-                transaction.Data = existingItem;
+                transaction.Data = new ProductItem(existingItem);
             });
         }
 
@@ -417,7 +428,7 @@ namespace WIT.Portal.WebApiControllers
         /// <returns></returns>
         [Route("UpdateProduct")]
         [HttpPost]
-        public HttpResponseMessage UpdateProduct(HttpRequestMessage request, [FromBody] Product item)
+        public HttpResponseMessage UpdateProduct(HttpRequestMessage request, [FromBody] ProductItem item)
         {
             return BaseAction(request, (transaction) => {
 
@@ -431,31 +442,30 @@ namespace WIT.Portal.WebApiControllers
                     throw new HttpResponseException(HttpStatusCode.BadRequest);
                 }
 
-                Product existingItem = _db.Products.Where(i => i.ProductID == item.ProductID).FirstOrDefault();
+                Product existingItem = _db.Products.FirstOrDefault(i => i.ProductID == item.ProductID);
 
                 if (existingItem == null)
                 {
-                    existingItem = _db.Products.Add(item);
+                    existingItem = _db.Products.Add(new Product());
+
+                    existingItem.ProductCode = item.ProductCode;
 
                     existingItem.CreatedBy = transaction.CurrentUserEmail;
                     existingItem.CreatedOn = DateTime.Now;
                 }
 
-                else
-                {
-                    //existingItem.ProductCode = item.ProductCode;
-                    existingItem.ProductName = item.ProductName;
-                    existingItem.Description = item.Description;
-                    existingItem.ProductClassID = item.ProductClassID;
-                    existingItem.ProductFeatureID = item.ProductFeatureID;
-                }
+                existingItem.ProductName = item.ProductName;
+                existingItem.Description = item.Description;
+
+                existingItem.ProductClassID = _db.ProductClasses.FirstOrDefault(i => i.Code == item.ProductClass)?.ProductClassID;
+                existingItem.ProductFeatureID = _db.ProductFeatures.FirstOrDefault(i => i.Code == item.ProductFeature)?.ProductFeatureID;
 
                 existingItem.UpdatedBy = transaction.CurrentUserEmail;
                 existingItem.UpdatedOn = DateTime.Now;
 
                 _db.SaveChanges();
 
-                transaction.Data = existingItem;
+                transaction.Data = new ProductItem(existingItem);
             });
         }
 
@@ -485,16 +495,21 @@ namespace WIT.Portal.WebApiControllers
 
                 if (!string.IsNullOrWhiteSpace(list.CustomerCode))
                 {
-                    q = q.Where(i => i.CustomerCode.StartsWith(list.CustomerCode));
+                    q = q.Where(i => i.CustomerCode.Contains(list.CustomerCode));
                 }
 
                 if (!string.IsNullOrWhiteSpace(list.CompanyName))
                 {
-                    q = q.Where(i => i.CompanyName.StartsWith(list.CompanyName));
+                    q = q.Where(i => i.CompanyName.Contains(list.CompanyName));
                 }
 
                 list.GridInfo.TotalRows = q.Count();
-                list.Items = q.Paged(list.GridInfo).ToList();
+                list.Items = q
+                    .Paged(list.GridInfo)
+                    .ToList()
+                    .Select(i => new CustomerItem(i))
+                    .ToList()
+                    ;
 
                 transaction.Data = list;
             });
@@ -509,11 +524,11 @@ namespace WIT.Portal.WebApiControllers
         /// <returns></returns>
         [Route("GetCustomer")]
         [HttpPost]
-        public HttpResponseMessage GetCustomer(HttpRequestMessage request, [FromBody] Customer item)
+        public HttpResponseMessage GetCustomer(HttpRequestMessage request, [FromBody] CustomerItem item)
         {
             return BaseAction(request, (transaction) => {
 
-                Customer existingItem = _db.Customers.Where(i => i.CustomerID == item.CustomerID).FirstOrDefault();
+                Customer existingItem = _db.Customers.FirstOrDefault(i => i.CustomerID == item.CustomerID);
 
                 if (existingItem == null)
                 {
@@ -521,7 +536,7 @@ namespace WIT.Portal.WebApiControllers
                     throw new HttpResponseException(HttpStatusCode.NotFound);
                 }
 
-                transaction.Data = existingItem;
+                transaction.Data = new CustomerItem(existingItem);
             });
         }
 
@@ -533,13 +548,13 @@ namespace WIT.Portal.WebApiControllers
         /// <returns></returns>
         [Route("DeleteCustomer")]
         [HttpPost]
-        public HttpResponseMessage DeleteCustomer(HttpRequestMessage request, [FromBody] Customer item)
+        public HttpResponseMessage DeleteCustomer(HttpRequestMessage request, [FromBody] CustomerItem item)
         {
             return BaseAction(request, (transaction) => {
 
                 this.ValidateToken(request, transaction);
 
-                Customer existingItem = _db.Customers.Where(i => i.CustomerID == item.CustomerID).FirstOrDefault();
+                Customer existingItem = _db.Customers.FirstOrDefault(i => i.CustomerID == item.CustomerID);
 
                 if (existingItem == null)
                 {
@@ -550,7 +565,7 @@ namespace WIT.Portal.WebApiControllers
                 _db.Customers.Remove(existingItem);
                 _db.SaveChanges();
 
-                transaction.Data = existingItem;
+                transaction.Data = new CustomerItem(existingItem);
             });
         }
 
@@ -562,7 +577,7 @@ namespace WIT.Portal.WebApiControllers
         /// <returns></returns>
         [Route("UpdateCustomer")]
         [HttpPost]
-        public HttpResponseMessage UpdateCustomer(HttpRequestMessage request, [FromBody] Customer item)
+        public HttpResponseMessage UpdateCustomer(HttpRequestMessage request, [FromBody] CustomerItem item)
         {
             return BaseAction(request, (transaction) => {
 
@@ -576,34 +591,32 @@ namespace WIT.Portal.WebApiControllers
                     throw new HttpResponseException(HttpStatusCode.BadRequest);
                 }
 
-                Customer existingItem = _db.Customers.Where(i => i.CustomerID == item.CustomerID).FirstOrDefault();
+                Customer existingItem = _db.Customers.FirstOrDefault(i => i.CustomerID == item.CustomerID);
 
                 if (existingItem == null)
                 {
-                    existingItem = _db.Customers.Add(item);
+                    existingItem = _db.Customers.Add(new Customer());
+
+                    existingItem.CustomerCode = item.CustomerCode;
 
                     existingItem.CreatedBy = transaction.CurrentUserEmail;
                     existingItem.CreatedOn = DateTime.Now;
                 }
 
-                else
-                {
-                    //existingItem.CustomerCode = item.CustomerCode;
-                    existingItem.CompanyName = item.CompanyName;
-                    existingItem.AddressLine1 = item.AddressLine1;
-                    existingItem.AddressLine2 = item.AddressLine2;
-                    existingItem.City = item.City;
-                    existingItem.State = item.State;
-                    existingItem.ZipCode = item.ZipCode;
-                    existingItem.PhoneNumber = item.PhoneNumber;
-                }
+                existingItem.CompanyName = item.CompanyName;
+                existingItem.AddressLine1 = item.AddressLine1;
+                existingItem.AddressLine2 = item.AddressLine2;
+                existingItem.City = item.City;
+                existingItem.State = item.State;
+                existingItem.ZipCode = item.ZipCode;
+                existingItem.PhoneNumber = item.PhoneNumber;
 
                 existingItem.UpdatedBy = transaction.CurrentUserEmail;
                 existingItem.UpdatedOn = DateTime.Now;
 
                 _db.SaveChanges();
 
-                transaction.Data = existingItem;
+                transaction.Data = new CustomerItem(existingItem);
             });
         }
 

@@ -55,20 +55,53 @@
                 <div class="form-group">
                     <label class="col-lg-3 col-sm-2 control-label">Product Class</label>
                     <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                        <input class="form-control"
-                               placeholder="Type to search"
-                               [typeahead]="productClasses" typeaheadOptionField="code" [typeaheadItemTemplate]="productClassTemplate"
-                               (typeaheadLoading)="productClassLoading($event)"
-                               (typeaheadNoResults)="productClassNoResults($event)"
-                               (typeaheadOnSelect)="productClassOnSelect($event)"
-                               (typeaheadOnBlur)="productClassOnBlur($event)"
-                               [ngModel]="productClass | uppercase" (ngModelChange)="productClass=$event"
-                               [ngClass]="{'validation-error': !!item.validationErrors['productClassID']}"
-                        />
+                        <div class="input-group">
+                            <input class="form-control"
+                                   placeholder="Type to search"
+                                   [typeahead]="productClasses" typeaheadOptionField="code" [typeaheadItemTemplate]="productClassTemplate"
+                                   (typeaheadLoading)="productClassLoading($event)"
+                                   (typeaheadNoResults)="productClassNoResults($event)"
+                                   (typeaheadOnSelect)="productClassOnSelect($event)"
+                                   (typeaheadOnBlur)="productClassOnBlur($event)"
+                                   [ngModel]="item.productClass | uppercase" (ngModelChange)="item.productClass=$event"
+                                   [ngClass]="{'validation-error': !!item.validationErrors['productClass']}" />
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-default" (click)="addProductClass()">
+                                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                                </button>
+                            </span>
+                        </div>
                     </div>
-                    <div class="col-lg-3" *ngIf="!!item.validationErrors['productClassID']">
+                    <div class="col-lg-3" *ngIf="!!item.validationErrors['productClass']">
                         <small class="text-danger">
-                            {{item.validationErrors['productClassID']}}
+                            {{item.validationErrors['productClass']}}
+                        </small>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-lg-3 col-sm-2 control-label">Product Feature</label>
+                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                        <div class="input-group">
+                            <input class="form-control"
+                                   placeholder="Type to search"
+                                   [typeahead]="productFeatures" typeaheadOptionField="code" [typeaheadItemTemplate]="productFeatureTemplate"
+                                   (typeaheadLoading)="productFeatureLoading($event)"
+                                   (typeaheadNoResults)="productFeatureNoResults($event)"
+                                   (typeaheadOnSelect)="productFeatureOnSelect($event)"
+                                   (typeaheadOnBlur)="productFeatureOnBlur($event)"
+                                   [ngModel]="item.productFeature | uppercase" (ngModelChange)="item.productFeature=$event"
+                                   [ngClass]="{'validation-error': !!item.validationErrors['productFeature']}" />
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-default" (click)="addProductFeature()">
+                                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-lg-3" *ngIf="!!item.validationErrors['productFeature']">
+                        <small class="text-danger">
+                            {{item.validationErrors['productFeature']}}
                         </small>
                     </div>
                 </div>
@@ -100,6 +133,10 @@
 </div>
 
 <ng-template #productClassTemplate let-model="item" let-index="index">
-   {{model.code}} | {{model.name}}
+    {{model.code}} | {{model.name}}
+</ng-template>
+
+<ng-template #productFeatureTemplate let-model="item" let-index="index">
+    {{model.code}} | {{model.name}}
 </ng-template>
 

@@ -14,7 +14,7 @@ namespace WIT.Business
 {
     public class ProductFeatureValidator
     {
-        private WitEntityValidator<ProductFeature> _validator = new WitEntityValidator<ProductFeature>();
+        private WitEntityValidator<ProductFeatureItem> _validator = new WitEntityValidator<ProductFeatureItem>();
         private WitEntities _db = null;
 
         private ProductFeatureValidator(WitEntities db)
@@ -39,7 +39,7 @@ namespace WIT.Business
             return !_db.ProductFeatures.Any(a => a.Code == code);
         }
 
-        public static bool Check(WitEntities db, ProductFeature item)
+        public static bool Check(WitEntities db, ProductFeatureItem item)
         {
             string ruleSet = item.ProductFeatureID == 0 ? "default,new" : "default";
             item.ValidationErrors = new ProductFeatureValidator(db)._validator.CheckErrors(item, ruleSet);
@@ -49,7 +49,7 @@ namespace WIT.Business
 
     public class ProductClassValidator
     {
-        private WitEntityValidator<ProductClass> _validator = new WitEntityValidator<ProductClass>();
+        private WitEntityValidator<ProductClassItem> _validator = new WitEntityValidator<ProductClassItem>();
         private WitEntities _db = null;
 
         private ProductClassValidator(WitEntities db)
@@ -71,10 +71,10 @@ namespace WIT.Business
         /// <returns></returns>
         private bool NotExist(string code)
         {
-            return !_db.ProductFeatures.Any(a => a.Code == code);
+            return !_db.ProductClasses.Any(a => a.Code == code);
         }
 
-        public static bool Check(WitEntities db, ProductClass item)
+        public static bool Check(WitEntities db, ProductClassItem item)
         {
             string ruleSet = item.ProductClassID == 0 ? "default,new" : "default";
             item.ValidationErrors = new ProductClassValidator(db)._validator.CheckErrors(item, ruleSet);
@@ -84,7 +84,7 @@ namespace WIT.Business
 
     public class ProductValidator
     {
-        private WitEntityValidator<Product> _validator = new WitEntityValidator<Product>();
+        private WitEntityValidator<ProductItem> _validator = new WitEntityValidator<ProductItem>();
         private WitEntities _db = null;
 
         private ProductValidator(WitEntities db)
@@ -92,7 +92,8 @@ namespace WIT.Business
             _db = db;
 
             _validator.RuleFor(a => a.ProductCode).NotEmpty().WithMessage("Code is required.");
-            _validator.RuleFor(a => a.ProductClassID).Must(ProductClassExistsOrEmpty).WithMessage("Incorrect value");
+            _validator.RuleFor(a => a.ProductClass).Must(ProductClassExistsOrEmpty).WithMessage("Incorrect value");
+            _validator.RuleFor(a => a.ProductFeature).Must(ProductFeatureExistsOrEmpty).WithMessage("Incorrect value");
 
             _validator.RuleSet("new", () =>
             {
@@ -110,16 +111,23 @@ namespace WIT.Business
             return !_db.Products.Any(a => a.ProductCode == code);
         }
 
-        private bool ProductClassExistsOrEmpty(int? productClassID)
+        private bool ProductClassExistsOrEmpty(string productClass)
         {
-            return 
-                !productClassID.HasValue || 
-                productClassID.Value == 0 || 
-                _db.ProductClasses.Any(a => a.ProductClassID == productClassID.Value)
+            return
+                string.IsNullOrWhiteSpace(productClass) ||
+                _db.ProductClasses.Any(a => a.Code == productClass)
                 ;
         }
 
-        public static bool Check(WitEntities db, Product item)
+        private bool ProductFeatureExistsOrEmpty(string productFeature)
+        {
+            return
+                string.IsNullOrWhiteSpace(productFeature) ||
+                _db.ProductFeatures.Any(a => a.Code == productFeature)
+                ;
+        }
+
+        public static bool Check(WitEntities db, ProductItem item)
         {
             string ruleSet = item.ProductID == 0 ? "default,new" : "default";
             item.ValidationErrors = new ProductValidator(db)._validator.CheckErrors(item, ruleSet);
@@ -129,7 +137,7 @@ namespace WIT.Business
 
     public class CustomerValidator
     {
-        private WitEntityValidator<Customer> _validator = new WitEntityValidator<Customer>();
+        private WitEntityValidator<CustomerItem> _validator = new WitEntityValidator<CustomerItem>();
         private WitEntities _db = null;
 
         private CustomerValidator(WitEntities db)
@@ -155,7 +163,7 @@ namespace WIT.Business
             return !_db.Customers.Any(a => a.CustomerCode == customerCode);
         }
 
-        public static bool Check(WitEntities db, Customer item)
+        public static bool Check(WitEntities db, CustomerItem item)
         {
             string ruleSet = item.CustomerID == 0 ? "default,new" : "default";
             item.ValidationErrors = new CustomerValidator(db)._validator.CheckErrors(item, ruleSet);

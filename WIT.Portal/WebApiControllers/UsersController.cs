@@ -55,7 +55,7 @@ namespace WIT.Portal.WebApiControllers
             return BaseAction(request, (transaction) => {
                 this.ValidateToken(request, transaction);
 
-                User existingItem = _db.Users.Where(i => i.UserID == transaction.CurrentUserID).FirstOrDefault();
+                User existingItem = _db.Users.FirstOrDefault(i => i.UserID == transaction.CurrentUserID);
 
                 if (existingItem == null)
                 {
@@ -64,9 +64,8 @@ namespace WIT.Portal.WebApiControllers
                 }
 
                 existingItem.Password = null;
-                existingItem.PasswordConfirmation = null;
 
-                transaction.Data = existingItem;
+                transaction.Data = new UserItem(existingItem);
             });
         }
 
@@ -78,7 +77,7 @@ namespace WIT.Portal.WebApiControllers
         /// <returns></returns>
         [Route("RegisterUser")]      
         [HttpPost]
-        public HttpResponseMessage RegisterUser(HttpRequestMessage request, [FromBody] User item)
+        public HttpResponseMessage RegisterUser(HttpRequestMessage request, [FromBody] UserItem item)
         {
             return BaseAction(request, (transaction) => {
 
@@ -90,18 +89,28 @@ namespace WIT.Portal.WebApiControllers
                     throw new HttpResponseException(HttpStatusCode.BadRequest);
                 }
 
-                item.CreatedBy = transaction.CurrentUserEmail;
-                item.CreatedOn = DateTime.Now;
-                item.UpdatedBy = transaction.CurrentUserEmail;
-                item.UpdatedOn = DateTime.Now;
+                User existingItem = _db.Users.Add(new User());
 
-                _db.Users.Add(item);
+                existingItem.FirstName = item.FirstName;
+                existingItem.LastName = item.LastName;
+                existingItem.EmailAddress = item.EmailAddress;
+                existingItem.AddressLine1 = item.AddressLine1;
+                existingItem.AddressLine2 = item.AddressLine2;
+                existingItem.City = item.City;
+                existingItem.State = item.State;
+                existingItem.ZipCode = item.ZipCode;
+                existingItem.Password = item.Password;
+
+                existingItem.CreatedBy = transaction.CurrentUserEmail;
+                existingItem.CreatedOn = DateTime.Now;
+                existingItem.UpdatedBy = transaction.CurrentUserEmail;
+                existingItem.UpdatedOn = DateTime.Now;
+
                 _db.SaveChanges();
 
-                item.Password = null;
-                item.PasswordConfirmation = null;
+                existingItem.Password = null;
 
-                transaction.Data = item;
+                transaction.Data = new UserItem(existingItem);
             });
         }
 
@@ -113,7 +122,7 @@ namespace WIT.Portal.WebApiControllers
         /// <returns></returns>
         [Route("UpdateProfile")]
         [HttpPost]
-        public HttpResponseMessage UpdateProfile(HttpRequestMessage request, [FromBody] User item)
+        public HttpResponseMessage UpdateProfile(HttpRequestMessage request, [FromBody] UserItem item)
         {
             return BaseAction(request, (transaction) => {
 
@@ -127,7 +136,7 @@ namespace WIT.Portal.WebApiControllers
                     throw new HttpResponseException(HttpStatusCode.BadRequest);
                 }
 
-                User existingItem = _db.Users.Where(i => i.UserID == transaction.CurrentUserID).FirstOrDefault();
+                User existingItem = _db.Users.FirstOrDefault(i => i.UserID == transaction.CurrentUserID);
 
                 if (existingItem == null)
                 {
@@ -149,9 +158,8 @@ namespace WIT.Portal.WebApiControllers
                 _db.SaveChanges();
 
                 existingItem.Password = null;
-                existingItem.PasswordConfirmation = null;
 
-                transaction.Data = existingItem;
+                transaction.Data = new UserItem(existingItem);
             });
         }
 
@@ -163,13 +171,13 @@ namespace WIT.Portal.WebApiControllers
         /// <returns></returns>
         [Route("Login")]
         [HttpPost]
-        public HttpResponseMessage Login(HttpRequestMessage request, [FromBody] User item)
+        public HttpResponseMessage Login(HttpRequestMessage request, [FromBody] UserItem item)
         {
             string token = "";
 
             HttpResponseMessage response = BaseAction(request, (transaction) => {
 
-                User existingItem = _db.Users.Where(i => i.EmailAddress == item.EmailAddress).FirstOrDefault();
+                User existingItem = _db.Users.FirstOrDefault(i => i.EmailAddress == item.EmailAddress);
 
                 if (existingItem == null || existingItem.Password != item.Password)
                 {
@@ -178,9 +186,8 @@ namespace WIT.Portal.WebApiControllers
                 }
 
                 existingItem.Password = null;
-                existingItem.PasswordConfirmation = null;
 
-                transaction.Data = existingItem;
+                transaction.Data = new UserItem(existingItem);
                 transaction.CurrentUserID = existingItem.UserID;
                 transaction.CurrentUserEmail = existingItem.EmailAddress;
 
@@ -211,7 +218,7 @@ namespace WIT.Portal.WebApiControllers
 
                 this.ValidateToken(request, transaction);
 
-                User existingItem = _db.Users.Where(i => i.UserID == transaction.CurrentUserID && i.EmailAddress == transaction.CurrentUserEmail).FirstOrDefault();
+                User existingItem = _db.Users.FirstOrDefault(i => i.UserID == transaction.CurrentUserID && i.EmailAddress == transaction.CurrentUserEmail);
 
                 if (existingItem == null)
                 {
@@ -219,9 +226,8 @@ namespace WIT.Portal.WebApiControllers
                 }
 
                 existingItem.Password = null;
-                existingItem.PasswordConfirmation = null;
 
-                transaction.Data = existingItem;
+                transaction.Data = new UserItem(existingItem);
             });
 
             if (response.StatusCode == HttpStatusCode.OK)

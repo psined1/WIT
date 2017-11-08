@@ -6,8 +6,8 @@ export class Product extends BaseEntity {
     productCode: string;
     productName: string;
     description: string;
-    productClassID: number;
-    productFeatureID: number;
+    productClass: string;
+    productFeature: string;
 
     constructor()
     constructor(rhs: Product)

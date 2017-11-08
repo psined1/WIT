@@ -2,12 +2,13 @@
 using System.Linq;
 using FluentValidation;
 using WIT.Data.Models;
+using WIT.Business.Entities;
 
 namespace WIT.Business
 {
     public class UserValidator //: WitEntityValidator<User>
     {
-        private WitEntityValidator<User> _validator = new WitEntityValidator<User>();
+        private WitEntityValidator<UserItem> _validator = new WitEntityValidator<UserItem>();
         private WitEntities _db = null;
 
         /// <summary>
@@ -42,7 +43,7 @@ namespace WIT.Business
             return !_db.Users.Any(a => a.EmailAddress == emailAddress);
         }
 
-        public static bool Check(WitEntities db, User item)
+        public static bool Check(WitEntities db, UserItem item)
         {
             string ruleSet = item.UserID == 0 ? "default,register" : "default";
             item.ValidationErrors = new UserValidator(db)._validator.CheckErrors(item, ruleSet);

@@ -66,11 +66,13 @@
     <Compile Include="Rules\WitEntityValidator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rules\UserBusinessRules.cs" />
-    <Compile Include="Transactions\CustomerList.cs" />
+    <Compile Include="Transactions\UserEntity.cs" />
+    <Compile Include="Transactions\CustomerEntity.cs" />
     <Compile Include="Transactions\GridInfo.cs" />
-    <Compile Include="Transactions\ProductClassList.cs" />
-    <Compile Include="Transactions\ProductList.cs" />
-    <Compile Include="Transactions\ProductFeatureList.cs" />
+    <Compile Include="Transactions\BaseEntity.cs" />
+    <Compile Include="Transactions\ProductClassEntity.cs" />
+    <Compile Include="Transactions\ProductEntity.cs" />
+    <Compile Include="Transactions\ProductFeatureEntity.cs" />
     <Compile Include="Transactions\TransactionInfo.cs" />
     <Compile Include="Utilities.cs" />
   </ItemGroup>

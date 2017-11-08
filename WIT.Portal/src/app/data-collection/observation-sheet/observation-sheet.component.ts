@@ -76,15 +76,12 @@ export class ObservationSheetComponent implements OnInit {
     }
 
     private editStep(step: ObservationSheetStep): void {
-        /*this.modalEvents = this.modalService.onHidden.subscribe((reason: string) => {
+        /*this.modalEvents = this.modalService.onHide.subscribe((reason: string) => {
             //console.log(`onHidden event has been fired${reason ? ', dismissed by ' + reason : ''}`);
             this.modalEvents.unsubscribe();
-            //this.updatedEvent.unsubscribe();
 
-            if (this.requiresRefresh) {
-                this.executeSearch();
-            }
         });*/
+
         let modalRef = this.modalService.show(StepMaintenanceComponent,
             Object.assign({}, {
                 animated: true,
@@ -93,10 +90,9 @@ export class ObservationSheetComponent implements OnInit {
                 ignoreBackdropClick: false
             }, { class: 'modal-lg' })
         );
+
         let maintComponent: StepMaintenanceComponent = modalRef.content;
-        //this.updatedEvent = maintComponent.updatedEvent
-        //    .subscribe(updated => this.requiresRefresh = updated)
-        //    ;
+
         maintComponent.step = step;
     }
 

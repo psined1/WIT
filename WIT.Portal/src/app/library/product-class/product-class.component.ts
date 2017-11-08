@@ -25,11 +25,11 @@ export class ProductClassComponent implements OnInit {
     @Input()
     public item: ProductClass;
 
-    public get showUpdateButton(): Boolean {
+    private get showUpdateButton(): Boolean {
         return this.item.productClassID > 0;
     }
 
-    public updatedEvent: EventEmitter<Boolean> = new EventEmitter();
+    public hasUpdated: Boolean;
 
     constructor(
         public bsModalRef: BsModalRef,
@@ -38,6 +38,22 @@ export class ProductClassComponent implements OnInit {
         private sessionService: SessionService,
         private libraryService: LibraryService
     ) { }
+
+    public ngOnInit() {
+
+        this.hasUpdated = false;
+
+        if (!this.item)
+            this.item = new ProductClass();
+
+        this.route.params.subscribe(params => {
+
+            let id: string = params['id'];
+            if (id != undefined) {
+                this.getItem(parseInt(id));
+            }
+        });
+    }
 
     public getItem(id: number): void {
 
@@ -53,20 +69,6 @@ export class ProductClassComponent implements OnInit {
                 response => this.getOnError(response)
                 );
         }
-    }
-
-    public ngOnInit() {
-
-        if (!this.item)
-            this.item = new ProductClass();
-
-        this.route.params.subscribe(params => {
-
-            let id: string = params['id'];
-            if (id != undefined) {
-                this.getItem(parseInt(id));
-            }
-        });
     }
 
     private getOnSuccess(response: TransactionInfo) {
@@ -104,7 +106,7 @@ export class ProductClassComponent implements OnInit {
 
         this.alertBox.renderSuccessMessage(response.returnMessage);
 
-        this.updatedEvent.emit(true);
+        this.hasUpdated = true;
     }
 
     private updateOnError(response: TransactionInfo) {

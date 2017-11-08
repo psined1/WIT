@@ -35,8 +35,6 @@ export class ProductListComponent implements OnInit {
     public runningSearch: Boolean = false;
 
     private modalSubscription: Subscription;
-    private updatedEvent: EventEmitter<Boolean>;
-    private requiresRefresh: Boolean = false;
     private modalRef: BsModalRef;
 
 
@@ -144,7 +142,7 @@ export class ProductListComponent implements OnInit {
 
     
     private onDelete(item: Product) {
-        this.requiresRefresh = false;
+
         this.modalSubscription = this.modalService.onHide.subscribe((reason: string) => {
             //console.log(`onHide event has been fired${reason ? ', dismissed by ' + reason : ''}`);
             this.modalSubscription.unsubscribe();
@@ -166,16 +164,17 @@ export class ProductListComponent implements OnInit {
 
     private onEdit(item?: Product) {
 
-        this.requiresRefresh = false;
-        this.modalSubscription = this.modalService.onHidden.subscribe((reason: string) => {
+        this.modalSubscription = this.modalService.onHide.subscribe((reason: string) => {
             //console.log(`onHidden event has been fired${reason ? ', dismissed by ' + reason : ''}`);
             this.modalSubscription.unsubscribe();
-            this.updatedEvent.unsubscribe();
 
-            if (this.requiresRefresh) {
+            console.log('triggered from product list component');
+
+            if (maintComponent.hasUpdated) {
                 this.executeSearch();
             }
         });
+
         let modalRef = this.modalService.show(ProductComponent,
             Object.assign({}, {
                 animated: true,
@@ -184,10 +183,9 @@ export class ProductListComponent implements OnInit {
                 ignoreBackdropClick: false
             }, { class: 'modal-lg' })
         );
+
         let maintComponent: ProductComponent = modalRef.content;
-        this.updatedEvent = maintComponent.updatedEvent
-            .subscribe(updated => this.requiresRefresh = updated)
-            ;
+
         if (item) {
             maintComponent.getItem(item.productID);
         }

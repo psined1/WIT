@@ -1,21 +1,24 @@
 import { Component, OnInit, EventEmitter, Input, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
-import { Observer, Observable } from 'rxjs';
+import { Observer, Observable, Subscription } from 'rxjs';
 //import 'rxjs/add/operator/map';
 
 import { AlertBoxComponent } from '../../shared/alertbox.component';
 import { HttpService } from '../../services/http.service';
 import { SessionService } from '../../services/session.service';
 
-import { BsModalRef } from 'ngx-bootstrap/modal/modal-options.class';
+import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 
 import { LibraryService } from '../../services/library.service';
 
 import { TransactionInfo } from '../../entities/transaction-info.entity';
-import { ProductFeature } from '../../entities/product-feature.entity';
+import { ProductFeature, ProductFeatureList } from '../../entities/product-feature.entity';
 import { ProductClass, ProductClassList } from '../../entities/product-class.entity';
 import { Product } from '../../entities/product.entity';
+
+import { ProductClassComponent } from '../product-class/product-class.component';
+import { ProductFeatureComponent } from '../product-feature/product-feature.component';
 
 @Component({
     templateUrl: './product.component.html'
@@ -35,14 +38,15 @@ export class ProductComponent implements OnInit {
         return this.item.productID > 0;
     }
 
-    public updatedEvent: EventEmitter<Boolean> = new EventEmitter();
+    public hasUpdated: Boolean;
 
     constructor(
         public bsModalRef: BsModalRef,
 
         private route: ActivatedRoute,
         private sessionService: SessionService,
-        private libraryService: LibraryService
+        private libraryService: LibraryService,
+        private modalService: BsModalService
     ) { }
 
     public getItem(id: number): void {
@@ -63,6 +67,8 @@ export class ProductComponent implements OnInit {
 
     public ngOnInit() {
 
+        this.hasUpdated = false;
+
         if (!this.item)
             this.item = new Product();
 
@@ -75,6 +81,7 @@ export class ProductComponent implements OnInit {
         });
 
         this.initProductClassLookup();
+        this.initProductFeatureLookup();
     }
 
     private getOnSuccess(response: TransactionInfo) {
@@ -111,7 +118,7 @@ export class ProductComponent implements OnInit {
 
         this.alertBox.renderSuccessMessage(response.returnMessage);
 
-        this.updatedEvent.emit(true);
+        this.hasUpdated = true;
     }
 
     private updateOnError(response: TransactionInfo) {
@@ -132,13 +139,17 @@ export class ProductComponent implements OnInit {
 
     ////////////////////////// typeahead /////////////////////////////
 
+    private subModalRef: BsModalRef;
+    private subModalSubscription: Subscription;
+
+    // ----------------------
+
     private productClasses: Observable<ProductClass[]>;
-    private productClass: string;
 
     private initProductClassLookup(): void {
 
         this.productClasses = Observable
-            .create((observer: Observer<string>) => observer.next(this.productClass))
+            .create((observer: Observer<string>) => observer.next(this.item.productClass))
             .mergeMap((filter: string) => {
 
                 let list = new ProductClassList();
@@ -153,24 +164,108 @@ export class ProductComponent implements OnInit {
 
     private productClassNoResults($event: Boolean): void {
         if ($event)
-            this.item.validationErrors.productClassID = "Incorrect value";
+            this.item.validationErrors.productClass = "Incorrect value";
     }
 
     private productClassLoading($event: Boolean): void {
         if (!$event)
-            this.item.validationErrors.productClassID = "";
+            this.item.validationErrors.productClass = "";
     }
 
     private productClassOnSelect($event: { item: ProductClass, value: string, Headers: Boolean }): void {
-        console.log($event);
-        this.productClass = $event.value;
-        this.item.productClassID = $event.item.productClassID;
+        this.item.productClass = $event.value;
     }
 
     private productClassOnBlur($event: {item: ProductClass, value: string, Headers: Boolean}): void {
-        console.log($event);
-        this.productClass = $event.value;
-        this.item.productClassID = $event.item.productClassID;
+        this.item.productClass = $event.value;
+    }
+
+    private addProductClass() {
+
+        let subModalRef = this.modalService.show(ProductClassComponent,
+            Object.assign({}, {
+                animated: true,
+                keyboard: true,
+                backdrop: true,
+                ignoreBackdropClick: false
+            }, { class: 'modal-lg' })
+        );
+
+        let maintComponent: ProductClassComponent = subModalRef.content;
+
+        //this.subModalSubscription =
+        this.modalService.onHide.subscribe((reason: string) => {
+            //console.log(`onHidden event has been fired${reason ? ', dismissed by ' + reason : ''}`);
+            //this.subModalSubscription.unsubscribe();
+
+            console.log('triggered from product component');
+
+            if (maintComponent.hasUpdated) {
+                this.item.productClass = maintComponent.item.code;
+            }
+        });
+    }
+
+    // ----------------------
+
+    private productFeatures: Observable<ProductFeature[]>;
+
+    private initProductFeatureLookup(): void {
+
+        this.productFeatures = Observable
+            .create((observer: Observer<string>) => observer.next(this.item.productFeature))
+            .mergeMap((filter: string) => {
+
+                let list = new ProductFeatureList();
+                list.gridInfo.sortExpression = "Code";
+                list.gridInfo.pageSize = 10;
+                list.code = filter;
+                return this.libraryService.getProductFeatures(list)
+                    .map((response: TransactionInfo) => response.data.items)
+                    ;
+            });
+    }
+
+    private productFeatureNoResults($event: Boolean): void {
+        if ($event)
+            this.item.validationErrors.productFeature = "Incorrect value";
+    }
+
+    private productFeatureLoading($event: Boolean): void {
+        if (!$event)
+            this.item.validationErrors.productFeature = "";
+    }
+
+    private productFeatureOnSelect($event: { item: ProductFeature, value: string, Headers: Boolean }): void {
+        this.item.productFeature = $event.value;
+    }
+
+    private productFeatureOnBlur($event: { item: ProductFeature, value: string, Headers: Boolean }): void {
+        this.item.productFeature = $event.value;
+    }
+
+    private addProducFeature() {
+
+        let subModalRef = this.modalService.show(ProductFeatureComponent,
+            Object.assign({}, {
+                animated: true,
+                keyboard: true,
+                backdrop: true,
+                ignoreBackdropClick: false
+            }, { class: 'modal-lg' })
+        );
+
+        let maintComponent: ProductFeatureComponent = subModalRef.content;
+
+        //this.subModalSubscription =
+        this.modalService.onHide.subscribe((reason: string) => {
+            //console.log(`onHidden event has been fired${reason ? ', dismissed by ' + reason : ''}`);
+            //this.subModalSubscription.unsubscribe();
+
+            if (maintComponent.hasUpdated) {
+                this.item.productFeature = maintComponent.item.code;
+            }
+        });
     }
 }
 
