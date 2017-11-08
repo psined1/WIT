@@ -92,6 +92,7 @@ namespace WIT.Business
             _db = db;
 
             _validator.RuleFor(a => a.ProductCode).NotEmpty().WithMessage("Code is required.");
+            _validator.RuleFor(a => a.ProductClassID).Must(ProductClassExistsOrEmpty).WithMessage("Incorrect value");
 
             _validator.RuleSet("new", () =>
             {
@@ -107,6 +108,15 @@ namespace WIT.Business
         private bool NotExist(string code)
         {
             return !_db.Products.Any(a => a.ProductCode == code);
+        }
+
+        private bool ProductClassExistsOrEmpty(int? productClassID)
+        {
+            return 
+                !productClassID.HasValue || 
+                productClassID.Value == 0 || 
+                _db.ProductClasses.Any(a => a.ProductClassID == productClassID.Value)
+                ;
         }
 
         public static bool Check(WitEntities db, Product item)

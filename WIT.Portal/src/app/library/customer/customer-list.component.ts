@@ -52,8 +52,6 @@ export class CustomerListComponent implements OnInit {
 
     public ngOnInit() {
 
-        console.log('init');
-
         this.columns.push(new DataGridColumn('customerCode', 'Customer Code', '{"width": "20%"}'));
         this.columns.push(new DataGridColumn('companyName', 'Company Name', '{"width": "30%" , "hyperLink": true}'));
         this.columns.push(new DataGridColumn('cityAndState', 'City', '{"width": "20%"}'));

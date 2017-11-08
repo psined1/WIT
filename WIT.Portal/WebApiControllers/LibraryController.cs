@@ -446,6 +446,8 @@ namespace WIT.Portal.WebApiControllers
                     //existingItem.ProductCode = item.ProductCode;
                     existingItem.ProductName = item.ProductName;
                     existingItem.Description = item.Description;
+                    existingItem.ProductClassID = item.ProductClassID;
+                    existingItem.ProductFeatureID = item.ProductFeatureID;
                 }
 
                 existingItem.UpdatedBy = transaction.CurrentUserEmail;

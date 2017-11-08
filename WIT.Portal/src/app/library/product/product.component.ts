@@ -35,9 +35,6 @@ export class ProductComponent implements OnInit {
         return this.item.productID > 0;
     }
 
-    private productClasses: Observable<string[]>;
-    private productClass: string;
-
     public updatedEvent: EventEmitter<Boolean> = new EventEmitter();
 
     constructor(
@@ -77,20 +74,7 @@ export class ProductComponent implements OnInit {
             }
         });
 
-        this.productClasses = Observable
-            .create((observer: Observer<string>) => observer.next(this.productClass))
-            .mergeMap((filter: string) => {
-
-                console.log(filter);
-
-                let list = new ProductClassList();
-                list.gridInfo.sortExpression = "Code";
-                list.gridInfo.pageSize = 10;
-                list.code = filter;
-                return this.libraryService.getProductClasses(list)
-                    .map((response: TransactionInfo) => response.data.items)
-                    ;
-            });
+        this.initProductClassLookup();
     }
 
     private getOnSuccess(response: TransactionInfo) {
@@ -143,6 +127,50 @@ export class ProductComponent implements OnInit {
 
         this.item.validationErrors = {};
         this.alertBox.clear();
+    }
+
+
+    ////////////////////////// typeahead /////////////////////////////
+
+    private productClasses: Observable<ProductClass[]>;
+    private productClass: string;
+
+    private initProductClassLookup(): void {
+
+        this.productClasses = Observable
+            .create((observer: Observer<string>) => observer.next(this.productClass))
+            .mergeMap((filter: string) => {
+
+                let list = new ProductClassList();
+                list.gridInfo.sortExpression = "Code";
+                list.gridInfo.pageSize = 10;
+                list.code = filter;
+                return this.libraryService.getProductClasses(list)
+                    .map((response: TransactionInfo) => response.data.items)
+                    ;
+            });
+    }
+
+    private productClassNoResults($event: Boolean): void {
+        if ($event)
+            this.item.validationErrors.productClassID = "Incorrect value";
+    }
+
+    private productClassLoading($event: Boolean): void {
+        if (!$event)
+            this.item.validationErrors.productClassID = "";
+    }
+
+    private productClassOnSelect($event: { item: ProductClass, value: string, Headers: Boolean }): void {
+        console.log($event);
+        this.productClass = $event.value;
+        this.item.productClassID = $event.item.productClassID;
+    }
+
+    private productClassOnBlur($event: {item: ProductClass, value: string, Headers: Boolean}): void {
+        console.log($event);
+        this.productClass = $event.value;
+        this.item.productClassID = $event.item.productClassID;
     }
 }
 

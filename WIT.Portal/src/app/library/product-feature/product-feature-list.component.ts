@@ -52,8 +52,6 @@ export class ProductFeatureListComponent implements OnInit {
 
     public ngOnInit() {
 
-        console.log('init');
-
         this.columns.push(new DataGridColumn('code', 'Code', '{"width": "20%"}'));
         this.columns.push(new DataGridColumn('name', 'Name', '{"width": "30%" , "hyperLink": true}'));
         this.columns.push(new DataGridColumn('description', 'Description', '{"width": "30%"}'));

@@ -56,13 +56,20 @@
                     <label class="col-lg-3 col-sm-2 control-label">Product Class</label>
                     <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                         <input class="form-control"
-                               [ngModel]="productClass | uppercase"
-                               (ngModelChange)="productClass=$event"
-                               [typeahead]="productClasses"
-                               [typeaheadItemTemplate]="productClassTemplate"
-                               typeaheadOptionField="code"
-                               placeholder="Locations loaded with timeout"
+                               placeholder="Type to search"
+                               [typeahead]="productClasses" typeaheadOptionField="code" [typeaheadItemTemplate]="productClassTemplate"
+                               (typeaheadLoading)="productClassLoading($event)"
+                               (typeaheadNoResults)="productClassNoResults($event)"
+                               (typeaheadOnSelect)="productClassOnSelect($event)"
+                               (typeaheadOnBlur)="productClassOnBlur($event)"
+                               [ngModel]="productClass | uppercase" (ngModelChange)="productClass=$event"
+                               [ngClass]="{'validation-error': !!item.validationErrors['productClassID']}"
                         />
+                    </div>
+                    <div class="col-lg-3" *ngIf="!!item.validationErrors['productClassID']">
+                        <small class="text-danger">
+                            {{item.validationErrors['productClassID']}}
+                        </small>
                     </div>
                 </div>
 
@@ -93,6 +100,6 @@
 </div>
 
 <ng-template #productClassTemplate let-model="item" let-index="index">
-   {{model.code}}, {{model.name}}
+   {{model.code}} | {{model.name}}
 </ng-template>
 
