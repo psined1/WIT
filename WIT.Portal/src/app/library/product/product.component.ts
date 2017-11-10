@@ -154,11 +154,8 @@ export class ProductComponent implements OnInit, OnDestroy {
 
         this.productClasses = Observable
             .create(observer => observer.next(this.item.productClass))
-            .takeWhile(() => !this.closing)
+            .do(() => this.alertBox.clear())
             .mergeMap((filter: string) => {
-
-                console.log(filter);
-                this.alertBox.clear();
 
                 let list = new ProductClassList();
                 list.gridInfo.sortExpression = "Code";
@@ -170,7 +167,7 @@ export class ProductComponent implements OnInit, OnDestroy {
             })
             .catch((response: TransactionInfo) => {
                 this.alertBox.renderErrorMessage(response.returnMessage);
-                return Observable.of([]);
+                return Observable.empty();
             });
     }
 
@@ -224,13 +221,8 @@ export class ProductComponent implements OnInit, OnDestroy {
 
         this.productFeatures = Observable
             .create(observer => observer.next(this.item.productFeature))
-            .takeWhile(() => !this.closing)
+            .do(() => this.alertBox.clear())
             .mergeMap((filter: string) => {
-
-                this.alertBox.clear();
-
-                console.log(filter);
-
                 let list = new ProductFeatureList();
                 list.gridInfo.sortExpression = "Code";
                 list.gridInfo.pageSize = 10;
@@ -239,9 +231,9 @@ export class ProductComponent implements OnInit, OnDestroy {
                     .map((response: TransactionInfo) => response.data.items)
                     ;
             })
-            .catch((response: TransactionInfo) => {
-                this.alertBox.renderErrorMessage(response.returnMessage);
-                return Observable.of([]);
+            .catch((response: any) => {
+                this.alertBox.renderErrorMessage(response.returnMessage || response);
+                return Observable.empty();
             });
     }
 
@@ -274,7 +266,6 @@ export class ProductComponent implements OnInit, OnDestroy {
             }, { class: 'modal-lg' })
         ).content;
 
-        //this.subModalSubscription =
         let modalHide = this.modalService.onHide.subscribe((reason: string) => {
 
             //console.log(`onHidden event has been fired${reason ? ', dismissed by ' + reason : ''}`);
