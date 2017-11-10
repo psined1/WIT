@@ -18,7 +18,7 @@ export class SessionService {
         return new User(this.user);             // return a secure copy
     }
 
-    public authenticatedEvent: EventEmitter<User>;
+    public authenticatedEvent: EventEmitter<{ value: User }>;
     public apiServer: string;
     public version: string;
     
@@ -35,7 +35,9 @@ export class SessionService {
         if (!this.isAuthenicated)
             this.saveToken("");
 
-        this.authenticatedEvent.emit(this.currentUser);
+        this.authenticatedEvent.emit({
+            value: this.currentUser
+        });
     }
 
     public logout() {

@@ -1,4 +1,4 @@
-import { Component, OnInit, EventEmitter, Input, ViewChild, OnDestroy } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 import { Observer, Observable, Subscription, Subject } from 'rxjs';
@@ -81,10 +81,10 @@ export class ProductComponent implements OnInit, OnDestroy {
             let item = new Product();
             item.productID = id;
 
-            this.libraryService.getProduct(item).toPromise()
-                .then(response => this.getOnSuccess(response))
-                .catch(response => this.getOnError(response))
-                ;
+            this.libraryService.getProduct(item).subscribe(
+                response => this.getOnSuccess(response),
+                response => this.getOnError(response)
+            );
         }
     }
 
@@ -109,10 +109,10 @@ export class ProductComponent implements OnInit, OnDestroy {
     public updateItem(): void {
 
         this.clearStatus();
-        this.libraryService.updateProduct(this.item).toPromise()
-            .then(response => this.updateOnSuccess(response))
-            .catch(response => this.updateOnError(response))
-            ;
+        this.libraryService.updateProduct(this.item).subscribe(
+            response => this.updateOnSuccess(response),
+            response => this.updateOnError(response)
+        );
     }
 
     private updateOnSuccess(response: TransactionInfo) {

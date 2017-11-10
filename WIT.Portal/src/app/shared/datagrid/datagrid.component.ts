@@ -17,8 +17,8 @@ export class DataGrid implements OnInit {
     public sortColumn: string;
     public sortDesending: Boolean;
     public sortAscending: Boolean;
- 
-    @Output() datagridEvent;
+
+    @Output() datagridEvent: EventEmitter<{ value: DataGridEventInformation }>;
     @Input() pageSize: number;
     @Input() columns: Array<DataGridColumn>;
     @Input() rows: Array<any>;
