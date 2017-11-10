@@ -3,7 +3,7 @@
 @Injectable()
 export class BlockUIService {
 
-    public blockUIEvent: EventEmitter<any>;
+    public blockUIEvent: EventEmitter<{ value: Boolean }>;
 
     constructor() {
         this.blockUIEvent = new EventEmitter();

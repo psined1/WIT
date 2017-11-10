@@ -1,4 +1,4 @@
-import { Component, OnInit, EventEmitter } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AccordionConfig } from 'ngx-bootstrap/accordion';
 import { DragulaService } from 'ng2-dragula';
 
@@ -22,7 +22,7 @@ export class ObservationSheetComponent implements OnInit {
     public observationSheet: ObservationSheet;
 
     private modalRef: BsModalRef;
-    private modalEvents: EventEmitter<string>;
+    private modalEvents: any;
     private isDirty: Boolean;
 
     constructor(

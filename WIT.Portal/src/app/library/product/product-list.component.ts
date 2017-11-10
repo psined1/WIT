@@ -1,4 +1,4 @@
-import { Component, OnInit, EventEmitter, Output, ViewChild } from '@angular/core';
+import { Component, OnInit, Output, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 
 import { DataGridColumn, DataGridButton, DataGridEventInformation } from '../../shared/datagrid/datagrid.core';
@@ -34,9 +34,6 @@ export class ProductListComponent implements OnInit {
     public autoFilter: Boolean = false;
     public delaySearch: Boolean = false;
     public runningSearch: Boolean = false;
-
-    //private modalSubscription: Subscription;
-    //private modalRef: BsModalRef;
 
 
     constructor(

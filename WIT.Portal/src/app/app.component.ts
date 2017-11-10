@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Input, ElementRef, ApplicationRef } from '@angular/core';
+import { Component, OnInit, Input, ElementRef, ApplicationRef } from '@angular/core';
 import { SessionService } from './services/session.service';
 import { UserService } from './services/user.service';
 import { BlockUIService } from './services/blockui.service';
@@ -52,8 +52,8 @@ export class AppComponent implements OnInit {
 
         this.sessionService.version = this.version;
 
-        this.sessionService.authenticatedEvent.subscribe(user => this.onAuthenication(user));
-        this.blockUIService.blockUIEvent.subscribe(event => this.blockUnBlockUI(event));
+        this.sessionService.authenticatedEvent.subscribe(event => this.onAuthenication(event.value));
+        this.blockUIService.blockUIEvent.subscribe(event => this.blockUI = event.value);
 
         this.blockUIService.startBlock();
 
@@ -67,10 +67,6 @@ export class AppComponent implements OnInit {
         //////////////////////////////////////// DEBUG BEGIN ///////////////////////////////////////
         //let usr = new User(); usr.isAuthenicated = true; usr.firstName = "Denis"; this.authenicateOnSuccess(usr);
         ////////////////////////////////////////// DEBUG END ///////////////////////////////////////
-    }
-
-    private blockUnBlockUI(event) {
-        this.blockUI = event.value;
     }
 
     private authenicateOnSuccess(response: TransactionInfo) {

@@ -1,4 +1,4 @@
-import { Component, OnInit, EventEmitter, Input, ViewChild } from '@angular/core';
+import { Component, OnInit, Input, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 import { AlertBoxComponent } from '../../shared/alertbox.component';
