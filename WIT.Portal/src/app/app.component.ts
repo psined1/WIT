@@ -52,7 +52,7 @@ export class AppComponent implements OnInit {
 
         this.sessionService.version = this.version;
 
-        this.sessionService.sessionEvent.subscribe(user => this.onAuthenication(user));
+        this.sessionService.authenticatedEvent.subscribe(user => this.onAuthenication(user));
         this.blockUIService.blockUIEvent.subscribe(event => this.blockUnBlockUI(event));
 
         this.blockUIService.startBlock();

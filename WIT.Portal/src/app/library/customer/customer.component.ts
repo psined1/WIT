@@ -37,8 +37,7 @@ export class CustomerComponent implements OnInit {
     public hasUpdated: Boolean;
 
     constructor(
-        public bsModalRef: BsModalRef,
-
+        private bsModalRef: BsModalRef,
         private route: ActivatedRoute,
         private sessionService: SessionService,
         private libraryService: LibraryService

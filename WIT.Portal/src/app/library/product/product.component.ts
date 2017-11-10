@@ -1,7 +1,7 @@
-import { Component, OnInit, EventEmitter, Input, ViewChild } from '@angular/core';
+import { Component, OnInit, EventEmitter, Input, ViewChild, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
-import { Observer, Observable, Subscription } from 'rxjs';
+import { Observer, Observable, Subscription, Subject } from 'rxjs';
 //import 'rxjs/add/operator/map';
 
 import { AlertBoxComponent } from '../../shared/alertbox.component';
@@ -24,7 +24,7 @@ import { ProductFeatureComponent } from '../product-feature/product-feature.comp
     templateUrl: './product.component.html'
 })
 
-export class ProductComponent implements OnInit {
+export class ProductComponent implements OnInit, OnDestroy {
 
     public title: string = 'Product Maintenance';
 
@@ -39,33 +39,17 @@ export class ProductComponent implements OnInit {
     }
 
     public hasUpdated: Boolean;
+    private closing: Boolean = false;
 
     constructor(
-        public bsModalRef: BsModalRef,
-
+        private bsModalRef: BsModalRef,
         private route: ActivatedRoute,
         private sessionService: SessionService,
         private libraryService: LibraryService,
         private modalService: BsModalService
     ) { }
 
-    public getItem(id: number): void {
-
-        if (id > 0) {
-
-            this.clearStatus();
-
-            let item = new Product();
-            item.productID = id;
-
-            this.libraryService.getProduct(item).subscribe(
-                response => this.getOnSuccess(response),
-                response => this.getOnError(response)
-                );
-        }
-    }
-
-    public ngOnInit() {
+    ngOnInit() {
 
         this.hasUpdated = false;
 
@@ -82,6 +66,26 @@ export class ProductComponent implements OnInit {
 
         this.initProductClassLookup();
         this.initProductFeatureLookup();
+    }
+
+    ngOnDestroy() {
+        this.closing = true;
+    }
+
+    public getItem(id: number): void {
+
+        if (id > 0) {
+
+            this.clearStatus();
+
+            let item = new Product();
+            item.productID = id;
+
+            this.libraryService.getProduct(item).toPromise()
+                .then(response => this.getOnSuccess(response))
+                .catch(response => this.getOnError(response))
+                ;
+        }
     }
 
     private getOnSuccess(response: TransactionInfo) {
@@ -105,10 +109,10 @@ export class ProductComponent implements OnInit {
     public updateItem(): void {
 
         this.clearStatus();
-        this.libraryService.updateProduct(this.item).subscribe(
-            response => this.updateOnSuccess(response),
-            response => this.updateOnError(response)
-            );
+        this.libraryService.updateProduct(this.item).toPromise()
+            .then(response => this.updateOnSuccess(response))
+            .catch(response => this.updateOnError(response))
+            ;
     }
 
     private updateOnSuccess(response: TransactionInfo) {
@@ -149,8 +153,12 @@ export class ProductComponent implements OnInit {
     private initProductClassLookup(): void {
 
         this.productClasses = Observable
-            .create((observer: Observer<string>) => observer.next(this.item.productClass))
+            .create(observer => observer.next(this.item.productClass))
+            .takeWhile(() => !this.closing)
             .mergeMap((filter: string) => {
+
+                console.log(filter);
+                this.alertBox.clear();
 
                 let list = new ProductClassList();
                 list.gridInfo.sortExpression = "Code";
@@ -159,6 +167,10 @@ export class ProductComponent implements OnInit {
                 return this.libraryService.getProductClasses(list)
                     .map((response: TransactionInfo) => response.data.items)
                     ;
+            })
+            .catch((response: TransactionInfo) => {
+                this.alertBox.renderErrorMessage(response.returnMessage);
+                return Observable.of([]);
             });
     }
 
@@ -182,21 +194,19 @@ export class ProductComponent implements OnInit {
 
     private addProductClass() {
 
-        let subModalRef = this.modalService.show(ProductClassComponent,
+        let maintComponent: ProductClassComponent = this.modalService.show(ProductClassComponent,
             Object.assign({}, {
                 animated: true,
                 keyboard: true,
                 backdrop: true,
                 ignoreBackdropClick: false
             }, { class: 'modal-lg' })
-        );
+        ).content;
 
-        let maintComponent: ProductClassComponent = subModalRef.content;
+        let modalHide = this.modalService.onHide.subscribe((reason: string) => {
 
-        //this.subModalSubscription =
-        this.modalService.onHide.subscribe((reason: string) => {
             //console.log(`onHidden event has been fired${reason ? ', dismissed by ' + reason : ''}`);
-            //this.subModalSubscription.unsubscribe();
+            modalHide.unsubscribe();
 
             console.log('triggered from product component');
 
@@ -213,8 +223,13 @@ export class ProductComponent implements OnInit {
     private initProductFeatureLookup(): void {
 
         this.productFeatures = Observable
-            .create((observer: Observer<string>) => observer.next(this.item.productFeature))
+            .create(observer => observer.next(this.item.productFeature))
+            .takeWhile(() => !this.closing)
             .mergeMap((filter: string) => {
+
+                this.alertBox.clear();
+
+                console.log(filter);
 
                 let list = new ProductFeatureList();
                 list.gridInfo.sortExpression = "Code";
@@ -223,6 +238,10 @@ export class ProductComponent implements OnInit {
                 return this.libraryService.getProductFeatures(list)
                     .map((response: TransactionInfo) => response.data.items)
                     ;
+            })
+            .catch((response: TransactionInfo) => {
+                this.alertBox.renderErrorMessage(response.returnMessage);
+                return Observable.of([]);
             });
     }
 
@@ -246,21 +265,20 @@ export class ProductComponent implements OnInit {
 
     private addProducFeature() {
 
-        let subModalRef = this.modalService.show(ProductFeatureComponent,
+        let maintComponent: ProductFeatureComponent = this.modalService.show(ProductFeatureComponent,
             Object.assign({}, {
                 animated: true,
                 keyboard: true,
                 backdrop: true,
                 ignoreBackdropClick: false
             }, { class: 'modal-lg' })
-        );
-
-        let maintComponent: ProductFeatureComponent = subModalRef.content;
+        ).content;
 
         //this.subModalSubscription =
-        this.modalService.onHide.subscribe((reason: string) => {
+        let modalHide = this.modalService.onHide.subscribe((reason: string) => {
+
             //console.log(`onHidden event has been fired${reason ? ', dismissed by ' + reason : ''}`);
-            //this.subModalSubscription.unsubscribe();
+            modalHide.unsubscribe();
 
             if (maintComponent.hasUpdated) {
                 this.item.productFeature = maintComponent.item.code;

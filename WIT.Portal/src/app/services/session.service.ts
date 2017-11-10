@@ -1,4 +1,5 @@
 ﻿import { Injectable, EventEmitter } from '@angular/core';
+import { Observer, Observable, Subject, Subscription } from 'rxjs';
 import { Headers } from '@angular/http';
 
 import { User } from '../entities/user.entity';
@@ -17,15 +18,16 @@ export class SessionService {
         return new User(this.user);             // return a secure copy
     }
 
-    public sessionEvent: EventEmitter<User>;
+    public authenticatedEvent: EventEmitter<User>;
     public apiServer: string;
     public version: string;
     
-    constructor() {      
-        this.sessionEvent = new EventEmitter();    
-        this.user = new User();    
+    constructor(
+    ) {      
+        this.authenticatedEvent = new EventEmitter();    
+        this.user = new User();
     }
- 
+
     public authenicated(user: User) {   
 
         this.user = new User(user);   
@@ -33,7 +35,7 @@ export class SessionService {
         if (!this.isAuthenicated)
             this.saveToken("");
 
-        this.sessionEvent.emit(this.currentUser);
+        this.authenticatedEvent.emit(this.currentUser);
     }
 
     public logout() {

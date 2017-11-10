@@ -8,6 +8,7 @@ import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 import { Subscription } from 'rxjs/Subscription';
 
 import { LibraryService } from '../../services/library.service';
+import { SessionService } from '../../services/session.service';
 
 import { AlertBoxComponent } from '../../shared/alertbox.component';
 import { ConfirmYesNoComponent } from '../../shared/confirm-yes-no/confirm-yes-no.component';
@@ -34,15 +35,16 @@ export class ProductListComponent implements OnInit {
     public delaySearch: Boolean = false;
     public runningSearch: Boolean = false;
 
-    private modalSubscription: Subscription;
-    private modalRef: BsModalRef;
+    //private modalSubscription: Subscription;
+    //private modalRef: BsModalRef;
 
 
     constructor(
         private libraryService: LibraryService,
         private router: Router,
         private route: ActivatedRoute,
-        private modalService: BsModalService
+        private modalService: BsModalService,
+        private sessionService: SessionService
     ) {
         this.autoFilter = false;
         this.list.gridInfo.pageSize = 20;
@@ -143,30 +145,45 @@ export class ProductListComponent implements OnInit {
     
     private onDelete(item: Product) {
 
-        this.modalSubscription = this.modalService.onHide.subscribe((reason: string) => {
-            //console.log(`onHide event has been fired${reason ? ', dismissed by ' + reason : ''}`);
-            this.modalSubscription.unsubscribe();
-            if (this.modalRef.content.result) {
-                console.log("Deleting product " + item.productCode);
-
-                this.libraryService.deleteProduct(item)
-                    .subscribe(
-                    response => this.executeSearch(),
-                    response => this.getListOnError(response)
-                    );
-            }
-        });
-        this.modalRef = this.modalService.show(ConfirmYesNoComponent);
-        let yesNo: ConfirmYesNoComponent = this.modalRef.content;
+        let yesNo: ConfirmYesNoComponent = this.modalService.show(ConfirmYesNoComponent).content;
         yesNo.title = "Delete Product";
         yesNo.message = "About to delete product '" + item.productCode + "'. Proceed?";
+
+        let modalHide = this.modalService.onHide.subscribe((reason: string) => {
+
+                //console.log(`onHide event has been fired${reason ? ', dismissed by ' + reason : ''}`);
+                modalHide.unsubscribe();
+
+                if (yesNo.result) {
+                    //console.log("Deleting product " + item.productCode);
+
+                    this.libraryService.deleteProduct(item).subscribe(
+                        response => this.executeSearch(),
+                        response => this.getListOnError(response)
+                        );
+                }
+            });
     }
 
     private onEdit(item?: Product) {
 
-        this.modalSubscription = this.modalService.onHide.subscribe((reason: string) => {
+        let maintComponent: ProductComponent = this.modalService.show(ProductComponent,
+            Object.assign({}, {
+                animated: true,
+                keyboard: true,
+                backdrop: true,
+                ignoreBackdropClick: false
+            }, { class: 'modal-lg' })
+        ).content;
+
+        if (item) {
+            maintComponent.getItem(item.productID);
+        }
+
+        let modalHide = this.modalService.onHide.subscribe((reason: string) => {
+
             //console.log(`onHidden event has been fired${reason ? ', dismissed by ' + reason : ''}`);
-            this.modalSubscription.unsubscribe();
+            modalHide.unsubscribe();
 
             console.log('triggered from product list component');
 
@@ -174,21 +191,6 @@ export class ProductListComponent implements OnInit {
                 this.executeSearch();
             }
         });
-
-        let modalRef = this.modalService.show(ProductComponent,
-            Object.assign({}, {
-                animated: true,
-                keyboard: true,
-                backdrop: true,
-                ignoreBackdropClick: false
-            }, { class: 'modal-lg' })
-        );
-
-        let maintComponent: ProductComponent = modalRef.content;
-
-        if (item) {
-            maintComponent.getItem(item.productID);
-        }
     }
 
     private addItem() {

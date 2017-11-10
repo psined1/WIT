@@ -34,8 +34,8 @@ export class ProductClassListComponent implements OnInit {
     public delaySearch: Boolean = false;
     public runningSearch: Boolean = false;
 
-    private modalSubscription: Subscription;
-    private modalRef: BsModalRef;
+    //private modalSubscription: Subscription;
+    //private modalRef: BsModalRef;
 
 
     constructor(
@@ -143,50 +143,51 @@ export class ProductClassListComponent implements OnInit {
     
     private onDelete(item: ProductClass) {
 
-        this.modalSubscription = this.modalService.onHide.subscribe((reason: string) => {
+        let yesNo: ConfirmYesNoComponent = this.modalService.show(ConfirmYesNoComponent).content;
+        yesNo.title = "Delete Product Class";
+        yesNo.message = "About to delete product class '" + item.code + "'. Proceed?";
+
+        let modalHide = this.modalService.onHide.subscribe((reason: string) => {
+
             //console.log(`onHide event has been fired${reason ? ', dismissed by ' + reason : ''}`);
-            this.modalSubscription.unsubscribe();
-            if (this.modalRef.content.result) {
+            modalHide.unsubscribe();
+
+            if (yesNo.result) {
                 console.log("Deleting product class " + item.code);
 
-                this.libraryService.deleteProductClass(item)
-                    .subscribe(
+                this.libraryService.deleteProductClass(item).subscribe(
                     response => this.executeSearch(),
                     response => this.getListOnError(response)
                     );
             }
         });
-        this.modalRef = this.modalService.show(ConfirmYesNoComponent);
-        let yesNo: ConfirmYesNoComponent = this.modalRef.content;
-        yesNo.title = "Delete Product Class";
-        yesNo.message = "About to delete product class '" + item.code + "'. Proceed?";
     }
 
     private onEdit(item?: ProductClass) {
 
-        this.modalSubscription = this.modalService.onHide.subscribe((reason: string) => {
-            //console.log(`onHidden event has been fired${reason ? ', dismissed by ' + reason : ''}`);
-            this.modalSubscription.unsubscribe();
-
-            if (maintComponent.hasUpdated) {
-                this.executeSearch();
-            }
-        });
-
-        let modalRef = this.modalService.show(ProductClassComponent,
+        let maintComponent: ProductClassComponent = this.modalService.show(ProductClassComponent,
             Object.assign({}, {
                 animated: true,
                 keyboard: true,
                 backdrop: true,
                 ignoreBackdropClick: false
             }, { class: 'modal-lg' })
-        );
-
-        let maintComponent: ProductClassComponent = modalRef.content;
+        ).content;
 
         if (item) {
             maintComponent.getItem(item.productClassID);
         }
+
+        let modalHide = this.modalService.onHide.subscribe((reason: string) => {
+
+            //console.log(`onHidden event has been fired${reason ? ', dismissed by ' + reason : ''}`);
+            modalHide.unsubscribe();
+
+            if (maintComponent.hasUpdated) {
+                this.executeSearch();
+            }
+        });
+
     }
 
     private addItem() {

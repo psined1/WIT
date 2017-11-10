@@ -32,8 +32,7 @@ export class ProductClassComponent implements OnInit {
     public hasUpdated: Boolean;
 
     constructor(
-        public bsModalRef: BsModalRef,
-
+        private bsModalRef: BsModalRef,
         private route: ActivatedRoute,
         private sessionService: SessionService,
         private libraryService: LibraryService
@@ -63,8 +62,7 @@ export class ProductClassComponent implements OnInit {
 
             let item = new ProductClass();
             item.productClassID = id;
-            this.libraryService.getProductClass(item)
-                .subscribe(
+            this.libraryService.getProductClass(item).subscribe(
                 response => this.getOnSuccess(response),
                 response => this.getOnError(response)
                 );
@@ -92,8 +90,7 @@ export class ProductClassComponent implements OnInit {
     public updateItem(): void {
 
         this.clearStatus();
-        this.libraryService.updateProductClass(this.item)
-            .subscribe(
+        this.libraryService.updateProductClass(this.item).subscribe(
             response => this.updateOnSuccess(response),
             response => this.updateOnError(response)
             );
