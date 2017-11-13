@@ -53,6 +53,39 @@
     <Compile Include="Models\Customer.cs">
       <DependentUpon>WitModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\LItem.cs">
+      <DependentUpon>WitModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\LItemProp.cs">
+      <DependentUpon>WitModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\LItemPropValue.cs">
+      <DependentUpon>WitModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\LItemPropValueDateTime.cs">
+      <DependentUpon>WitModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\LItemPropValueDecimal.cs">
+      <DependentUpon>WitModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\LItemPropValueInteger.cs">
+      <DependentUpon>WitModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\LItemPropValueString.cs">
+      <DependentUpon>WitModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\LItemPropValueText.cs">
+      <DependentUpon>WitModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\LItemType.cs">
+      <DependentUpon>WitModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\LPropType.cs">
+      <DependentUpon>WitModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\LValueRule.cs">
+      <DependentUpon>WitModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Product.cs">
       <DependentUpon>WitModel.tt</DependentUpon>
     </Compile>

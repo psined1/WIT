@@ -66,6 +66,7 @@
     <Compile Include="Rules\WitEntityValidator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rules\UserBusinessRules.cs" />
+    <Compile Include="Transactions\ItemEntity.cs" />
     <Compile Include="Transactions\UserEntity.cs" />
     <Compile Include="Transactions\CustomerEntity.cs" />
     <Compile Include="Transactions\GridInfo.cs" />
