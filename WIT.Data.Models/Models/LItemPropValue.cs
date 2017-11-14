@@ -15,12 +15,14 @@ namespace WIT.Data.Models
     public partial class LItemPropValue
     {
         public long ItemPropValueID { get; set; }
+        public long ItemID { get; set; }
         public long ItemPropID { get; set; }
         public Nullable<System.DateTime> CreatedOn { get; set; }
         public Nullable<System.DateTime> UpdatedOn { get; set; }
         public string CreatedBy { get; set; }
         public string UpdatedBy { get; set; }
     
+        public virtual LItem LItem { get; set; }
         public virtual LItemProp LItemProp { get; set; }
         public virtual LItemPropValueDateTime LItemPropValueDateTime { get; set; }
         public virtual LItemPropValueDecimal LItemPropValueDecimal { get; set; }

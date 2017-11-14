@@ -42,13 +42,13 @@
             <PropertyRef Name="ItemPropID" />
           </Key>
           <Property Name="ItemPropID" Type="bigint" Nullable="false" />
-          <Property Name="ItemID" Type="bigint" Nullable="false" />
+          <Property Name="ItemTypeID" Type="int" Nullable="false" />
           <Property Name="Name" Type="varchar" MaxLength="100" Nullable="false" />
           <Property Name="Description" Type="varchar" MaxLength="250" />
           <Property Name="PropType" Type="int" Nullable="false" />
-          <Property Name="ItemTypeID" Type="int" />
-          <Property Name="GridHide" Type="bit" Nullable="false" />
+          <Property Name="ValueItemTypeID" Type="int" />
           <Property Name="ValueRule" Type="int" Nullable="false" />
+          <Property Name="GridHide" Type="bit" Nullable="false" />
           <Property Name="CreatedOn" Type="datetime" />
           <Property Name="UpdatedOn" Type="datetime" />
           <Property Name="CreatedBy" Type="varchar" MaxLength="50" />
@@ -59,6 +59,7 @@
             <PropertyRef Name="ItemPropValueID" />
           </Key>
           <Property Name="ItemPropValueID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ItemID" Type="bigint" Nullable="false" />
           <Property Name="ItemPropID" Type="bigint" Nullable="false" />
           <Property Name="CreatedOn" Type="datetime" />
           <Property Name="UpdatedOn" Type="datetime" />
@@ -185,22 +186,8 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_LItemProp_LItem">
-          <End Role="LItem" Type="Self.LItem" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Role="LItemProp" Type="Self.LItemProp" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="LItem">
-              <PropertyRef Name="ItemID" />
-            </Principal>
-            <Dependent Role="LItemProp">
-              <PropertyRef Name="ItemID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_LItemProp_LItemType">
-          <End Role="LItemType" Type="Self.LItemType" Multiplicity="0..1">
+          <End Role="LItemType" Type="Self.LItemType" Multiplicity="1">
             <OnDelete Action="Cascade" />
           </End>
           <End Role="LItemProp" Type="Self.LItemProp" Multiplicity="*" />
@@ -210,6 +197,32 @@
             </Principal>
             <Dependent Role="LItemProp">
               <PropertyRef Name="ItemTypeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_LItemProp_LItemType_Value">
+          <End Role="LItemType" Type="Self.LItemType" Multiplicity="0..1" />
+          <End Role="LItemProp" Type="Self.LItemProp" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="LItemType">
+              <PropertyRef Name="ItemTypeID" />
+            </Principal>
+            <Dependent Role="LItemProp">
+              <PropertyRef Name="ValueItemTypeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_LItemPropValue_LItem">
+          <End Role="LItem" Type="Self.LItem" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="LItemPropValue" Type="Self.LItemPropValue" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="LItem">
+              <PropertyRef Name="ItemID" />
+            </Principal>
+            <Dependent Role="LItemPropValue">
+              <PropertyRef Name="ItemID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -340,13 +353,17 @@
             <End Role="LItemType" EntitySet="LItemType" />
             <End Role="LItem" EntitySet="LItem" />
           </AssociationSet>
-          <AssociationSet Name="FK_LItemProp_LItem" Association="Self.FK_LItemProp_LItem">
-            <End Role="LItem" EntitySet="LItem" />
-            <End Role="LItemProp" EntitySet="LItemProp" />
-          </AssociationSet>
           <AssociationSet Name="FK_LItemProp_LItemType" Association="Self.FK_LItemProp_LItemType">
             <End Role="LItemType" EntitySet="LItemType" />
             <End Role="LItemProp" EntitySet="LItemProp" />
+          </AssociationSet>
+          <AssociationSet Name="FK_LItemProp_LItemType_Value" Association="Self.FK_LItemProp_LItemType_Value">
+            <End Role="LItemType" EntitySet="LItemType" />
+            <End Role="LItemProp" EntitySet="LItemProp" />
+          </AssociationSet>
+          <AssociationSet Name="FK_LItemPropValue_LItem" Association="Self.FK_LItemPropValue_LItem">
+            <End Role="LItem" EntitySet="LItem" />
+            <End Role="LItemPropValue" EntitySet="LItemPropValue" />
           </AssociationSet>
           <AssociationSet Name="FK_LItemPropValue_LItemProp" Association="Self.FK_LItemPropValue_LItemProp">
             <End Role="LItemProp" EntitySet="LItemProp" />
@@ -402,16 +419,25 @@
           <EntitySet Name="LItems" EntityType="WIT.Data.Models.LItem" />
           <EntitySet Name="LItemProps" EntityType="WIT.Data.Models.LItemProp" />
           <EntitySet Name="LItemPropValues" EntityType="WIT.Data.Models.LItemPropValue" />
+          <EntitySet Name="LItemPropValueDateTimes" EntityType="WIT.Data.Models.LItemPropValueDateTime" />
+          <EntitySet Name="LItemPropValueDecimals" EntityType="WIT.Data.Models.LItemPropValueDecimal" />
+          <EntitySet Name="LItemPropValueIntegers" EntityType="WIT.Data.Models.LItemPropValueInteger" />
+          <EntitySet Name="LItemPropValueStrings" EntityType="WIT.Data.Models.LItemPropValueString" />
+          <EntitySet Name="LItemPropValueTexts" EntityType="WIT.Data.Models.LItemPropValueText" />
           <EntitySet Name="LItemTypes" EntityType="WIT.Data.Models.LItemType" />
           <AssociationSet Name="FK_LItem_LItemType" Association="WIT.Data.Models.FK_LItem_LItemType">
             <End Role="LItemType" EntitySet="LItemTypes" />
             <End Role="LItem" EntitySet="LItems" />
           </AssociationSet>
-          <AssociationSet Name="FK_LItemProp_LItem" Association="WIT.Data.Models.FK_LItemProp_LItem">
+          <AssociationSet Name="FK_LItemPropValue_LItem" Association="WIT.Data.Models.FK_LItemPropValue_LItem">
             <End Role="LItem" EntitySet="LItems" />
-            <End Role="LItemProp" EntitySet="LItemProps" />
+            <End Role="LItemPropValue" EntitySet="LItemPropValues" />
           </AssociationSet>
           <AssociationSet Name="FK_LItemProp_LItemType" Association="WIT.Data.Models.FK_LItemProp_LItemType">
+            <End Role="LItemType" EntitySet="LItemTypes" />
+            <End Role="LItemProp" EntitySet="LItemProps" />
+          </AssociationSet>
+          <AssociationSet Name="FK_LItemProp_LItemType_Value" Association="WIT.Data.Models.FK_LItemProp_LItemType_Value">
             <End Role="LItemType" EntitySet="LItemTypes" />
             <End Role="LItemProp" EntitySet="LItemProps" />
           </AssociationSet>
@@ -419,11 +445,6 @@
             <End Role="LItemProp" EntitySet="LItemProps" />
             <End Role="LItemPropValue" EntitySet="LItemPropValues" />
           </AssociationSet>
-          <EntitySet Name="LItemPropValueDateTimes" EntityType="WIT.Data.Models.LItemPropValueDateTime" />
-          <EntitySet Name="LItemPropValueDecimals" EntityType="WIT.Data.Models.LItemPropValueDecimal" />
-          <EntitySet Name="LItemPropValueIntegers" EntityType="WIT.Data.Models.LItemPropValueInteger" />
-          <EntitySet Name="LItemPropValueStrings" EntityType="WIT.Data.Models.LItemPropValueString" />
-          <EntitySet Name="LItemPropValueTexts" EntityType="WIT.Data.Models.LItemPropValueText" />
           <AssociationSet Name="FK_LItemPropValueDateTime_LItemPropValue" Association="WIT.Data.Models.FK_LItemPropValueDateTime_LItemPropValue">
             <End Role="LItemPropValue" EntitySet="LItemPropValues" />
             <End Role="LItemPropValueDateTime" EntitySet="LItemPropValueDateTimes" />
@@ -444,7 +465,7 @@
             <End Role="LItemPropValue" EntitySet="LItemPropValues" />
             <End Role="LItemPropValueText" EntitySet="LItemPropValueTexts" />
           </AssociationSet>
-        </EntityContainer>
+          </EntityContainer>
         <EntityType Name="User">
           <Key>
             <PropertyRef Name="UserID" />
@@ -551,6 +572,25 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EnumType Name="LValueRuleEnum">
+          <Member Name="SingleOptional" Value="0" />
+          <Member Name="SingleRequired" Value="1" />
+          <Member Name="MultipleOptional" Value="2" />
+          <Member Name="MultipleRequired" Value="3" />
+        </EnumType>
+        <EnumType Name="LPropTypeEnum">
+          <Member Name="String" Value="0" />
+          <Member Name="Integer" Value="2" />
+          <Member Name="Decimal" Value="3" />
+          <Member Name="Date" Value="4" />
+          <Member Name="Time" Value="5" />
+          <Member Name="DateTime" Value="6" />
+          <Member Name="Text" Value="1" />
+          <Member Name="Item" Value="100" />
+          <Member Name="Image" Value="7" />
+          <Member Name="Video" Value="8" />
+          <Member Name="Hyperlink" Value="9" />
+        </EnumType>
         <EntityType Name="LItem">
           <Key>
             <PropertyRef Name="ItemID" />
@@ -565,26 +605,26 @@
           <Property Name="CreatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="UpdatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="LItemType" Relationship="WIT.Data.Models.FK_LItem_LItemType" FromRole="LItem" ToRole="LItemType" />
-          <NavigationProperty Name="LItemProps" Relationship="WIT.Data.Models.FK_LItemProp_LItem" FromRole="LItem" ToRole="LItemProp" />
+          <NavigationProperty Name="LItemPropValues" Relationship="WIT.Data.Models.FK_LItemPropValue_LItem" FromRole="LItem" ToRole="LItemPropValue" />
         </EntityType>
         <EntityType Name="LItemProp">
           <Key>
             <PropertyRef Name="ItemPropID" />
           </Key>
           <Property Name="ItemPropID" Type="Int64" Nullable="false" />
-          <Property Name="ItemID" Type="Int64" Nullable="false" />
+          <Property Name="ItemTypeID" Type="Int32" Nullable="false" />
           <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
           <Property Name="Description" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
-          <Property Name="PropType" Type="WIT.Data.Models.LPropType" Nullable="false" />
-          <Property Name="ItemTypeID" Type="Int32" />
+          <Property Name="PropType" Type="WIT.Data.Models.LPropTypeEnum" Nullable="false" />
+          <Property Name="ValueItemTypeID" Type="Int32" />
+          <Property Name="ValueRule" Type="WIT.Data.Models.LValueRuleEnum" Nullable="false" />
           <Property Name="GridHide" Type="Boolean" Nullable="false" />
-          <Property Name="ValueRule" Type="WIT.Data.Models.LValueRule" Nullable="false" />
           <Property Name="CreatedOn" Type="DateTime" Precision="3" />
           <Property Name="UpdatedOn" Type="DateTime" Precision="3" />
           <Property Name="CreatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="UpdatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="LItem" Relationship="WIT.Data.Models.FK_LItemProp_LItem" FromRole="LItemProp" ToRole="LItem" />
           <NavigationProperty Name="LItemType" Relationship="WIT.Data.Models.FK_LItemProp_LItemType" FromRole="LItemProp" ToRole="LItemType" />
+          <NavigationProperty Name="LItemType1" Relationship="WIT.Data.Models.FK_LItemProp_LItemType_Value" FromRole="LItemProp" ToRole="LItemType" />
           <NavigationProperty Name="LItemPropValues" Relationship="WIT.Data.Models.FK_LItemPropValue_LItemProp" FromRole="LItemProp" ToRole="LItemPropValue" />
         </EntityType>
         <EntityType Name="LItemPropValue">
@@ -592,11 +632,13 @@
             <PropertyRef Name="ItemPropValueID" />
           </Key>
           <Property Name="ItemPropValueID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ItemID" Type="Int64" Nullable="false" />
           <Property Name="ItemPropID" Type="Int64" Nullable="false" />
           <Property Name="CreatedOn" Type="DateTime" Precision="3" />
           <Property Name="UpdatedOn" Type="DateTime" Precision="3" />
           <Property Name="CreatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="UpdatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="LItem" Relationship="WIT.Data.Models.FK_LItemPropValue_LItem" FromRole="LItemPropValue" ToRole="LItem" />
           <NavigationProperty Name="LItemProp" Relationship="WIT.Data.Models.FK_LItemPropValue_LItemProp" FromRole="LItemPropValue" ToRole="LItemProp" />
           <NavigationProperty Name="LItemPropValueDateTime" Relationship="WIT.Data.Models.FK_LItemPropValueDateTime_LItemPropValue" FromRole="LItemPropValue" ToRole="LItemPropValueDateTime" />
           <NavigationProperty Name="LItemPropValueDecimal" Relationship="WIT.Data.Models.FK_LItemPropValueDecimal_LItemPropValue" FromRole="LItemPropValue" ToRole="LItemPropValueDecimal" />
@@ -604,94 +646,6 @@
           <NavigationProperty Name="LItemPropValueString" Relationship="WIT.Data.Models.FK_LItemPropValueString_LItemPropValue" FromRole="LItemPropValue" ToRole="LItemPropValueString" />
           <NavigationProperty Name="LItemPropValueText" Relationship="WIT.Data.Models.FK_LItemPropValueText_LItemPropValue" FromRole="LItemPropValue" ToRole="LItemPropValueText" />
         </EntityType>
-        <EntityType Name="LItemType">
-          <Key>
-            <PropertyRef Name="ItemTypeID" />
-          </Key>
-          <Property Name="ItemTypeID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
-          <Property Name="Description" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
-          <Property Name="MenuHide" Type="Boolean" Nullable="false" />
-          <Property Name="CreatedOn" Type="DateTime" Precision="3" />
-          <Property Name="UpdatedOn" Type="DateTime" Precision="3" />
-          <Property Name="CreatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="UpdatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="LItems" Relationship="WIT.Data.Models.FK_LItem_LItemType" FromRole="LItemType" ToRole="LItem" />
-          <NavigationProperty Name="LItemProps" Relationship="WIT.Data.Models.FK_LItemProp_LItemType" FromRole="LItemType" ToRole="LItemProp" />
-        </EntityType>
-        <Association Name="FK_LItem_LItemType">
-          <End Type="WIT.Data.Models.LItemType" Role="LItemType" Multiplicity="1" />
-          <End Type="WIT.Data.Models.LItem" Role="LItem" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="LItemType">
-              <PropertyRef Name="ItemTypeID" />
-            </Principal>
-            <Dependent Role="LItem">
-              <PropertyRef Name="ItemTypeID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_LItemProp_LItem">
-          <End Type="WIT.Data.Models.LItem" Role="LItem" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Type="WIT.Data.Models.LItemProp" Role="LItemProp" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="LItem">
-              <PropertyRef Name="ItemID" />
-            </Principal>
-            <Dependent Role="LItemProp">
-              <PropertyRef Name="ItemID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_LItemProp_LItemType">
-          <End Type="WIT.Data.Models.LItemType" Role="LItemType" Multiplicity="0..1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Type="WIT.Data.Models.LItemProp" Role="LItemProp" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="LItemType">
-              <PropertyRef Name="ItemTypeID" />
-            </Principal>
-            <Dependent Role="LItemProp">
-              <PropertyRef Name="ItemTypeID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_LItemPropValue_LItemProp">
-          <End Type="WIT.Data.Models.LItemProp" Role="LItemProp" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Type="WIT.Data.Models.LItemPropValue" Role="LItemPropValue" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="LItemProp">
-              <PropertyRef Name="ItemPropID" />
-            </Principal>
-            <Dependent Role="LItemPropValue">
-              <PropertyRef Name="ItemPropID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <EnumType Name="LValueRule">
-          <Member Name="SingleOptional" Value="0" />
-          <Member Name="SingleRequired" Value="1" />
-          <Member Name="MultipleOptional" Value="2" />
-          <Member Name="MultipleRequired" Value="3" />
-        </EnumType>
-        <EnumType Name="LPropType">
-          <Member Name="String" Value="0" />
-          <Member Name="Integer" Value="2" />
-          <Member Name="Decimal" Value="3" />
-          <Member Name="Date" Value="4" />
-          <Member Name="Time" Value="5" />
-          <Member Name="DateTime" Value="6" />
-          <Member Name="Text" Value="1" />
-          <Member Name="Item" Value="100" />
-          <Member Name="Image" Value="7" />
-          <Member Name="Video" Value="8" />
-          <Member Name="Hyperlink" Value="9" />
-        </EnumType>
         <EntityType Name="LItemPropValueDateTime">
           <Key>
             <PropertyRef Name="ItemPropValueID" />
@@ -732,6 +686,88 @@
           <Property Name="Value" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="LItemPropValue" Relationship="WIT.Data.Models.FK_LItemPropValueText_LItemPropValue" FromRole="LItemPropValueText" ToRole="LItemPropValue" />
         </EntityType>
+        <EntityType Name="LItemType">
+          <Key>
+            <PropertyRef Name="ItemTypeID" />
+          </Key>
+          <Property Name="ItemTypeID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Description" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="MenuHide" Type="Boolean" Nullable="false" />
+          <Property Name="CreatedOn" Type="DateTime" Precision="3" />
+          <Property Name="UpdatedOn" Type="DateTime" Precision="3" />
+          <Property Name="CreatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="UpdatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="LItems" Relationship="WIT.Data.Models.FK_LItem_LItemType" FromRole="LItemType" ToRole="LItem" />
+          <NavigationProperty Name="LItemProps" Relationship="WIT.Data.Models.FK_LItemProp_LItemType" FromRole="LItemType" ToRole="LItemProp" />
+          <NavigationProperty Name="LItemProps1" Relationship="WIT.Data.Models.FK_LItemProp_LItemType_Value" FromRole="LItemType" ToRole="LItemProp" />
+        </EntityType>
+        <Association Name="FK_LItem_LItemType">
+          <End Type="WIT.Data.Models.LItemType" Role="LItemType" Multiplicity="1" />
+          <End Type="WIT.Data.Models.LItem" Role="LItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="LItemType">
+              <PropertyRef Name="ItemTypeID" />
+            </Principal>
+            <Dependent Role="LItem">
+              <PropertyRef Name="ItemTypeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_LItemPropValue_LItem">
+          <End Type="WIT.Data.Models.LItem" Role="LItem" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="WIT.Data.Models.LItemPropValue" Role="LItemPropValue" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="LItem">
+              <PropertyRef Name="ItemID" />
+            </Principal>
+            <Dependent Role="LItemPropValue">
+              <PropertyRef Name="ItemID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_LItemProp_LItemType">
+          <End Type="WIT.Data.Models.LItemType" Role="LItemType" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="WIT.Data.Models.LItemProp" Role="LItemProp" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="LItemType">
+              <PropertyRef Name="ItemTypeID" />
+            </Principal>
+            <Dependent Role="LItemProp">
+              <PropertyRef Name="ItemTypeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_LItemProp_LItemType_Value">
+          <End Type="WIT.Data.Models.LItemType" Role="LItemType" Multiplicity="0..1" />
+          <End Type="WIT.Data.Models.LItemProp" Role="LItemProp" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="LItemType">
+              <PropertyRef Name="ItemTypeID" />
+            </Principal>
+            <Dependent Role="LItemProp">
+              <PropertyRef Name="ValueItemTypeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_LItemPropValue_LItemProp">
+          <End Type="WIT.Data.Models.LItemProp" Role="LItemProp" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="WIT.Data.Models.LItemPropValue" Role="LItemPropValue" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="LItemProp">
+              <PropertyRef Name="ItemPropID" />
+            </Principal>
+            <Dependent Role="LItemPropValue">
+              <PropertyRef Name="ItemPropID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_LItemPropValueDateTime_LItemPropValue">
           <End Type="WIT.Data.Models.LItemPropValue" Role="LItemPropValue" Multiplicity="1">
             <OnDelete Action="Cascade" />
@@ -802,7 +838,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-      </Schema>
+        </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
@@ -913,13 +949,13 @@
                 <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
                 <ScalarProperty Name="UpdatedOn" ColumnName="UpdatedOn" />
                 <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
-                <ScalarProperty Name="ValueRule" ColumnName="ValueRule" />
                 <ScalarProperty Name="GridHide" ColumnName="GridHide" />
-                <ScalarProperty Name="ItemTypeID" ColumnName="ItemTypeID" />
+                <ScalarProperty Name="ValueRule" ColumnName="ValueRule" />
+                <ScalarProperty Name="ValueItemTypeID" ColumnName="ValueItemTypeID" />
                 <ScalarProperty Name="PropType" ColumnName="PropType" />
                 <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="ItemID" ColumnName="ItemID" />
+                <ScalarProperty Name="ItemTypeID" ColumnName="ItemTypeID" />
                 <ScalarProperty Name="ItemPropID" ColumnName="ItemPropID" />
               </MappingFragment>
             </EntityTypeMapping>
@@ -932,21 +968,8 @@
                 <ScalarProperty Name="UpdatedOn" ColumnName="UpdatedOn" />
                 <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
                 <ScalarProperty Name="ItemPropID" ColumnName="ItemPropID" />
+                <ScalarProperty Name="ItemID" ColumnName="ItemID" />
                 <ScalarProperty Name="ItemPropValueID" ColumnName="ItemPropValueID" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="LItemTypes">
-            <EntityTypeMapping TypeName="WIT.Data.Models.LItemType">
-              <MappingFragment StoreEntitySet="LItemType">
-                <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
-                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
-                <ScalarProperty Name="UpdatedOn" ColumnName="UpdatedOn" />
-                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
-                <ScalarProperty Name="MenuHide" ColumnName="MenuHide" />
-                <ScalarProperty Name="Description" ColumnName="Description" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="ItemTypeID" ColumnName="ItemTypeID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -990,7 +1013,21 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-        </EntityContainerMapping>
+          <EntitySetMapping Name="LItemTypes">
+            <EntityTypeMapping TypeName="WIT.Data.Models.LItemType">
+              <MappingFragment StoreEntitySet="LItemType">
+                <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="UpdatedOn" ColumnName="UpdatedOn" />
+                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+                <ScalarProperty Name="MenuHide" ColumnName="MenuHide" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ItemTypeID" ColumnName="ItemTypeID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
   </edmx:Runtime>

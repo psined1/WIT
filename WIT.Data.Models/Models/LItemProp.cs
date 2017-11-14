@@ -21,20 +21,20 @@ namespace WIT.Data.Models
         }
     
         public long ItemPropID { get; set; }
-        public long ItemID { get; set; }
+        public int ItemTypeID { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public LPropType PropType { get; set; }
-        public Nullable<int> ItemTypeID { get; set; }
+        public LPropTypeEnum PropType { get; set; }
+        public Nullable<int> ValueItemTypeID { get; set; }
+        public LValueRuleEnum ValueRule { get; set; }
         public bool GridHide { get; set; }
-        public LValueRule ValueRule { get; set; }
         public Nullable<System.DateTime> CreatedOn { get; set; }
         public Nullable<System.DateTime> UpdatedOn { get; set; }
         public string CreatedBy { get; set; }
         public string UpdatedBy { get; set; }
     
-        public virtual LItem LItem { get; set; }
         public virtual LItemType LItemType { get; set; }
+        public virtual LItemType LItemType1 { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<LItemPropValue> LItemPropValues { get; set; }
     }

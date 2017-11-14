@@ -80,10 +80,10 @@
     <Compile Include="Models\LItemType.cs">
       <DependentUpon>WitModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\LPropType.cs">
+    <Compile Include="Models\LPropTypeEnum.cs">
       <DependentUpon>WitModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\LValueRule.cs">
+    <Compile Include="Models\LValueRuleEnum.cs">
       <DependentUpon>WitModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Product.cs">

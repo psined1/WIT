@@ -11,7 +11,7 @@ namespace WIT.Data.Models
 {
     using System;
     
-    public enum LPropType : int
+    public enum LPropTypeEnum : int
     {
         String = 0,
         Integer = 2,

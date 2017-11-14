@@ -8,19 +8,34 @@ using WIT.Data.Models;
 
 namespace WIT.Business.Entities
 {
-    public class ItemProperty
+    public class ItemField
     {
         // from LItemProp entity
         public long Id { get; set; }
         public string Name { get; set; }
         public string Help { get; set; }
-        public LPropType PropType { get; set; }
+        public LPropTypeEnum PropType { get; set; }
         public Nullable<int> ItemTypeID { get; set; }
         public bool GridHide { get; set; }
-        public LValueRule ValueRule { get; set; }
+        public LValueRuleEnum ValueRule { get; set; }
+
+        public ItemField()
+        {
+        }
+
+        public ItemField(LItemProp prop)
+        {
+            Id = prop.ItemPropID;
+            Name = prop.Name;
+            Help = prop.Description;
+            PropType = prop.PropType;
+            ItemTypeID = prop.ItemTypeID;
+            GridHide = prop.GridHide;
+            ValueRule = prop.ValueRule;
+        }
     }
 
-    public class ItemPropertyValue : ItemProperty
+    public class ItemValue : ItemField
     {
         // from LITemPropValueNnnn entity
         public dynamic Value { get; set; }
@@ -42,7 +57,7 @@ namespace WIT.Business.Entities
         public string Help { get; set; }
 
         // from LItemProp
-        public List<ItemPropertyValue> Properties { get; set; }
+        public List<ItemValue> Values { get; set; }
 
         // obsolete
         public Dictionary<string, string> ValidationErrors { get; set; }
@@ -50,14 +65,9 @@ namespace WIT.Business.Entities
 
     public class ItemGrid
     {
-        // from LItemType entity:
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public string Help { get; set; }
-
         public GridInfo GridInfo { get; set; }
 
-        public List<ItemProperty> Fields { get; set; }
+        public List<ItemField> Fields { get; set; }
 
         public List<Dictionary<string,object>> Data { get; set; }
     }

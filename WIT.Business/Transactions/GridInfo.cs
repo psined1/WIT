@@ -16,7 +16,13 @@ namespace WIT.Business.Entities
         public string SortExpression { get; set; }
         public string SortDirection { get; set; }
         public int CurrentPageNumber { get; set; }
+
         public string Filter { get; set; }
+
+        // from LItemType entity:
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Help { get; set; }
 
         public GridInfo()
         {
@@ -25,7 +31,10 @@ namespace WIT.Business.Entities
             PageSize = 0;
             CurrentPageNumber = 0;
             SortDirection = "ASC";
+
             Filter = "";
+
+            Id = 0;
         }
     }
 

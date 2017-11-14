@@ -31,6 +31,59 @@ namespace WIT.Portal.WebApiControllers
             base.Dispose(disposing);
         }
 
+        /// <summary>
+        /// GetLItems
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="info"></param>
+        /// <returns></returns>
+        [Route("GetLItems")]
+        [HttpPost]
+        public HttpResponseMessage GetLItems(HttpRequestMessage request, [FromBody] GridInfo info)
+        {
+            return BaseAction(request, (transaction) => {
+
+                if (string.IsNullOrWhiteSpace(info.SortExpression))
+                    info.SortExpression = "Code";
+
+                if (string.IsNullOrWhiteSpace(info.SortDirection))
+                    info.SortDirection = "ASC";
+
+                var itemType = _db.LItemTypes.FirstOrDefault(i => i.ItemTypeID == info.Id);
+
+                if (itemType == null)
+                {
+                    transaction.ReturnMessage = string.Format("Item type {0} not found", info.Id);
+                    throw new HttpResponseException(HttpStatusCode.NotFound);
+                }
+
+                ItemGrid grid = new ItemGrid();
+
+                foreach (var prop in itemType.LItemProps)
+                {
+                    grid.Fields.Add(new ItemField(prop));
+                }
+
+                if (!string.IsNullOrWhiteSpace(info.Filter))
+                {
+                    // TODO
+                    //q = q.Where(i => i.Code.Contains(info.Code));
+                }
+
+                info.TotalRows = q.Count();
+
+                info.Data = q
+                    .Paged(info.GridInfo)
+                    .ToList()
+                    .Select(i => new ProductFeatureItem(i))
+                    .ToList()
+                    ;
+
+                transaction.Data = info;
+            });
+        }
+
+
         #region ProductFeature
 
         /// <summary>

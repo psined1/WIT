@@ -1,7 +1,7 @@
 USE [WIT]
 GO
 
-/****** Object:  Table [dbo].[LItemPropValue]    Script Date: 11/13/2017 10:52:27 ******/
+/****** Object:  Table [dbo].[LItemPropValue]    Script Date: 11/14/2017 13:14:47 ******/
 SET ANSI_NULLS ON
 GO
 
@@ -13,6 +13,7 @@ GO
 
 CREATE TABLE [dbo].[LItemPropValue](
 	[ItemPropValueID] [bigint] IDENTITY(1,1) NOT NULL,
+	[ItemID] [bigint] NOT NULL,
 	[ItemPropID] [bigint] NOT NULL,
 	[CreatedOn] [datetime] NULL,
 	[UpdatedOn] [datetime] NULL,
@@ -27,6 +28,15 @@ CREATE TABLE [dbo].[LItemPropValue](
 GO
 
 SET ANSI_PADDING OFF
+GO
+
+ALTER TABLE [dbo].[LItemPropValue]  WITH CHECK ADD  CONSTRAINT [FK_LItemPropValue_LItem] FOREIGN KEY([ItemID])
+REFERENCES [dbo].[LItem] ([ItemID])
+ON UPDATE CASCADE
+ON DELETE CASCADE
+GO
+
+ALTER TABLE [dbo].[LItemPropValue] CHECK CONSTRAINT [FK_LItemPropValue_LItem]
 GO
 
 ALTER TABLE [dbo].[LItemPropValue]  WITH CHECK ADD  CONSTRAINT [FK_LItemPropValue_LItemProp] FOREIGN KEY([ItemPropID])

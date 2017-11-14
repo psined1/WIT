@@ -11,7 +11,7 @@ namespace WIT.Data.Models
 {
     using System;
     
-    public enum LValueRule : int
+    public enum LValueRuleEnum : int
     {
         SingleOptional = 0,
         SingleRequired = 1,
