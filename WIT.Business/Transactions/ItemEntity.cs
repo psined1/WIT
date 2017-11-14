@@ -12,6 +12,7 @@ namespace WIT.Business.Entities
     {
         // from LItemProp entity
         public long Id { get; set; }
+        public string Key { get; set; }
         public string Name { get; set; }
         public string Help { get; set; }
         public LPropTypeEnum PropType { get; set; }
@@ -26,6 +27,7 @@ namespace WIT.Business.Entities
         public ItemField(LItemProp prop)
         {
             Id = prop.ItemPropID;
+            Key = string.Format("p{0}", prop.ItemPropID);
             Name = prop.Name;
             Help = prop.Description;
             PropType = prop.PropType;

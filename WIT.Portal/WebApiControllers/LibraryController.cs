@@ -43,12 +43,6 @@ namespace WIT.Portal.WebApiControllers
         {
             return BaseAction(request, (transaction) => {
 
-                if (string.IsNullOrWhiteSpace(info.SortExpression))
-                    info.SortExpression = "Code";
-
-                if (string.IsNullOrWhiteSpace(info.SortDirection))
-                    info.SortDirection = "ASC";
-
                 var itemType = _db.LItemTypes.FirstOrDefault(i => i.ItemTypeID == info.Id);
 
                 if (itemType == null)
@@ -64,22 +58,43 @@ namespace WIT.Portal.WebApiControllers
                     grid.Fields.Add(new ItemField(prop));
                 }
 
+                var q = _db.LItems.AsQueryable();
+
                 if (!string.IsNullOrWhiteSpace(info.Filter))
                 {
-                    // TODO
-                    //q = q.Where(i => i.Code.Contains(info.Code));
+                    q = q.Where(i => i.Key.Contains(info.Filter) || i.LItemPropValues.Any(v => v.LItemPropValueString.Value.Contains(info.Filter)));
                 }
 
                 info.TotalRows = q.Count();
 
-                info.Data = q
-                    .Paged(info.GridInfo)
+                if (string.IsNullOrWhiteSpace(info.SortExpression))
+                    info.SortExpression = "Key";
+
+                if (string.IsNullOrWhiteSpace(info.SortDirection))
+                    info.SortDirection = "ASC";
+
+                var values = new List<Dictionary<string, object>>();
+
+                foreach (var item in q.Page(info).ToList())
+                {
+                    var itemValues = new Dictionary<string, object>();
+                    itemValues.Add("ID", item.ItemID);
+
+                    foreach (var value in item.LItemPropValues)
+                    {
+                        //itemValues.Add(string.Format("p{0}", value.ItemPropID), 
+                    }
+
+                    values.Add(itemValues);
+                }
+
+                /*grid.Data = q
+                    .Page(info)
                     .ToList()
                     .Select(i => new ProductFeatureItem(i))
-                    .ToList()
-                    ;
+                    ;*/
 
-                transaction.Data = info;
+                transaction.Data = grid;
             });
         }
 
@@ -118,7 +133,7 @@ namespace WIT.Portal.WebApiControllers
 
                 list.GridInfo.TotalRows = q.Count();
                 list.Items = q
-                    .Paged(list.GridInfo)
+                    .Page(list.GridInfo)
                     .ToList()
                     .Select(i => new ProductFeatureItem(i))
                     .ToList()
@@ -264,7 +279,7 @@ namespace WIT.Portal.WebApiControllers
 
                 list.GridInfo.TotalRows = q.Count();
                 list.Items = q
-                    .Paged(list.GridInfo)
+                    .Page(list.GridInfo)
                     .ToList()
                     .Select(i => new ProductClassItem(i))
                     .ToList()
@@ -409,7 +424,7 @@ namespace WIT.Portal.WebApiControllers
 
                 list.GridInfo.TotalRows = q.Count();
                 list.Items = q
-                    .Paged(list.GridInfo)
+                    .Page(list.GridInfo)
                     .ToList()
                     .Select(i => new ProductItem(i))
                     .ToList()
@@ -558,7 +573,7 @@ namespace WIT.Portal.WebApiControllers
 
                 list.GridInfo.TotalRows = q.Count();
                 list.Items = q
-                    .Paged(list.GridInfo)
+                    .Page(list.GridInfo)
                     .ToList()
                     .Select(i => new CustomerItem(i))
                     .ToList()

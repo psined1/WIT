@@ -40,7 +40,7 @@ namespace WIT.Business.Entities
 
     public static class GridPagingExtension
     {
-        public static IQueryable<T> Paged<T>(this IQueryable<T> q, GridInfo gridInfo)
+        public static IQueryable<T> Page<T>(this IQueryable<T> q, GridInfo gridInfo)
         {
             if (!string.IsNullOrWhiteSpace(gridInfo.SortExpression))
                 q = q.OrderBy(string.Format("{0} {1}", gridInfo.SortExpression, gridInfo.SortDirection));
