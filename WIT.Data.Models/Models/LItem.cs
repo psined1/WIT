@@ -17,7 +17,7 @@ namespace WIT.Data.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public LItem()
         {
-            this.LItemPropValues = new HashSet<LItemPropValue>();
+            this.LItemValues = new HashSet<LItemValue>();
         }
     
         public long ItemID { get; set; }
@@ -30,6 +30,6 @@ namespace WIT.Data.Models
     
         public virtual LItemType LItemType { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<LItemPropValue> LItemPropValues { get; set; }
+        public virtual ICollection<LItemValue> LItemValues { get; set; }
     }
 }

@@ -12,11 +12,11 @@ namespace WIT.Data.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class LItemPropValueInteger
+    public partial class LItemValueInteger
     {
-        public long ItemPropValueID { get; set; }
+        public long ItemValueID { get; set; }
         public int Value { get; set; }
     
-        public virtual LItemPropValue LItemPropValue { get; set; }
+        public virtual LItemValue LItemValue { get; set; }
     }
 }

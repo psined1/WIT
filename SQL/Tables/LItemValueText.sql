@@ -1,0 +1,37 @@
+USE [WIT]
+GO
+
+/****** Object:  Table [dbo].[LItemValueText]    Script Date: 11/13/2017 11:09:31 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+SET ANSI_PADDING ON
+GO
+
+CREATE TABLE [dbo].[LItemValueText](
+	[ItemValueID] [bigint] NOT NULL,
+	[Value] [varchar](max) NOT NULL,
+ CONSTRAINT [PK_LItemValueText] PRIMARY KEY CLUSTERED 
+(
+	[ItemValueID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+SET ANSI_PADDING OFF
+GO
+
+ALTER TABLE [dbo].[LItemValueText]  WITH CHECK ADD  CONSTRAINT [FK_LItemValueText_LItemValue] FOREIGN KEY([ItemValueID])
+REFERENCES [dbo].[LItemValue] ([ItemValueID])
+ON UPDATE CASCADE
+ON DELETE CASCADE
+GO
+
+ALTER TABLE [dbo].[LItemValueText] CHECK CONSTRAINT [FK_LItemValueText_LItemValue]
+GO
+
+

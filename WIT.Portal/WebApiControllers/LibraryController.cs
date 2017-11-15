@@ -51,43 +51,103 @@ namespace WIT.Portal.WebApiControllers
                     throw new HttpResponseException(HttpStatusCode.NotFound);
                 }
 
+                // make grid payload
                 ItemGrid grid = new ItemGrid();
 
-                grid.Fields.Add(new ItemField() {
-                    Key = "ID",
+                // fields
+                ItemField sortField = new ItemField()
+                {
+                    Id = -1,
+                    Key = "id",
                     Name = "Id",
                     PropType = LPropTypeEnum.Integer,
                     GridHide = true
+                };
+
+                grid.Fields.Add(sortField);
+
+                grid.Fields.Add(new ItemField()
+                {
+                    Id = 0,
+                    Key = "key",
+                    Name = "Key",
+                    PropType = LPropTypeEnum.String,
+                    GridHide = false
                 });
 
                 foreach (var prop in itemType.LItemProps)
                 {
-                    grid.Fields.Add(new ItemField(prop));
+                    ItemField field = new ItemField(prop);
+
+                    grid.Fields.Add(field);
+
+                    if (field.Id == info.SortId)
+                    {
+                        sortField = field;
+                    }
                 }
 
+                // items filter
                 var q = _db.LItems.AsQueryable();
 
                 if (!string.IsNullOrWhiteSpace(info.Filter))
                 {
-                    q = q.Where(i => i.Key.Contains(info.Filter) || i.LItemPropValues.Any(v => v.LItemPropValueString.Value.Contains(info.Filter)));
+                    q = q.Where(i => i.Key.Contains(info.Filter) || i.LItemValues.Any(v => v.LItemValueString.Value.Contains(info.Filter)));
                 }
 
+                // count
                 info.TotalRows = q.Count();
 
-                if (string.IsNullOrWhiteSpace(info.SortExpression))
-                    info.SortExpression = "Key";
-
+                // order by
                 if (string.IsNullOrWhiteSpace(info.SortDirection))
                     info.SortDirection = "ASC";
 
+                if (sortField.Id < 0)
+                {
+                    if (info.SortDirection == "ASC")
+                        q = q.OrderBy(i => i.ItemID);
+                    else
+                        q = q.OrderByDescending(i => i.ItemID);
+                }
+
+                else if (sortField.Id == 0)
+                {
+                    if (info.SortDirection == "ASC")
+                        q = q.OrderBy(i => i.Key);
+                    else
+                        q = q.OrderByDescending(i => i.Key);
+                }
+
+                else
+                {
+                    var iv = q.Join(
+                        _db.LItemValues, 
+                        i => new { i.ItemID, ItemPropID = sortField.Id }, 
+                        v => new { v.ItemID, v.ItemPropID }, 
+                        (i, v) => new { i, v.ItemValueID }
+                        );
+
+                    switch (sortField.PropType)
+                    {
+                        case LPropTypeEnum.String:
+                            var x = iv.Join(_db.LItemValueStrings, iv => iv.ItemValueID, v => v.ItemValueID, (iv, v) => new {  });
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
+
+                // data page
                 var values = new List<Dictionary<string, object>>();
 
                 foreach (var item in q.Page(info).ToList())
                 {
                     var itemValues = new Dictionary<string, object>();
-                    itemValues.Add("ID", item.ItemID);
+                    itemValues.Add("id", item.ItemID);
+                    itemValues.Add("key", item.Key);
 
-                    foreach (var value in item.LItemPropValues)
+                    foreach (var value in item.LItemValues)
                     {
                         //itemValues.Add(string.Format("p{0}", value.ItemPropID), 
                     }

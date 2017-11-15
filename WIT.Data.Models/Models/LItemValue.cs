@@ -12,11 +12,11 @@ namespace WIT.Data.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class LItemPropValue
+    public partial class LItemValue
     {
-        public long ItemPropValueID { get; set; }
+        public long ItemValueID { get; set; }
         public long ItemID { get; set; }
-        public long ItemPropID { get; set; }
+        public int ItemPropID { get; set; }
         public Nullable<System.DateTime> CreatedOn { get; set; }
         public Nullable<System.DateTime> UpdatedOn { get; set; }
         public string CreatedBy { get; set; }
@@ -24,10 +24,10 @@ namespace WIT.Data.Models
     
         public virtual LItem LItem { get; set; }
         public virtual LItemProp LItemProp { get; set; }
-        public virtual LItemPropValueDateTime LItemPropValueDateTime { get; set; }
-        public virtual LItemPropValueDecimal LItemPropValueDecimal { get; set; }
-        public virtual LItemPropValueInteger LItemPropValueInteger { get; set; }
-        public virtual LItemPropValueString LItemPropValueString { get; set; }
-        public virtual LItemPropValueText LItemPropValueText { get; set; }
+        public virtual LItemValueDateTime LItemValueDateTime { get; set; }
+        public virtual LItemValueDecimal LItemValueDecimal { get; set; }
+        public virtual LItemValueInteger LItemValueInteger { get; set; }
+        public virtual LItemValueString LItemValueString { get; set; }
+        public virtual LItemValueText LItemValueText { get; set; }
     }
 }

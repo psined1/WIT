@@ -13,6 +13,7 @@ namespace WIT.Business.Entities
         public int TotalPages { get; set; }
         public int TotalRows { get; set; }
         public int PageSize { get; set; }
+        public int SortId { get; set; }
         public string SortExpression { get; set; }
         public string SortDirection { get; set; }
         public int CurrentPageNumber { get; set; }
@@ -31,6 +32,7 @@ namespace WIT.Business.Entities
             PageSize = 0;
             CurrentPageNumber = 0;
             SortDirection = "ASC";
+            SortId = 0;
 
             Filter = "";
 
@@ -40,21 +42,24 @@ namespace WIT.Business.Entities
 
     public static class GridPagingExtension
     {
-        public static IQueryable<T> Page<T>(this IQueryable<T> q, GridInfo gridInfo)
+        public static IQueryable<T> Page<T>(this IQueryable<T> q, GridInfo info)
         {
-            if (!string.IsNullOrWhiteSpace(gridInfo.SortExpression))
-                q = q.OrderBy(string.Format("{0} {1}", gridInfo.SortExpression, gridInfo.SortDirection));
-
-            if (gridInfo.PageSize > 0)
+            if (!string.IsNullOrWhiteSpace(info.SortExpression))
             {
-                int currentPage = gridInfo.CurrentPageNumber;
+                if (string.IsNullOrWhiteSpace(info.SortDirection))
+                    info.SortDirection = "ASC";
 
-                if (currentPage < 1)
-                    currentPage = 1;
+                q = q.OrderBy(string.Format("{0} {1}", info.SortExpression, info.SortDirection));
+            }
+
+            if (info.PageSize > 0)
+            {
+                if (info.CurrentPageNumber < 1)
+                    info.CurrentPageNumber = 1;
 
                 q = q
-                    .Skip((currentPage - 1) * gridInfo.PageSize)
-                    .Take(gridInfo.PageSize)
+                    .Skip((info.CurrentPageNumber - 1) * info.PageSize)
+                    .Take(info.PageSize)
                 ;
             }
 

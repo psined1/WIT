@@ -12,25 +12,25 @@
         <EntityTypeShape EntityType="WIT.Data.Models.Product" Width="1.5" PointX="5.625" PointY="4.5" />
         <AssociationConnector Association="WIT.Data.Models.FK_Product_ProductClass" />
         <AssociationConnector Association="WIT.Data.Models.FK_Product_ProductFeature" />
-        <EntityTypeShape EntityType="WIT.Data.Models.LItem" Width="1.5" PointX="10.625" PointY="5.25" />
-        <EntityTypeShape EntityType="WIT.Data.Models.LItemProp" Width="1.5" PointX="10.625" PointY="8.75" />
-        <EntityTypeShape EntityType="WIT.Data.Models.LItemPropValue" Width="1.5" PointX="12.875" PointY="7.125" />
-        <EntityTypeShape EntityType="WIT.Data.Models.LItemPropValueDateTime" Width="1.5" PointX="15.125" PointY="8" />
-        <EntityTypeShape EntityType="WIT.Data.Models.LItemPropValueDecimal" Width="1.5" PointX="15.125" PointY="5.75" />
-        <EntityTypeShape EntityType="WIT.Data.Models.LItemPropValueInteger" Width="1.5" PointX="15.125" PointY="3.625" />
-        <EntityTypeShape EntityType="WIT.Data.Models.LItemPropValueString" Width="1.5" PointX="15.125" PointY="12.375" />
-        <EntityTypeShape EntityType="WIT.Data.Models.LItemPropValueText" Width="1.5" PointX="15.125" PointY="10.125" />
+        <EntityTypeShape EntityType="WIT.Data.Models.LItem" Width="1.5" PointX="10.625" PointY="5.375" />
+        <EntityTypeShape EntityType="WIT.Data.Models.LItemProp" Width="1.5" PointX="10.625" PointY="8.625" />
         <EntityTypeShape EntityType="WIT.Data.Models.LItemType" Width="1.5" PointX="8.375" PointY="7.375" />
+        <EntityTypeShape EntityType="WIT.Data.Models.LItemValue" Width="1.5" PointX="12.875" PointY="7.125" />
+        <EntityTypeShape EntityType="WIT.Data.Models.LItemValueDateTime" Width="1.5" PointX="15.125" PointY="12.375" />
+        <EntityTypeShape EntityType="WIT.Data.Models.LItemValueDecimal" Width="1.5" PointX="15.125" PointY="5.75" />
+        <EntityTypeShape EntityType="WIT.Data.Models.LItemValueInteger" Width="1.5" PointX="15.125" PointY="3.625" />
+        <EntityTypeShape EntityType="WIT.Data.Models.LItemValueString" Width="1.5" PointX="15.125" PointY="8" />
+        <EntityTypeShape EntityType="WIT.Data.Models.LItemValueText" Width="1.5" PointX="15.125" PointY="10.125" />
         <AssociationConnector Association="WIT.Data.Models.FK_LItem_LItemType" />
-        <AssociationConnector Association="WIT.Data.Models.FK_LItemPropValue_LItem" />
+        <AssociationConnector Association="WIT.Data.Models.FK_LItemValue_LItem" />
         <AssociationConnector Association="WIT.Data.Models.FK_LItemProp_LItemType" />
         <AssociationConnector Association="WIT.Data.Models.FK_LItemProp_LItemType_Value" />
-        <AssociationConnector Association="WIT.Data.Models.FK_LItemPropValue_LItemProp" />
-        <AssociationConnector Association="WIT.Data.Models.FK_LItemPropValueDateTime_LItemPropValue" />
-        <AssociationConnector Association="WIT.Data.Models.FK_LItemPropValueDecimal_LItemPropValue" />
-        <AssociationConnector Association="WIT.Data.Models.FK_LItemPropValueInteger_LItemPropValue" />
-        <AssociationConnector Association="WIT.Data.Models.FK_LItemPropValueString_LItemPropValue" />
-        <AssociationConnector Association="WIT.Data.Models.FK_LItemPropValueText_LItemPropValue" />
+        <AssociationConnector Association="WIT.Data.Models.FK_LItemValue_LItemProp" />
+        <AssociationConnector Association="WIT.Data.Models.FK_LItemValueDateTime_LItemValue" />
+        <AssociationConnector Association="WIT.Data.Models.FK_LItemValueDecimal_LItemValue" />
+        <AssociationConnector Association="WIT.Data.Models.FK_LItemValueInteger_LItemValue" />
+        <AssociationConnector Association="WIT.Data.Models.FK_LItemValueString_LItemValue" />
+        <AssociationConnector Association="WIT.Data.Models.FK_LItemValueText_LItemValue" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

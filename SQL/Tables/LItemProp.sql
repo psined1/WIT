@@ -1,7 +1,7 @@
 USE [WIT]
 GO
 
-/****** Object:  Table [dbo].[LItemProp]    Script Date: 11/14/2017 13:05:00 ******/
+/****** Object:  Table [dbo].[LItemProp]    Script Date: 11/15/2017 12:24:22 ******/
 SET ANSI_NULLS ON
 GO
 
@@ -12,7 +12,7 @@ SET ANSI_PADDING ON
 GO
 
 CREATE TABLE [dbo].[LItemProp](
-	[ItemPropID] [bigint] NOT NULL,
+	[ItemPropID] [int] NOT NULL,
 	[ItemTypeID] [int] NOT NULL,
 	[Name] [varchar](100) NOT NULL,
 	[Description] [varchar](250) NULL,

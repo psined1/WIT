@@ -32,12 +32,12 @@ namespace WIT.Data.Models
         public virtual DbSet<Product> Products { get; set; }
         public virtual DbSet<LItem> LItems { get; set; }
         public virtual DbSet<LItemProp> LItemProps { get; set; }
-        public virtual DbSet<LItemPropValue> LItemPropValues { get; set; }
-        public virtual DbSet<LItemPropValueDateTime> LItemPropValueDateTimes { get; set; }
-        public virtual DbSet<LItemPropValueDecimal> LItemPropValueDecimals { get; set; }
-        public virtual DbSet<LItemPropValueInteger> LItemPropValueIntegers { get; set; }
-        public virtual DbSet<LItemPropValueString> LItemPropValueStrings { get; set; }
-        public virtual DbSet<LItemPropValueText> LItemPropValueTexts { get; set; }
         public virtual DbSet<LItemType> LItemTypes { get; set; }
+        public virtual DbSet<LItemValue> LItemValues { get; set; }
+        public virtual DbSet<LItemValueDateTime> LItemValueDateTimes { get; set; }
+        public virtual DbSet<LItemValueDecimal> LItemValueDecimals { get; set; }
+        public virtual DbSet<LItemValueInteger> LItemValueIntegers { get; set; }
+        public virtual DbSet<LItemValueString> LItemValueStrings { get; set; }
+        public virtual DbSet<LItemValueText> LItemValueTexts { get; set; }
     }
 }
