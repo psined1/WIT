@@ -53,6 +53,13 @@ namespace WIT.Portal.WebApiControllers
 
                 ItemGrid grid = new ItemGrid();
 
+                grid.Fields.Add(new ItemField() {
+                    Key = "ID",
+                    Name = "Id",
+                    PropType = LPropTypeEnum.Integer,
+                    GridHide = true
+                });
+
                 foreach (var prop in itemType.LItemProps)
                 {
                     grid.Fields.Add(new ItemField(prop));
