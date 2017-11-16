@@ -3,8 +3,11 @@
     public totalRows: number;
     public pageSize: number;
     public currentPageNumber: number;
+    public sortId: number;
     public sortExpression: string;
     public sortDirection: string;
+    public filter: string;
+    public id: number;
 
     constructor()
     constructor(rhs: GridInfo)
@@ -16,9 +19,14 @@
             this.currentPageNumber = rhs.currentPageNumber;
             this.sortExpression = rhs.sortExpression;
             this.sortDirection = rhs.sortDirection;
+            this.filter = rhs.filter;
+            this.id = rhs.id;
+            this.sortId = rhs.sortId;
         } else {
             this.totalRows = 0;
             this.pageSize = 0;
+            this.id = 0;
+
             this.reset();
         }
 
@@ -37,6 +45,8 @@
         this.currentPageNumber = 1;
         this.sortDirection = "";
         this.sortExpression = "";
+        this.filter = "";
+        this.sortId = 0;
     }
 }
 

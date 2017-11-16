@@ -77,6 +77,8 @@ export class ProductClassListComponent implements OnInit {
 
         this.runningSearch = true;
 
+        this.libraryService.getItems().subscribe(response => console.log(response), response => console.log(response));
+
         setTimeout(() => {
 
             let list = new ProductClassList();

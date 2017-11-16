@@ -72,5 +72,12 @@ namespace WIT.Business.Entities
         public List<ItemField> Fields { get; set; }
 
         public List<Dictionary<string,object>> Data { get; set; }
+
+        public ItemGrid(GridInfo gridInfo)
+        {
+            GridInfo = gridInfo;
+            Fields = new List<ItemField>();
+            Data = new List<Dictionary<string, object>>();
+        }
     }
 }

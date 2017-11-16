@@ -1,7 +1,7 @@
 USE [WIT]
 GO
 
-/****** Object:  Table [dbo].[LItemProp]    Script Date: 11/15/2017 12:24:22 ******/
+/****** Object:  Table [dbo].[LItemProp]    Script Date: 11/16/2017 15:28:45 ******/
 SET ANSI_NULLS ON
 GO
 
@@ -12,7 +12,7 @@ SET ANSI_PADDING ON
 GO
 
 CREATE TABLE [dbo].[LItemProp](
-	[ItemPropID] [int] NOT NULL,
+	[ItemPropID] [int] IDENTITY(1,1) NOT NULL,
 	[ItemTypeID] [int] NOT NULL,
 	[Name] [varchar](100) NOT NULL,
 	[Description] [varchar](250) NULL,
@@ -55,6 +55,9 @@ ALTER TABLE [dbo].[LItemProp] ADD  CONSTRAINT [DF_LItemProp_PropType]  DEFAULT (
 GO
 
 ALTER TABLE [dbo].[LItemProp] ADD  CONSTRAINT [DF_LItemProp_ValueRule]  DEFAULT ((0)) FOR [ValueRule]
+GO
+
+ALTER TABLE [dbo].[LItemProp] ADD  CONSTRAINT [DF_LItemProp_GridHide]  DEFAULT ((0)) FOR [GridHide]
 GO
 
 ALTER TABLE [dbo].[LItemProp] ADD  CONSTRAINT [DF_LItemProp_CreatedOn]  DEFAULT (getdate()) FOR [CreatedOn]

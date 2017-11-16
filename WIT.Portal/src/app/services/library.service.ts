@@ -9,12 +9,22 @@ import { ProductFeature, ProductFeatureList } from '../entities/product-feature.
 import { ProductClass, ProductClassList } from '../entities/product-class.entity';
 import { Product, ProductList } from '../entities/product.entity';
 import { Customer, CustomerList } from '../entities/customer.entity';
+import { GridInfo } from '../entities/grid-info.entity';
 
 
 @Injectable()
 export class LibraryService {
 
     constructor(private httpService: HttpService, private sessionService: SessionService) { }
+
+    public getItems(): Observable<any> {
+        let gridInfo = new GridInfo();
+        gridInfo.id = 1;
+        gridInfo.filter = 'C';
+        gridInfo.pageSize = 20;
+        let url = this.sessionService.apiServer + "library/getItems";
+        return this.httpService.httpPostNonblocking(url, gridInfo);
+    }
 
     // Product Features
     public getProductFeatures(list: ProductFeatureList): Observable<any> {

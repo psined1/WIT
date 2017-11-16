@@ -37,7 +37,7 @@ namespace WIT.Portal.WebApiControllers
         /// <param name="request"></param>
         /// <param name="info"></param>
         /// <returns></returns>
-        [Route("GetLItems")]
+        [Route("GetItems")]
         [HttpPost]
         public HttpResponseMessage GetLItems(HttpRequestMessage request, [FromBody] GridInfo info)
         {
@@ -52,7 +52,7 @@ namespace WIT.Portal.WebApiControllers
                 }
 
                 // make grid payload
-                ItemGrid grid = new ItemGrid();
+                ItemGrid grid = new ItemGrid(info);
 
                 // fields
                 ItemField sortField = new ItemField()
@@ -87,6 +87,16 @@ namespace WIT.Portal.WebApiControllers
                     }
                 }
 
+                /*
+                    select i.ItemID
+                    from LItem i
+                    left join LItemValue sv on sv.ItemID=i.ItemID and sv.ItemPropID=1
+                    left join LItemValueString svs on svs.ItemValueID=sv.ItemValueID
+                    where i.[Key] like '%%' 
+                    or exists(select 1 from dbo.LItemValueString fvs inner join LItemValue fv on fv.ItemValueID=fvs.ItemValueID where fv.ItemID=i.ItemID)
+                    order by svs.Value, i.ItemID desc
+                */
+
                 // items filter
                 var q = _db.LItems.AsQueryable();
 
@@ -95,7 +105,7 @@ namespace WIT.Portal.WebApiControllers
                     q = q.Where(i => i.Key.Contains(info.Filter) || i.LItemValues.Any(v => v.LItemValueString.Value.Contains(info.Filter)));
                 }
 
-                // count
+                // total items count
                 info.TotalRows = q.Count();
 
                 // order by
@@ -104,68 +114,130 @@ namespace WIT.Portal.WebApiControllers
 
                 if (sortField.Id < 0)
                 {
-                    if (info.SortDirection == "ASC")
-                        q = q.OrderBy(i => i.ItemID);
-                    else
+                    if (info.SortDirection.StartsWith("D"))
                         q = q.OrderByDescending(i => i.ItemID);
+                    else
+                        q = q.OrderBy(i => i.ItemID);
                 }
 
                 else if (sortField.Id == 0)
                 {
-                    if (info.SortDirection == "ASC")
-                        q = q.OrderBy(i => i.Key);
-                    else
+                    if (info.SortDirection.StartsWith("D"))
                         q = q.OrderByDescending(i => i.Key);
+                    else
+                        q = q.OrderBy(i => i.Key);
                 }
 
                 else
                 {
-                    var iv = q.Join(_db.LItemValues, 
-                        i => new { i.ItemID, ItemPropID = sortField.Id }, 
-                        v => new { v.ItemID, v.ItemPropID }, 
-                        (i, v) => new { LItem = i, ItemValueID = v.ItemValueID }
-                        );
-
                     switch (sortField.PropType)
                     {
                         case LPropTypeEnum.String:
-                            q = iv
-                                .Join(_db.LItemValueStrings, i => i.ItemValueID, v => v.ItemValueID, (i, v) => new { i.LItem, v.Value })
-                                .OrderBy(x => x.Value).ThenBy(x => x.LItem.ItemID).Select(x => x.LItem)
-                                ;
+                            var sv1 = q
+                                .Join(_db.LItemValues.DefaultIfEmpty(),
+                                    i => new { i.ItemID, ItemPropID = sortField.Id },
+                                    v => new { v.ItemID, v.ItemPropID },
+                                    (i, v) => new { LItem = i, Value = v.LItemValueString.Value }
+                                );
+                            if (info.SortDirection.StartsWith("D"))
+                                q = sv1.OrderByDescending(s => s.Value).ThenBy(s => s.LItem.ItemID).Select(s => s.LItem);
+                            else
+                                q = sv1.OrderBy(s => s.Value).ThenBy(s => s.LItem.ItemID).Select(s => s.LItem);
                             break;
 
                         case LPropTypeEnum.Integer:
-                            q = iv
-                                .Join(_db.LItemValueIntegers, i => i.ItemValueID, v => v.ItemValueID, (i, v) => new { i.LItem, v.Value })
-                                .OrderBy(x => x.Value).ThenBy(x => x.LItem.ItemID).Select(x => x.LItem)
-                                ;
+                            var sv2 = q
+                                .Join(_db.LItemValues.DefaultIfEmpty(),
+                                    i => new { i.ItemID, ItemPropID = sortField.Id },
+                                    v => new { v.ItemID, v.ItemPropID },
+                                    (i, v) => new { LItem = i, Value = v.LItemValueInteger.Value }
+                                );
+                            if (info.SortDirection.StartsWith("D"))
+                                q = sv2.OrderByDescending(s => s.Value).ThenBy(s => s.LItem.ItemID).Select(s => s.LItem);
+                            else
+                                q = sv2.OrderBy(s => s.Value).ThenBy(s => s.LItem.ItemID).Select(s => s.LItem);
+                            break;
+
+                        case LPropTypeEnum.Decimal:
+                            var sv3 = q
+                                .Join(_db.LItemValues.DefaultIfEmpty(),
+                                    i => new { i.ItemID, ItemPropID = sortField.Id },
+                                    v => new { v.ItemID, v.ItemPropID },
+                                    (i, v) => new { LItem = i, Value = v.LItemValueDecimal.Value }
+                                );
+                            if (info.SortDirection.StartsWith("D"))
+                                q = sv3.OrderByDescending(s => s.Value).ThenBy(s => s.LItem.ItemID).Select(s => s.LItem);
+                            else
+                                q = sv3.OrderBy(s => s.Value).ThenBy(s => s.LItem.ItemID).Select(s => s.LItem);
+                            break;
+
+                        case LPropTypeEnum.Date:
+                        case LPropTypeEnum.Time:
+                        case LPropTypeEnum.DateTime:
+                            var sv4 = q
+                                .Join(_db.LItemValues.DefaultIfEmpty(),
+                                    i => new { i.ItemID, ItemPropID = sortField.Id },
+                                    v => new { v.ItemID, v.ItemPropID },
+                                    (i, v) => new { LItem = i, Value = v.LItemValueDateTime.Value }
+                                );
+                            if (info.SortDirection.StartsWith("D"))
+                                q = sv4.OrderByDescending(s => s.Value).ThenBy(s => s.LItem.ItemID).Select(s => s.LItem);
+                            else
+                                q = sv4.OrderBy(s => s.Value).ThenBy(s => s.LItem.ItemID).Select(s => s.LItem);
                             break;
                     }
                 }
 
-                // data page
-                var values = new List<Dictionary<string, object>>();
+                // data page before values
+                var itemIds = q.Page(info).Select(i => i.ItemID).ToArray();
 
-                foreach (var item in q.Page(info).ToList())
-                {
-                    var itemValues = new Dictionary<string, object>();
-                    itemValues.Add("id", item.ItemID);
-                    itemValues.Add("key", item.Key);
-
-                    foreach (var value in item.LItemValues)
+                var valueQuery = _db.LItems.Where(i => itemIds.Contains(i.ItemID))
+                    .Join(_db.LItemProps, 
+                        i=> i.ItemTypeID, 
+                        p => p.ItemTypeID, 
+                        (i, p) => new { LItem = i, LItemProp = p }
+                        )
+                    .Join(_db.LItemValues.DefaultIfEmpty(), 
+                        ip => new { ItemID = ip.LItem.ItemID, ItemPropID = ip.LItemProp.ItemPropID }, 
+                        v => new { ItemID = v.ItemID, ItemPropID = v.ItemPropID }, 
+                        (ip, v) => new { LItem = ip.LItem, LItemProp = ip.LItemProp, LItemValue = v }
+                        )
+                    .OrderBy(v => v.LItemValue.ItemID)
+                    .ThenBy(v => v.LItemProp.ItemPropID)
+                    .Select(v => new
                     {
-                        //itemValues.Add(string.Format("p{0}", value.ItemPropID), 
+                        ItemID = v.LItem.ItemID,
+                        Key = v.LItem.Key,
+                        ItemPropID = v.LItemProp.ItemPropID,
+                        PropType = v.LItemProp.PropType,
+                        ItemValueID = v.LItemValue.ItemValueID,
+                        ValueString = v.LItemValue.LItemValueString != null ? v.LItemValue.LItemValueString.Value : null,
+                        ValueText = v.LItemValue.LItemValueText != null ? v.LItemValue.LItemValueText.Value : null,
+                        ValueInteger = v.LItemValue.LItemValueInteger != null ? (int?)v.LItemValue.LItemValueInteger.Value : null,
+                        ValueDecimal = v.LItemValue.LItemValueDecimal != null ? (decimal?)v.LItemValue.LItemValueDecimal.Value : null,
+                        ValueDateTime = v.LItemValue.LItemValueDateTime != null ? (DateTime?)v.LItemValue.LItemValueDateTime.Value : null
+                    });
+
+                System.Diagnostics.Debug.Print(((System.Data.Entity.Core.Objects.ObjectQuery)valueQuery).ToTraceString());
+
+                long itemId = 0;
+                Dictionary<string, object> itemValues = null;
+                foreach (var value in valueQuery.ToList())
+                {
+                    if (value.ItemID != itemId)
+                    {
+                        // add previous
+                        if (itemValues != null)
+                            grid.Data.Add(itemValues);
+
+                        itemId = value.ItemID;
+                        itemValues = new Dictionary<string, object>();
+                        itemValues.Add("id", value.ItemID);
+                        itemValues.Add("key", value.Key);
                     }
 
-                    values.Add(itemValues);
+                    itemValues.Add(string.Format("p{0}", value.ItemPropID), value.ValueString);
                 }
-
-                /*grid.Data = q
-                    .Page(info)
-                    .ToList()
-                    .Select(i => new ProductFeatureItem(i))
-                    ;*/
 
                 transaction.Data = grid;
             });
