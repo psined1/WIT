@@ -34,7 +34,6 @@ namespace WIT.Data.Models
         public string UpdatedBy { get; set; }
     
         public virtual LItemType LItemType { get; set; }
-        public virtual LItemType LItemType1 { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<LItemValue> LItemValues { get; set; }
     }

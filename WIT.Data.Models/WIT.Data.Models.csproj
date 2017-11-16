@@ -59,25 +59,25 @@
     <Compile Include="Models\LItemProp.cs">
       <DependentUpon>WitModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\LItemPropValue.cs">
-      <DependentUpon>WitModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\LItemPropValueDateTime.cs">
-      <DependentUpon>WitModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\LItemPropValueDecimal.cs">
-      <DependentUpon>WitModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\LItemPropValueInteger.cs">
-      <DependentUpon>WitModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\LItemPropValueString.cs">
-      <DependentUpon>WitModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\LItemPropValueText.cs">
-      <DependentUpon>WitModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\LItemType.cs">
+      <DependentUpon>WitModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\LItemValue.cs">
+      <DependentUpon>WitModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\LItemValueDateTime.cs">
+      <DependentUpon>WitModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\LItemValueDecimal.cs">
+      <DependentUpon>WitModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\LItemValueInteger.cs">
+      <DependentUpon>WitModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\LItemValueString.cs">
+      <DependentUpon>WitModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\LItemValueText.cs">
       <DependentUpon>WitModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\LPropTypeEnum.cs">

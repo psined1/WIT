@@ -120,20 +120,26 @@ namespace WIT.Portal.WebApiControllers
 
                 else
                 {
-                    var iv = q.Join(
-                        _db.LItemValues, 
+                    var iv = q.Join(_db.LItemValues, 
                         i => new { i.ItemID, ItemPropID = sortField.Id }, 
                         v => new { v.ItemID, v.ItemPropID }, 
-                        (i, v) => new { i, v.ItemValueID }
+                        (i, v) => new { LItem = i, ItemValueID = v.ItemValueID }
                         );
 
                     switch (sortField.PropType)
                     {
                         case LPropTypeEnum.String:
-                            var x = iv.Join(_db.LItemValueStrings, iv => iv.ItemValueID, v => v.ItemValueID, (iv, v) => new {  });
+                            q = iv
+                                .Join(_db.LItemValueStrings, i => i.ItemValueID, v => v.ItemValueID, (i, v) => new { i.LItem, v.Value })
+                                .OrderBy(x => x.Value).ThenBy(x => x.LItem.ItemID).Select(x => x.LItem)
+                                ;
                             break;
 
-                        default:
+                        case LPropTypeEnum.Integer:
+                            q = iv
+                                .Join(_db.LItemValueIntegers, i => i.ItemValueID, v => v.ItemValueID, (i, v) => new { i.LItem, v.Value })
+                                .OrderBy(x => x.Value).ThenBy(x => x.LItem.ItemID).Select(x => x.LItem)
+                                ;
                             break;
                     }
                 }

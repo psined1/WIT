@@ -620,7 +620,6 @@
           <Property Name="CreatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="UpdatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="LItemType" Relationship="WIT.Data.Models.FK_LItemProp_LItemType" FromRole="LItemProp" ToRole="LItemType" />
-          <NavigationProperty Name="LItemType1" Relationship="WIT.Data.Models.FK_LItemProp_LItemType_Value" FromRole="LItemProp" ToRole="LItemType" />
           <NavigationProperty Name="LItemValues" Relationship="WIT.Data.Models.FK_LItemValue_LItemProp" FromRole="LItemProp" ToRole="LItemValue" />
         </EntityType>
         <EntityType Name="LItemType">
@@ -637,7 +636,6 @@
           <Property Name="UpdatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="LItems" Relationship="WIT.Data.Models.FK_LItem_LItemType" FromRole="LItemType" ToRole="LItem" />
           <NavigationProperty Name="LItemProps" Relationship="WIT.Data.Models.FK_LItemProp_LItemType" FromRole="LItemType" ToRole="LItemProp" />
-          <NavigationProperty Name="LItemProps1" Relationship="WIT.Data.Models.FK_LItemProp_LItemType_Value" FromRole="LItemType" ToRole="LItemProp" />
         </EntityType>
         <EntityType Name="LItemValue">
           <Key>
