@@ -53,10 +53,17 @@ export class GridInfo {
     }
 }
 
+
+export interface IItemData {
+    id: number;
+    key: string;
+}
+
+
 export class ItemGrid {
     public gridInfo: GridInfo;
     public fields: Array<ItemField>;
-    public data: Array<any>;
+    public data: Array<IItemData>;
 
     constructor()
     constructor(rhs: ItemGrid)

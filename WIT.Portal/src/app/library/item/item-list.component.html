@@ -3,7 +3,7 @@
 <div class="form-horizontal" style="margin-bottom:25px;">
 
     <div style="width:20%; float:left; padding-right:1px;">
-        <input type="text" class="form-control" placeholder="Filter" [ngModel]="list.filter" (ngModelChange)="filterChanged($event)" />
+        <input type="text" class="form-control" placeholder="Filter" [ngModel]="list.gridInfo.filter" (ngModelChange)="filterChanged($event)" />
     </div>
 
     <div style="float:left; padding-right:1px; padding-left:5px;">
@@ -32,7 +32,7 @@
 
 <br clear="all" />
 
-<datagrid [rows]="list.items"
+<datagrid [rows]="list.data"
           [columns]="columns"
           [pageSize]="list.gridInfo.pageSize"
           (datagridEvent)="datagridEvent($event)">

@@ -16,8 +16,8 @@ import { TransactionInfo } from '../../entities/transaction-info.entity';
 import { ProductFeature, ProductFeatureList } from '../../entities/product-feature.entity';
 //import { ProductFeatureComponent } from "./product-feature.component";
 
-import { GridInfo, ItemGrid } from '../../entities/grid-info.entity';
-import { ItemField } from '../../entities/item-field.entity';
+import { GridInfo, ItemGrid, IItemData } from '../../entities/grid-info.entity';
+import { ItemField, LPropTypeEnum } from '../../entities/item-field.entity';
 
 
 @Component({
@@ -29,7 +29,7 @@ export class ItemListComponent implements OnInit {
     @ViewChild(DataGrid) datagrid: DataGrid;
     @ViewChild(AlertBoxComponent) alertBox: AlertBoxComponent;
 
-    public title: string = 'Item list';
+    public title: string = 'Library items';
     public list: ItemGrid = new ItemGrid();
     public columns: Array<DataGridColumn> = [];
 
@@ -49,17 +49,10 @@ export class ItemListComponent implements OnInit {
     ) {
         this.autoFilter = false;
         this.list.gridInfo.pageSize = 20;
+        this.list.gridInfo.itemTypeId = 2;
     }
 
     public ngOnInit() {
-
-        /*
-        this.columns.push(new DataGridColumn('code', 'Code', '{"width": "20%"}'));
-        this.columns.push(new DataGridColumn('name', 'Name', '{"width": "30%" , "hyperLink": true}'));
-        this.columns.push(new DataGridColumn('description', 'Description', '{"width": "30%"}'));
-        this.columns.push(new DataGridColumn('updatedOn', 'Updated On', '{"width": "15%" , "formatDate": true}'));
-        this.columns.push(new DataGridColumn('', '', '{"disableSorting": true, "buttons": [{"name": "x", "icon": "trash", "class": "btn btn-danger"}]}'));
-        */
 
         this.route.params.subscribe(params => {
 
@@ -70,6 +63,14 @@ export class ItemListComponent implements OnInit {
             let itemTypeId: number = Number.parseInt(params['itemTypeId']);
             if (!Number.isNaN(itemTypeId)) {
                 this.list.gridInfo.itemTypeId = itemTypeId;
+            }
+            let pageSize: number = Number.parseInt(params['pageSize']);
+            if (!Number.isNaN(pageSize)) {
+                this.list.gridInfo.pageSize = pageSize;
+            }
+            let currentPage: number = Number.parseInt(params['currentPage']);
+            if (!Number.isNaN(currentPage)) {
+                this.list.gridInfo.currentPageNumber = currentPage;
             }
         });
 
@@ -84,11 +85,7 @@ export class ItemListComponent implements OnInit {
 
         setTimeout(() => {
 
-            let list = new ItemGrid();
-            list.gridInfo = this.list.gridInfo;
-            list.gridInfo.filter = this.list.gridInfo.filter;
-
-            this.libraryService.getItems(/*list*/).subscribe(
+            this.libraryService.getItems(this.list.gridInfo).subscribe(
                 response => this.getListOnSuccess(response),
                 response => this.getListOnError(response)
             );
@@ -99,21 +96,53 @@ export class ItemListComponent implements OnInit {
 
     private getListOnSuccess(response: TransactionInfo): void {
 
+        console.log(response.data);
+
         let list = new ItemGrid(response.data);
         if (list) {
-            this.datagrid.databind(list.gridInfo);
-            this.list.data = list.data;
-
             // columns
             let columns: Array<DataGridColumn> = [];
             for (const c of list.fields) {
-                console.log(c);
-                let column = new DataGridColumn(c.key, c.name, '{}');
-                columns.push(column);
+                if (!c.gridHide) {
+                    let options = '';
+                    if (c.key === 'key' || c.propType === LPropTypeEnum.Hyperlink)
+                        options = (options === '' ? '' : ',') + '"hyperLink": true';
+                    switch (c.propType) {
+                        case LPropTypeEnum.Image:
+                        case LPropTypeEnum.Video:
+                        case LPropTypeEnum.Text:
+                            options = (options === '' ? '' : ',') + '"disableSorting": true';
+                            break;
+
+                        case LPropTypeEnum.Date:
+                            options = (options === '' ? '' : ',') + '"formatDate": true';
+                            break;
+
+                        case LPropTypeEnum.Time:
+                            options = (options === '' ? '' : ',') + '"formatTime": true';
+                            break;
+
+                        case LPropTypeEnum.DateTime:
+                            options = (options === '' ? '' : ',') + '"formatDate": true';
+                            options = (options === '' ? '' : ',') + '"formatTime": true';
+                            break;
+                    }
+                    if (!c.isSortable) {
+                        options = (options === '' ? '' : ',') + '"disableSorting": true';
+                    }
+                    let column = new DataGridColumn(c.key, c.name, '{' + options + '}');
+                    columns.push(column);
+                }
             }
-            this.columns.push(new DataGridColumn('', '', '{"disableSorting": true, "buttons": [{"name": "x", "icon": "trash", "class": "btn btn-danger"}]}'));
-            console.log(columns);
+            columns.push(new DataGridColumn('', '', '{"disableSorting": true, "buttons": [{"name": "x", "icon": "trash", "class": "btn btn-danger"}]}'));
+
             this.columns = columns;
+            this.list = list;
+            this.datagrid.databind(this.list.gridInfo);
+
+            //console.log(this.columns);
+            //console.log(this.list.data);
+            //console.log(this.list.gridInfo);
         }
 
         this.alertBox.renderSuccessMessage(response.returnMessage);
@@ -128,7 +157,7 @@ export class ItemListComponent implements OnInit {
 
     public datagridEvent(event) {
 
-        /*let datagridEvent: DataGridEventInformation = event.value;
+        let datagridEvent: DataGridEventInformation = event.value;
 
         if (datagridEvent.EventType == "PagingEvent") {
             this.onPagingEvent(datagridEvent.CurrentPageNumber);
@@ -149,14 +178,14 @@ export class ItemListComponent implements OnInit {
         else if (datagridEvent.EventType == "ButtonClicked") {
             if (datagridEvent.Button.Name === "x") {
                 let i = datagridEvent.ItemSelected;
-                let item = this.list.items[i];
+                let item = this.list.data[i];
                 this.onDelete(item);
             }
-        }*/
+        }
     }
 
 
-    private onDelete(item: ProductFeature) {
+    private onDelete(item: IItemData) {
 
         /*this.modalSubscription = this.modalService.onHide.subscribe((reason: string) => {
             //console.log(`onHide event has been fired${reason ? ', dismissed by ' + reason : ''}`);
@@ -177,7 +206,7 @@ export class ItemListComponent implements OnInit {
         yesNo.message = "About to delete product feature '" + item.code + "'. Proceed?";*/
     }
 
-    private onEdit(item?: ProductFeature) {
+    private onEdit(item?: IItemData) {
 
         /*this.modalSubscription = this.modalService.onHide.subscribe((reason: string) => {
             //console.log(`onHidden event has been fired${reason ? ', dismissed by ' + reason : ''}`);
@@ -212,7 +241,7 @@ export class ItemListComponent implements OnInit {
     private onItemSelected(itemSelected: number) {
 
         /*let rowSelected = itemSelected;
-        let item = this.list.items[rowSelected];
+        let item = this.list.data[rowSelected];
 
         //this.router.navigate(['/customers/customer-maintenance', { id: item.ProductFeatureId }]);
 
@@ -221,7 +250,9 @@ export class ItemListComponent implements OnInit {
 
     private onSorting(sortDirection: string, sortExpression: string) {
         this.list.gridInfo.sortDirection = sortDirection;
-        this.list.gridInfo.sortExpression = sortExpression;
+        this.list.gridInfo.sortExpression = sortExpression; // obsolete
+        this.list.fields.filter(f => f.key == sortExpression).forEach(f => this.list.gridInfo.sortId = f.id);
+
         this.list.gridInfo.currentPageNumber = 1;
         this.delaySearch = false;
         this.executeSearch();
@@ -243,6 +274,8 @@ export class ItemListComponent implements OnInit {
     public reset(): void {
         this.list.gridInfo.filter = "";
         this.list.gridInfo.currentPageNumber = 1;
+        this.list.gridInfo.sortId = -1;
+        this.list.gridInfo.sortExpression = "";
         this.delaySearch = false;
         this.executeSearch();
     }

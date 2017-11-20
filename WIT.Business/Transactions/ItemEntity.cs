@@ -19,6 +19,8 @@ namespace WIT.Business.Entities
         public Nullable<int> ItemTypeID { get; set; }
         public bool GridHide { get; set; }
         public LValueRuleEnum ValueRule { get; set; }
+        public bool Disabled { get; set; }
+        public bool IsSortable { get; set; }
 
         public ItemField()
         {
@@ -34,6 +36,15 @@ namespace WIT.Business.Entities
             ItemTypeID = prop.ItemTypeID;
             GridHide = prop.GridHide;
             ValueRule = prop.ValueRule;
+
+            IsSortable =
+                prop.PropType == LPropTypeEnum.String ||
+                prop.PropType == LPropTypeEnum.Integer ||
+                prop.PropType == LPropTypeEnum.Decimal ||
+                prop.PropType == LPropTypeEnum.Date ||
+                prop.PropType == LPropTypeEnum.Time ||
+                prop.PropType == LPropTypeEnum.DateTime
+                ;
         }
     }
 

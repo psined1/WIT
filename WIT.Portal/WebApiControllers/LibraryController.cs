@@ -55,25 +55,25 @@ namespace WIT.Portal.WebApiControllers
                 ItemGrid grid = new ItemGrid(info);
 
                 // fields
-                ItemField sortField = new ItemField()
+                grid.Fields.Add(new ItemField()
                 {
                     Id = -1,
                     Key = "id",
                     Name = "Id",
                     PropType = LPropTypeEnum.Integer,
                     GridHide = true
-                };
+                });
 
-                grid.Fields.Add(sortField);
-
-                grid.Fields.Add(new ItemField()
+                ItemField sortField = new ItemField()
                 {
                     Id = 0,
                     Key = "key",
                     Name = "Key",
                     PropType = LPropTypeEnum.String,
-                    GridHide = false
-                });
+                    IsSortable = true
+                };
+
+                grid.Fields.Add(sortField);
 
                 foreach (var prop in itemType.LItemProps)
                 {
@@ -87,18 +87,8 @@ namespace WIT.Portal.WebApiControllers
                     }
                 }
 
-                /*
-                    select i.ItemID
-                    from LItem i
-                    left join LItemValue sv on sv.ItemID=i.ItemID and sv.ItemPropID=1
-                    left join LItemValueString svs on svs.ItemValueID=sv.ItemValueID
-                    where i.[Key] like '%%' 
-                    or exists(select 1 from dbo.LItemValueString fvs inner join LItemValue fv on fv.ItemValueID=fvs.ItemValueID where fv.ItemID=i.ItemID)
-                    order by svs.Value, i.ItemID desc
-                */
-
                 // items filter
-                var q = _db.LItems.AsQueryable();
+                var q = _db.LItems.AsQueryable().Where(i => i.ItemTypeID == itemType.ItemTypeID);
 
                 if (!string.IsNullOrWhiteSpace(info.Filter))
                 {
@@ -218,25 +208,29 @@ namespace WIT.Portal.WebApiControllers
                         ValueDateTime = v.LItemValue.LItemValueDateTime != null ? (DateTime?)v.LItemValue.LItemValueDateTime.Value : null
                     });
 
-                System.Diagnostics.Debug.Print(((System.Data.Entity.Core.Objects.ObjectQuery)valueQuery).ToTraceString());
+                //System.Diagnostics.Debug.Print(((System.Data.Entity.Core.Objects.ObjectQuery)valueQuery).ToTraceString());
 
                 long itemId = 0;
                 Dictionary<string, object> itemValues = null;
-                foreach (var value in valueQuery.ToList())
+                var valueList = valueQuery.ToList();
+                foreach (var value in valueList)
                 {
                     if (value.ItemID != itemId)
                     {
-                        // add previous
-                        if (itemValues != null)
-                            grid.Data.Add(itemValues);
-
-                        itemId = value.ItemID;
                         itemValues = new Dictionary<string, object>();
                         itemValues.Add("id", value.ItemID);
                         itemValues.Add("key", value.Key);
+                        grid.Data.Add(itemValues);
+
+                        itemId = value.ItemID;
                     }
 
-                    itemValues.Add(string.Format("p{0}", value.ItemPropID), value.ValueString);
+                    switch(value.PropType)
+                    {
+                        case LPropTypeEnum.String:
+                            itemValues.Add(string.Format("p{0}", value.ItemPropID), value.ValueString);
+                            break;
+                    }
                 }
 
                 transaction.Data = grid;

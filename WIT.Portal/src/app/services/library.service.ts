@@ -17,11 +17,7 @@ export class LibraryService {
 
     constructor(private httpService: HttpService, private sessionService: SessionService) { }
 
-    public getItems(): Observable<any> {
-        let gridInfo = new GridInfo();
-        gridInfo.itemTypeId = 1;
-        gridInfo.filter = 'C';
-        gridInfo.pageSize = 20;
+    public getItems(gridInfo: GridInfo): Observable<any> {
         let url = this.sessionService.apiServer + "library/getItems";
         return this.httpService.httpPostNonblocking(url, gridInfo);
     }
