@@ -22,18 +22,17 @@ import { ProductComponent } from "./product/product.component";
 
 import { CustomerListComponent } from "./customer/customer-list.component";
 import { CustomerComponent } from "./customer/customer.component";
+import { ItemComponent } from './item/item.component';
+import { ItemListComponent } from './item/item-list.component';
 
 
 @NgModule({
     declarations: [
-        ProductFeatureListComponent,
-        ProductFeatureComponent,
-        ProductClassListComponent,
-        ProductClassComponent,
-        ProductListComponent,
-        ProductComponent,
-        CustomerListComponent,
-        CustomerComponent
+        ProductFeatureListComponent, ProductFeatureComponent,
+        ProductClassListComponent, ProductClassComponent,
+        ProductListComponent, ProductComponent,
+        CustomerListComponent, CustomerComponent,
+        ItemListComponent, ItemComponent
     ],
     imports: [
         CommonModule,

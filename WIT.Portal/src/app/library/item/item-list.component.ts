@@ -13,29 +13,32 @@ import { AlertBoxComponent } from '../../shared/alertbox.component';
 import { ConfirmYesNoComponent } from '../../shared/confirm-yes-no/confirm-yes-no.component';
 
 import { TransactionInfo } from '../../entities/transaction-info.entity';
-import { ProductClass, ProductClassList } from '../../entities/product-class.entity';
-import { ProductClassComponent } from "./product-class.component";
+import { ProductFeature, ProductFeatureList } from '../../entities/product-feature.entity';
+//import { ProductFeatureComponent } from "./product-feature.component";
+
+import { GridInfo, ItemGrid } from '../../entities/grid-info.entity';
+import { ItemField } from '../../entities/item-field.entity';
 
 
 @Component({
-    templateUrl: './product-class-list.component.html'
+    templateUrl: './item-list.component.html'
 })
 
-export class ProductClassListComponent implements OnInit {
+export class ItemListComponent implements OnInit {
 
     @ViewChild(DataGrid) datagrid: DataGrid;
     @ViewChild(AlertBoxComponent) alertBox: AlertBoxComponent;
 
-    public title: string = 'Product Classes';
-    public list: ProductClassList = new ProductClassList();
-    public columns = [];
+    public title: string = 'Item list';
+    public list: ItemGrid = new ItemGrid();
+    public columns: Array<DataGridColumn> = [];
 
     public autoFilter: Boolean = false;
     public delaySearch: Boolean = false;
     public runningSearch: Boolean = false;
 
-    //private modalSubscription: Subscription;
-    //private modalRef: BsModalRef;
+    private modalSubscription: Subscription;
+    private modalRef: BsModalRef;
 
 
     constructor(
@@ -50,21 +53,23 @@ export class ProductClassListComponent implements OnInit {
 
     public ngOnInit() {
 
+        /*
         this.columns.push(new DataGridColumn('code', 'Code', '{"width": "20%"}'));
         this.columns.push(new DataGridColumn('name', 'Name', '{"width": "30%" , "hyperLink": true}'));
         this.columns.push(new DataGridColumn('description', 'Description', '{"width": "30%"}'));
         this.columns.push(new DataGridColumn('updatedOn', 'Updated On', '{"width": "15%" , "formatDate": true}'));
         this.columns.push(new DataGridColumn('', '', '{"disableSorting": true, "buttons": [{"name": "x", "icon": "trash", "class": "btn btn-danger"}]}'));
+        */
 
         this.route.params.subscribe(params => {
 
-            let code: string = params['code'];
-            if (code != undefined) {
-                this.list.code = code;
+            let filter: string = params['filter'];
+            if (filter != undefined) {
+                this.list.gridInfo.filter = filter;
             }
-            let name: string = params['name'];
-            if (name != undefined) {
-                this.list.name = name;
+            let itemTypeId: number = Number.parseInt(params['itemTypeId']);
+            if (!Number.isNaN(itemTypeId)) {
+                this.list.gridInfo.itemTypeId = itemTypeId;
             }
         });
 
@@ -79,15 +84,14 @@ export class ProductClassListComponent implements OnInit {
 
         setTimeout(() => {
 
-            let list = new ProductClassList();
+            let list = new ItemGrid();
             list.gridInfo = this.list.gridInfo;
-            list.code = this.list.code;
-            list.name = this.list.name;
+            list.gridInfo.filter = this.list.gridInfo.filter;
 
-            this.libraryService.getProductClasses(list).subscribe(
+            this.libraryService.getItems(/*list*/).subscribe(
                 response => this.getListOnSuccess(response),
                 response => this.getListOnError(response)
-                );
+            );
 
         }, this.delaySearch ? 500 : 0);
     }
@@ -95,10 +99,21 @@ export class ProductClassListComponent implements OnInit {
 
     private getListOnSuccess(response: TransactionInfo): void {
 
-        let list = new ProductClassList(response.data);
+        let list = new ItemGrid(response.data);
         if (list) {
             this.datagrid.databind(list.gridInfo);
-            this.list = list;
+            this.list.data = list.data;
+
+            // columns
+            let columns: Array<DataGridColumn> = [];
+            for (const c of list.fields) {
+                console.log(c);
+                let column = new DataGridColumn(c.key, c.name, '{}');
+                columns.push(column);
+            }
+            this.columns.push(new DataGridColumn('', '', '{"disableSorting": true, "buttons": [{"name": "x", "icon": "trash", "class": "btn btn-danger"}]}'));
+            console.log(columns);
+            this.columns = columns;
         }
 
         this.alertBox.renderSuccessMessage(response.returnMessage);
@@ -113,7 +128,7 @@ export class ProductClassListComponent implements OnInit {
 
     public datagridEvent(event) {
 
-        let datagridEvent: DataGridEventInformation = event.value;
+        /*let datagridEvent: DataGridEventInformation = event.value;
 
         if (datagridEvent.EventType == "PagingEvent") {
             this.onPagingEvent(datagridEvent.CurrentPageNumber);
@@ -137,57 +152,56 @@ export class ProductClassListComponent implements OnInit {
                 let item = this.list.items[i];
                 this.onDelete(item);
             }
-        }
+        }*/
     }
 
-    
-    private onDelete(item: ProductClass) {
 
-        let yesNo: ConfirmYesNoComponent = this.modalService.show(ConfirmYesNoComponent).content;
-        yesNo.title = "Delete Product Class";
-        yesNo.message = "About to delete product class '" + item.code + "'. Proceed?";
+    private onDelete(item: ProductFeature) {
 
-        let modalHide = this.modalService.onHide.subscribe((reason: string) => {
-
+        /*this.modalSubscription = this.modalService.onHide.subscribe((reason: string) => {
             //console.log(`onHide event has been fired${reason ? ', dismissed by ' + reason : ''}`);
-            modalHide.unsubscribe();
+            this.modalSubscription.unsubscribe();
+            if (this.modalRef.content.result) {
+                console.log("Deleting product feature " + item.code);
 
-            if (yesNo.result) {
-                console.log("Deleting product class " + item.code);
-
-                this.libraryService.deleteProductClass(item).subscribe(
+                this.libraryService.deleteProductFeature(item)
+                    .subscribe(
                     response => this.executeSearch(),
                     response => this.getListOnError(response)
                     );
             }
         });
+        this.modalRef = this.modalService.show(ConfirmYesNoComponent);
+        let yesNo: ConfirmYesNoComponent = this.modalRef.content;
+        yesNo.title = "Delete Product Feature";
+        yesNo.message = "About to delete product feature '" + item.code + "'. Proceed?";*/
     }
 
-    private onEdit(item?: ProductClass) {
+    private onEdit(item?: ProductFeature) {
 
-        let maintComponent: ProductClassComponent = this.modalService.show(ProductClassComponent,
-            Object.assign({}, {
-                animated: true,
-                keyboard: true,
-                backdrop: true,
-                ignoreBackdropClick: false
-            }, { class: 'modal-lg' })
-        ).content;
-
-        if (item) {
-            maintComponent.getItem(item.productClassID);
-        }
-
-        let modalHide = this.modalService.onHide.subscribe((reason: string) => {
-
+        /*this.modalSubscription = this.modalService.onHide.subscribe((reason: string) => {
             //console.log(`onHidden event has been fired${reason ? ', dismissed by ' + reason : ''}`);
-            modalHide.unsubscribe();
+            this.modalSubscription.unsubscribe();
 
             if (maintComponent.hasUpdated) {
                 this.executeSearch();
             }
         });
 
+        let modalRef = this.modalService.show(ProductFeatureComponent,
+            Object.assign({}, {
+                animated: true,
+                keyboard: true,
+                backdrop: true,
+                ignoreBackdropClick: false
+            }, { class: 'modal-lg' })
+        );
+
+        let maintComponent: ProductFeatureComponent = modalRef.content;
+
+        if (item) {
+            maintComponent.getItem(item.productFeatureID);
+        }*/
     }
 
     private addItem() {
@@ -197,12 +211,12 @@ export class ProductClassListComponent implements OnInit {
 
     private onItemSelected(itemSelected: number) {
 
-        let rowSelected = itemSelected;
+        /*let rowSelected = itemSelected;
         let item = this.list.items[rowSelected];
 
-        //this.router.navigate(['/customers/customer-maintenance', { id: item.ProductClassId }]);
+        //this.router.navigate(['/customers/customer-maintenance', { id: item.ProductFeatureId }]);
 
-        this.onEdit(item);
+        this.onEdit(item);*/
     }
 
     private onSorting(sortDirection: string, sortExpression: string) {
@@ -227,8 +241,7 @@ export class ProductClassListComponent implements OnInit {
     }
 
     public reset(): void {
-        this.list.code = "";
-        this.list.name = "";
+        this.list.gridInfo.filter = "";
         this.list.gridInfo.currentPageNumber = 1;
         this.delaySearch = false;
         this.executeSearch();
@@ -240,20 +253,9 @@ export class ProductClassListComponent implements OnInit {
         this.executeSearch();
     }
 
-    public nameChanged(newValue): void {
+    public filterChanged(newValue): void {
 
-        this.list.name = newValue;
-        this.list.gridInfo.currentPageNumber = 1;
-
-        if (this.autoFilter) {
-            this.delaySearch = true;
-            this.executeSearch();
-        }
-    }
-
-    public codeChanged(newValue): void {
-
-        this.list.code = newValue;
+        this.list.gridInfo.filter = newValue;
         this.list.gridInfo.currentPageNumber = 1;
 
         if (this.autoFilter) {

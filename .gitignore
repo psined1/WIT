@@ -207,3 +207,4 @@ WIT.Business.Entities
 /WIT.Portal/cmd.bat
 /WIT.Portal/ng_serve.bat
 /WIT.Portal/_ng.bat
+/_ng.bat

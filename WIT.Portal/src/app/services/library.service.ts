@@ -19,7 +19,7 @@ export class LibraryService {
 
     public getItems(): Observable<any> {
         let gridInfo = new GridInfo();
-        gridInfo.id = 1;
+        gridInfo.itemTypeId = 1;
         gridInfo.filter = 'C';
         gridInfo.pageSize = 20;
         let url = this.sessionService.apiServer + "library/getItems";

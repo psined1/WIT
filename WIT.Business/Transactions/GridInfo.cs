@@ -21,7 +21,7 @@ namespace WIT.Business.Entities
         public string Filter { get; set; }
 
         // from LItemType entity:
-        public int Id { get; set; }
+        public int ItemTypeId { get; set; }
         public string Name { get; set; }
         public string Help { get; set; }
 
@@ -36,7 +36,7 @@ namespace WIT.Business.Entities
 
             Filter = "";
 
-            Id = 0;
+            ItemTypeId = 0;
         }
     }
 

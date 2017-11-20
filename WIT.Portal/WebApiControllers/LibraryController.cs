@@ -43,11 +43,11 @@ namespace WIT.Portal.WebApiControllers
         {
             return BaseAction(request, (transaction) => {
 
-                var itemType = _db.LItemTypes.FirstOrDefault(i => i.ItemTypeID == info.Id);
+                var itemType = _db.LItemTypes.FirstOrDefault(i => i.ItemTypeID == info.ItemTypeId);
 
                 if (itemType == null)
                 {
-                    transaction.ReturnMessage = string.Format("Item type {0} not found", info.Id);
+                    transaction.ReturnMessage = string.Format("Item type {0} not found", info.ItemTypeId);
                     throw new HttpResponseException(HttpStatusCode.NotFound);
                 }
 

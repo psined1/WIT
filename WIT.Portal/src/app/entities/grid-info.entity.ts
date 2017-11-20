@@ -1,13 +1,16 @@
-﻿export class GridInfo {
+﻿import { ItemField } from './item-field.entity';
+
+// obsolete
+export class GridInfo {
 
     public totalRows: number;
     public pageSize: number;
     public currentPageNumber: number;
-    public sortId: number;
-    public sortExpression: string;
+    public sortId: number;              // library item property ID, -1 = itemId, 0 = key
+    public sortExpression: string;      // obsolete, use sortId
     public sortDirection: string;
     public filter: string;
-    public id: number;
+    public itemTypeId: number;
 
     constructor()
     constructor(rhs: GridInfo)
@@ -20,12 +23,12 @@
             this.sortExpression = rhs.sortExpression;
             this.sortDirection = rhs.sortDirection;
             this.filter = rhs.filter;
-            this.id = rhs.id;
+            this.itemTypeId = rhs.itemTypeId;
             this.sortId = rhs.sortId;
         } else {
             this.totalRows = 0;
             this.pageSize = 0;
-            this.id = 0;
+            this.itemTypeId = 0;
 
             this.reset();
         }
@@ -50,6 +53,35 @@
     }
 }
 
+export class ItemGrid {
+    public gridInfo: GridInfo;
+    public fields: Array<ItemField>;
+    public data: Array<any>;
+
+    constructor()
+    constructor(rhs: ItemGrid)
+    constructor(rhs?: ItemGrid) {
+        if (rhs) {
+            for (let k in rhs) this[k] = rhs[k];
+            this.gridInfo = new GridInfo(rhs.gridInfo);
+        }
+
+        if (!this.data || !Array.isArray(this.data)) {
+            this.data = [];
+        }
+
+        if (!this.fields || !Array.isArray(this.fields)) {
+            this.fields = [];
+        }
+
+        if (!this.gridInfo || !(this.gridInfo instanceof GridInfo)) {
+            this.gridInfo = new GridInfo();
+        }
+    }
+}
+
+
+// obsolete
 export class ListBase {
 
     public gridInfo: GridInfo;
