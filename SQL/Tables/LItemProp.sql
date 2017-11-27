@@ -1,7 +1,7 @@
 USE [WIT]
 GO
 
-/****** Object:  Table [dbo].[LItemProp]    Script Date: 11/24/2017 09:13:21 ******/
+/****** Object:  Table [dbo].[LItemProp]    Script Date: 11/27/2017 11:23:13 ******/
 SET ANSI_NULLS ON
 GO
 
@@ -14,17 +14,19 @@ GO
 CREATE TABLE [dbo].[LItemProp](
 	[ItemPropID] [int] IDENTITY(1,1) NOT NULL,
 	[ItemTypeID] [int] NOT NULL,
-	[Name] [varchar](100) NOT NULL,
-	[Description] [varchar](250) NULL,
-	[PropType] [int] NOT NULL,
-	[Required] [bit] NOT NULL,
-	[Multiple] [bit] NOT NULL,
-	[ValueItemTypeID] [int] NULL,
-	[GridHide] [bit] NOT NULL,
 	[CreatedOn] [datetime] NULL,
 	[UpdatedOn] [datetime] NULL,
 	[CreatedBy] [varchar](50) NULL,
 	[UpdatedBy] [varchar](50) NULL,
+	[Name] [varchar](100) NOT NULL,
+	[Description] [varchar](250) NULL,
+	[PropType] [int] NOT NULL,
+	[ValueItemTypeID] [int] NULL,
+	[Required] [bit] NOT NULL,
+	[Multiple] [bit] NOT NULL,
+	[Unique] [bit] NOT NULL,
+	[UpperCase] [bit] NOT NULL,
+	[GridHide] [bit] NOT NULL,
  CONSTRAINT [PK_LItemProp] PRIMARY KEY CLUSTERED 
 (
 	[ItemPropID] ASC
@@ -52,6 +54,12 @@ GO
 ALTER TABLE [dbo].[LItemProp] CHECK CONSTRAINT [FK_LItemProp_LItemType_Value]
 GO
 
+ALTER TABLE [dbo].[LItemProp] ADD  CONSTRAINT [DF_LItemProp_CreatedOn]  DEFAULT (getdate()) FOR [CreatedOn]
+GO
+
+ALTER TABLE [dbo].[LItemProp] ADD  CONSTRAINT [DF_LItemProp_UpdatedOn]  DEFAULT (getdate()) FOR [UpdatedOn]
+GO
+
 ALTER TABLE [dbo].[LItemProp] ADD  CONSTRAINT [DF_LItemProp_PropType]  DEFAULT ((0)) FOR [PropType]
 GO
 
@@ -61,13 +69,13 @@ GO
 ALTER TABLE [dbo].[LItemProp] ADD  CONSTRAINT [DF_LItemProp_Multiple]  DEFAULT ((0)) FOR [Multiple]
 GO
 
+ALTER TABLE [dbo].[LItemProp] ADD  CONSTRAINT [DF_LItemProp_Unique]  DEFAULT ((0)) FOR [Unique]
+GO
+
+ALTER TABLE [dbo].[LItemProp] ADD  CONSTRAINT [DF_LItemProp_UpperCase]  DEFAULT ((0)) FOR [UpperCase]
+GO
+
 ALTER TABLE [dbo].[LItemProp] ADD  CONSTRAINT [DF_LItemProp_GridHide]  DEFAULT ((0)) FOR [GridHide]
-GO
-
-ALTER TABLE [dbo].[LItemProp] ADD  CONSTRAINT [DF_LItemProp_CreatedOn]  DEFAULT (getdate()) FOR [CreatedOn]
-GO
-
-ALTER TABLE [dbo].[LItemProp] ADD  CONSTRAINT [DF_LItemProp_UpdatedOn]  DEFAULT (getdate()) FOR [UpdatedOn]
 GO
 
 

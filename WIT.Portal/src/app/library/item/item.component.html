@@ -1,3 +1,85 @@
-<p>
-  item works!
-</p>
+<div class="modal-header">
+
+    <h4 class="modal-title pull-left">{{title}}</h4>
+
+</div>
+
+<div class="modal-body">
+
+    <div class="panel panel-default">
+
+        <div class="form-horizontal" role="form">
+
+            <div style="padding:10px;margin:10px; ">
+
+                <div *ngFor="let f of item.fields" class="form-group">
+
+                    <label class="col-lg-3 col-sm-2 control-label" [ngClass]="{'required': f.required}">{{f.name}}</label>
+
+                    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12" [ngSwitch]="f.propType">
+
+                        <content *ngSwitchCase="propType.String">
+
+                            <input *ngIf="f.upperCase" type="text" class="form-control"
+                                    [ngModel]="f.value | uppercase"
+                                    (ngModelChange)="f.value=$event"
+                                    [ngClass]="{'validation-error': !!f.validationError}"
+                                    [disabled]="showUpdateButton && f.isItemKey || f.disabled">
+
+                            <input *ngIf="!f.upperCase" type="text" class="form-control"
+                                    [(ngModel)]="f.value"
+                                    [ngClass]="{'validation-error': !!f.validationError}"
+                                    [disabled]="showUpdateButton && f.isItemKey || f.disabled">
+
+                        </content>
+
+                        <content *ngSwitchCase="propType.Text">
+
+                            <textarea class="form-control"
+                                   [(ngModel)]="f.value"
+                                   [ngClass]="{'validation-error': !!f.validationError}"
+                                   [disabled]="f.disabled">
+                            </textarea>
+
+                        </content>
+
+                        <content *ngSwitchDefault>
+
+                            <span>TODO: Implement FIeld Type {{f.propType}}</span>
+
+                        </content>
+
+                    </div>
+                    <div class="col-lg-3" *ngIf="!!f.validationError">
+                        <small class="text-danger">
+                            {{f.validationError}}
+                        </small>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <alertbox></alertbox>
+
+</div>
+
+<div class="modal-footer">
+    <div class="pull-left">
+        <content *ngIf="showUpdateButton">
+            <button (click)="updateItem()" class="btn btn-primary">
+                Update
+            </button>
+        </content>
+        <content *ngIf="!showUpdateButton">
+            <button (click)="updateItem()" class="btn btn-primary">
+                Create
+            </button>
+        </content>
+        <button type="button" class="btn btn-default" (click)="bsModalRef.hide()">Close</button>
+    </div>
+</div>

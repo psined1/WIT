@@ -78,7 +78,7 @@ namespace WIT.Portal.WebApiControllers
 
                 if (!string.IsNullOrWhiteSpace(info.Filter))
                 {
-                    q = q.Where(i => i.Key.Contains(info.Filter) || i.LItemValues.Any(v => v.LItemValueString.Value.Contains(info.Filter)));
+                    q = q.Where(i => i.LItemValues.Any(v => v.LItemValueString.Value.Contains(info.Filter)));
                 }
 
                 // total items count
@@ -91,9 +91,9 @@ namespace WIT.Portal.WebApiControllers
                 if (sortField.Id <= 0)
                 {
                     if (info.SortDirection.StartsWith("D"))
-                        q = q.OrderByDescending(i => i.Key);
+                        q = q.OrderByDescending(i => i.ItemID);
                     else
-                        q = q.OrderBy(i => i.Key);
+                        q = q.OrderBy(i => i.ItemID);
                 }
 
                 else
@@ -201,7 +201,6 @@ namespace WIT.Portal.WebApiControllers
                 {
                     itemData = new Dictionary<string, object>(2 + itemType.LItemProps.Count);
                     itemData.Add("id", item.ItemID);
-                    itemData.Add("key", item.Key);
                     grid.Data.Add(itemData);
 
                     foreach (var prop in itemType.LItemProps.OrderBy(p => p.ItemPropID))
@@ -248,13 +247,12 @@ namespace WIT.Portal.WebApiControllers
                                 break;
 
                             case LPropTypeEnum.Item:
-                                string keys = "";
-                                foreach (var mValue in itemValues)
-                                {
-                                    keys += (keys == "" ? "" : ", ") + mValue.LItemValueItem.Key;
-                                    if (!prop.Multiple) break;
-                                }
-                                itemData.Add(string.Format("p{0}", sValue.ItemPropID), keys);
+                                var linkedIds = itemValues
+                                    .Select(v => v.LItemValueItem.ItemID)
+                                    .Take(prop.Multiple ? itemValues.Count() : 1)
+                                    .ToArray()
+                                    ;
+                                itemData.Add(string.Format("p{0}", sValue.ItemPropID), linkedIds);
                                 break;
 
                             // TODO: implement other types
@@ -294,6 +292,32 @@ namespace WIT.Portal.WebApiControllers
                 ItemEntity item = new ItemEntity(existingItem);
 
                 transaction.Data = item;
+            });
+        }
+
+        /// <summary>
+        /// GetProductFeature
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="itemId"></param>
+        /// <returns></returns>
+        [Route("GetBlankItem")]
+        [HttpGet]
+        public HttpResponseMessage GetItemForType(HttpRequestMessage request, long itemTypeId)
+        {
+            return BaseAction(request, (transaction) => {
+
+                var existingItemType = _db.LItemTypes.Include(t => t.LItemProps).FirstOrDefault(t => t.ItemTypeID == itemTypeId);
+
+                if (existingItemType == null)
+                {
+                    transaction.ReturnMessage = string.Format("Item type {0} not found", itemTypeId);
+                    throw new HttpResponseException(HttpStatusCode.NotFound);
+                }
+
+                ItemEntity blankItem = new ItemEntity(existingItemType);
+
+                transaction.Data = blankItem;
             });
         }
 

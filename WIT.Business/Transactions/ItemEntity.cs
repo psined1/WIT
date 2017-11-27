@@ -21,11 +21,18 @@ namespace WIT.Business.Entities
         public bool GridHide { get; set; }
         public bool Required { get; set; }
         public bool Multiple { get; set; }
-        public bool Disabled { get; set; }
+        public bool Unique { get; set; }
+        public bool UpperCase { get; set; }
+        public bool Disabled
+        {
+            get {
+                return false;       // TODO: not implemented
+            }
+        }
+                    
         public bool IsSortable {
             get {
                 return 
-                    Id == 0 ||                              // sort by key always allowed
                     PropType == LPropTypeEnum.String ||
                     PropType == LPropTypeEnum.Integer ||
                     PropType == LPropTypeEnum.Decimal ||
@@ -33,6 +40,14 @@ namespace WIT.Business.Entities
                     PropType == LPropTypeEnum.Time ||
                     PropType == LPropTypeEnum.DateTime
                     ;
+            }
+        }
+
+        public bool IsItemKey
+        {
+            get
+            {
+                return Unique && Required && !Multiple;
             }
         }
 
@@ -53,6 +68,8 @@ namespace WIT.Business.Entities
                 GridHide = prop.GridHide;
                 Required = prop.Required;
                 Multiple = prop.Multiple;
+                Unique = prop.Unique;
+                UpperCase = prop.UpperCase;
             }
         }
     }
@@ -98,10 +115,8 @@ namespace WIT.Business.Entities
                         Value = values
                             .OrderBy(v => v.ItemValueID)
                             .Take(Multiple ? values.Count : 1)
-                            .Select(v => new {
-                                ItemId = v.LItemValueItem.ItemID,
-                                Key = v.LItemValueItem.Key
-                            });
+                            .Select(v => v.LItemValueItem.ItemID)
+                            .ToArray();
                         break;
 
                     // TODO: implement other types
@@ -112,13 +127,17 @@ namespace WIT.Business.Entities
                 }
             }
         }
+
+        public ItemValue(LItemProp prop)
+            : base(prop)
+        {
+        }
     }
 
     public class ItemEntity
     {
         // from LItem entity
         public long Id { get; set; }
-        public string Key { get; set; }
         public Nullable<System.DateTime> CreatedOn { get; set; }
         public Nullable<System.DateTime> UpdatedOn { get; set; }
         public string CreatedBy { get; set; }
@@ -129,17 +148,16 @@ namespace WIT.Business.Entities
         public string Help { get; set; }
 
         // from LItemProp
-        public List<ItemValue> Values { get; set; }
+        public List<ItemValue> Fields { get; set; }
 
         // obsolete
-        public Dictionary<string, string> ValidationErrors { get; set; }
+        //public Dictionary<string, string> ValidationErrors { get; set; }
 
         public ItemEntity(LItem existingItem)
         {
             if (existingItem != null)
             {
                 Id = existingItem.ItemID;
-                Key = existingItem.Key;
                 CreatedBy = existingItem.CreatedBy;
                 CreatedOn = existingItem.CreatedOn;
                 UpdatedBy = existingItem.UpdatedBy;
@@ -148,7 +166,7 @@ namespace WIT.Business.Entities
                 Name = existingItem.LItemType.Name;
                 Help = existingItem.LItemType.Description;
 
-                Values = new List<ItemValue>(existingItem.LItemType.LItemProps.Count + 2);
+                Fields = new List<ItemValue>(existingItem.LItemType.LItemProps.Count + 1);
 
                 foreach (var prop in existingItem.LItemType.LItemProps.OrderBy(p => p.ItemPropID))
                 {
@@ -157,7 +175,23 @@ namespace WIT.Business.Entities
                         .ToList()
                         ;
 
-                    Values.Add(new ItemValue(prop, propValues));
+                    Fields.Add(new ItemValue(prop, propValues));
+                }
+            }
+        }
+
+        public ItemEntity(LItemType existingItemType)
+        {
+            if (existingItemType != null)
+            {
+                Name = existingItemType.Name;
+                Help = existingItemType.Description;
+
+                Fields = new List<ItemValue>(existingItemType.LItemProps.Count + 1);
+
+                foreach (var prop in existingItemType.LItemProps.OrderBy(p => p.ItemPropID))
+                {
+                    Fields.Add(new ItemValue(prop));
                 }
             }
         }
@@ -180,20 +214,11 @@ namespace WIT.Business.Entities
             // fields
             Fields.Add(new ItemField()
             {
-                Id = -1,
+                Id = 0,
                 Key = "id",
                 Name = "Id",
                 PropType = LPropTypeEnum.Integer,
                 GridHide = true
-            });
-
-            Fields.Add(new ItemField()
-            {
-                Id = 0,
-                Key = "key",
-                Name = "Key",
-                PropType = LPropTypeEnum.String,
-                GridHide = false
             });
         }
     }

@@ -23,7 +23,6 @@ namespace WIT.Data.Models
     
         public long ItemID { get; set; }
         public int ItemTypeID { get; set; }
-        public string Key { get; set; }
         public Nullable<System.DateTime> CreatedOn { get; set; }
         public Nullable<System.DateTime> UpdatedOn { get; set; }
         public string CreatedBy { get; set; }

@@ -9,7 +9,8 @@ import { ProductFeature, ProductFeatureList } from '../entities/product-feature.
 import { ProductClass, ProductClassList } from '../entities/product-class.entity';
 import { Product, ProductList } from '../entities/product.entity';
 import { Customer, CustomerList } from '../entities/customer.entity';
-import { GridInfo, IItemData } from '../entities/grid-info.entity';
+import { GridInfo } from '../entities/grid-info.entity';
+import { IItemData } from '../entities/item-field.entity';
 
 
 @Injectable()
@@ -23,8 +24,18 @@ export class LibraryService {
         return this.httpService.httpPostNonblocking(url, gridInfo);
     }
 
-    public deleteItem(item: IItemData): Observable<any> {
-        let url = this.sessionService.apiServer + "library/deleteItem?itemId=" + item.id;
+    public deleteItem(itemId: number): Observable<any> {
+        let url = this.sessionService.apiServer + "library/deleteItem?itemId=" + itemId;
+        return this.httpService.httpGet(url);
+    }
+
+    public getItem(itemId: number): Observable<any> {
+        let url = this.sessionService.apiServer + "library/getItem?itemId=" + itemId;
+        return this.httpService.httpGet(url);
+    }
+
+    public getBlankItem(itemTypeId: number): Observable<any> {
+        let url = this.sessionService.apiServer + "library/getBlankItem?itemTypeId=" + itemTypeId;
         return this.httpService.httpGet(url);
     }
 

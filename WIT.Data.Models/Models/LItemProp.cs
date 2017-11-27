@@ -33,6 +33,8 @@ namespace WIT.Data.Models
         public string UpdatedBy { get; set; }
         public bool Required { get; set; }
         public bool Multiple { get; set; }
+        public bool Unique { get; set; }
+        public bool UpperCase { get; set; }
     
         public virtual LItemType LItemType { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

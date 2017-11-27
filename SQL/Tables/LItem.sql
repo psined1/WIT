@@ -1,7 +1,7 @@
 USE [WIT]
 GO
 
-/****** Object:  Table [dbo].[LItem]    Script Date: 11/14/2017 16:13:05 ******/
+/****** Object:  Table [dbo].[LItem]    Script Date: 11/27/2017 11:05:34 ******/
 SET ANSI_NULLS ON
 GO
 
@@ -14,7 +14,6 @@ GO
 CREATE TABLE [dbo].[LItem](
 	[ItemID] [bigint] IDENTITY(1,1) NOT NULL,
 	[ItemTypeID] [int] NOT NULL,
-	[Key] [varchar](50) NOT NULL,
 	[CreatedOn] [datetime] NULL,
 	[UpdatedOn] [datetime] NULL,
 	[CreatedBy] [varchar](50) NULL,
@@ -22,11 +21,6 @@ CREATE TABLE [dbo].[LItem](
  CONSTRAINT [PK_LItem] PRIMARY KEY CLUSTERED 
 (
 	[ItemID] ASC
-)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY],
- CONSTRAINT [UX_LItem] UNIQUE NONCLUSTERED 
-(
-	[ItemTypeID] ASC,
-	[Key] ASC
 )WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 

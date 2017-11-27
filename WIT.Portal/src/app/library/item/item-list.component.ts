@@ -17,8 +17,8 @@ import { TransactionInfo } from '../../entities/transaction-info.entity';
 
 import { ItemComponent } from "./item.component";
 
-import { GridInfo, ItemGrid, IItemData } from '../../entities/grid-info.entity';
-import { ItemField, LPropTypeEnum } from '../../entities/item-field.entity';
+import { GridInfo, ItemGrid } from '../../entities/grid-info.entity';
+import { ItemField, LPropTypeEnum, IItemData } from '../../entities/item-field.entity';
 
 
 
@@ -113,7 +113,7 @@ export class ItemListComponent implements OnInit {
 
                 let options: string = '';
 
-                if (c.key === 'key' || c.propType === LPropTypeEnum.Hyperlink) {
+                if (c.isItemKey || c.propType === LPropTypeEnum.Hyperlink) {
                     options = options + (options === '' ? '' : ',') + '"hyperLink": true';
                 }
 
@@ -122,12 +122,6 @@ export class ItemListComponent implements OnInit {
                 }
 
                 switch (c.propType) {
-                    case LPropTypeEnum.Image:
-                    case LPropTypeEnum.Video:
-                    case LPropTypeEnum.Text:
-                        //options = options + (options === '' ? '' : ',') + '"disableSorting": true';
-                        break;
-
                     case LPropTypeEnum.Date:
                         options = options + (options === '' ? '' : ',') + '"formatDate": true';
                         break;
@@ -144,6 +138,7 @@ export class ItemListComponent implements OnInit {
                     case LPropTypeEnum.Item:
                     case LPropTypeEnum.Image:
                     case LPropTypeEnum.Video:
+                    case LPropTypeEnum.Text:
                     case LPropTypeEnum.Hyperlink:
                         break;
                 }
@@ -211,7 +206,7 @@ export class ItemListComponent implements OnInit {
 
         let yesNo: ConfirmYesNoComponent = this.modalService.show(ConfirmYesNoComponent).content;
         yesNo.title = "Delete " + this.list.gridInfo.name;
-        yesNo.message = "About to delete entry '" + item.key + "'. Proceed?";
+        yesNo.message = "About to delete entry '" + item.id + "'. Proceed?";
 
         let modalHide = this.modalService.onHide.subscribe((reason: string) => {
 
@@ -221,7 +216,7 @@ export class ItemListComponent implements OnInit {
             if (yesNo.result) {
                 console.log("Deleting item " + item.id);
 
-                this.libraryService.deleteItem(item).subscribe(
+                this.libraryService.deleteItem(item.id).subscribe(
                     response => this.executeSearch(),
                     response => this.getListOnError(response)
                 );
@@ -232,7 +227,7 @@ export class ItemListComponent implements OnInit {
 
     private onEdit(item?: IItemData) {
 
-        console.log(item);
+        //console.log(item);
 
         let maintComponent: ItemComponent = this.modalService.show(ItemComponent,
             Object.assign({}, {
@@ -244,7 +239,9 @@ export class ItemListComponent implements OnInit {
         ).content;
 
         if (item) {
-            //maintComponent.getItem(item.id);
+            maintComponent.getItem(item.id);
+        } else {
+            maintComponent.initItem(this.list.gridInfo.itemTypeId);
         }
 
         let modalHide = this.modalService.onHide.subscribe((reason: string) => {

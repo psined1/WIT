@@ -29,7 +29,6 @@
           </Key>
           <Property Name="ItemID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="ItemTypeID" Type="int" Nullable="false" />
-          <Property Name="Key" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="CreatedOn" Type="datetime" />
           <Property Name="UpdatedOn" Type="datetime" />
           <Property Name="CreatedBy" Type="varchar" MaxLength="50" />
@@ -41,17 +40,19 @@
           </Key>
           <Property Name="ItemPropID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="ItemTypeID" Type="int" Nullable="false" />
-          <Property Name="Name" Type="varchar" MaxLength="100" Nullable="false" />
-          <Property Name="Description" Type="varchar" MaxLength="250" />
-          <Property Name="PropType" Type="int" Nullable="false" />
-          <Property Name="Required" Type="bit" Nullable="false" />
-          <Property Name="Multiple" Type="bit" Nullable="false" />
-          <Property Name="ValueItemTypeID" Type="int" />
-          <Property Name="GridHide" Type="bit" Nullable="false" />
           <Property Name="CreatedOn" Type="datetime" />
           <Property Name="UpdatedOn" Type="datetime" />
           <Property Name="CreatedBy" Type="varchar" MaxLength="50" />
           <Property Name="UpdatedBy" Type="varchar" MaxLength="50" />
+          <Property Name="Name" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="Description" Type="varchar" MaxLength="250" />
+          <Property Name="PropType" Type="int" Nullable="false" />
+          <Property Name="ValueItemTypeID" Type="int" />
+          <Property Name="Required" Type="bit" Nullable="false" />
+          <Property Name="Multiple" Type="bit" Nullable="false" />
+          <Property Name="Unique" Type="bit" Nullable="false" />
+          <Property Name="UpperCase" Type="bit" Nullable="false" />
+          <Property Name="GridHide" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="LItemType">
           <Key>
@@ -636,7 +637,6 @@
           </Key>
           <Property Name="ItemID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="ItemTypeID" Type="Int32" Nullable="false" />
-          <Property Name="Key" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="CreatedOn" Type="DateTime" Precision="3" />
           <Property Name="UpdatedOn" Type="DateTime" Precision="3" />
           <Property Name="CreatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
@@ -664,6 +664,8 @@
           <NavigationProperty Name="LItemValues" Relationship="WIT.Data.Models.FK_LItemValue_LItemProp" FromRole="LItemProp" ToRole="LItemValue" />
           <Property Name="Required" Type="Boolean" Nullable="false" />
           <Property Name="Multiple" Type="Boolean" Nullable="false" />
+          <Property Name="Unique" Type="Boolean" Nullable="false" />
+          <Property Name="UpperCase" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="LItemType">
           <Key>
@@ -976,7 +978,6 @@
                 <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
                 <ScalarProperty Name="UpdatedOn" ColumnName="UpdatedOn" />
                 <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
-                <ScalarProperty Name="Key" ColumnName="Key" />
                 <ScalarProperty Name="ItemTypeID" ColumnName="ItemTypeID" />
                 <ScalarProperty Name="ItemID" ColumnName="ItemID" />
               </MappingFragment>
@@ -985,6 +986,8 @@
           <EntitySetMapping Name="LItemProps">
             <EntityTypeMapping TypeName="WIT.Data.Models.LItemProp">
               <MappingFragment StoreEntitySet="LItemProp">
+                <ScalarProperty Name="UpperCase" ColumnName="UpperCase" />
+                <ScalarProperty Name="Unique" ColumnName="Unique" />
                 <ScalarProperty Name="Multiple" ColumnName="Multiple" />
                 <ScalarProperty Name="Required" ColumnName="Required" />
                 <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />

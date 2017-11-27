@@ -1,4 +1,4 @@
-﻿import { ItemField } from './item-field.entity';
+﻿import { ItemField, IItemData } from './item-field.entity';
 
 // obsolete
 export class GridInfo {
@@ -54,11 +54,6 @@ export class GridInfo {
     }
 }
 
-
-export interface IItemData {
-    id: number;
-    key: string;
-}
 
 
 export class ItemGrid {
