@@ -13,11 +13,14 @@ import { AlertBoxComponent } from '../../shared/alertbox.component';
 import { ConfirmYesNoComponent } from '../../shared/confirm-yes-no/confirm-yes-no.component';
 
 import { TransactionInfo } from '../../entities/transaction-info.entity';
-import { ProductFeature, ProductFeatureList } from '../../entities/product-feature.entity';
-//import { ProductFeatureComponent } from "./product-feature.component";
+//import { ProductFeature, ProductFeatureList } from '../../entities/product-feature.entity';
+
+import { ItemComponent } from "./item.component";
 
 import { GridInfo, ItemGrid, IItemData } from '../../entities/grid-info.entity';
 import { ItemField, LPropTypeEnum } from '../../entities/item-field.entity';
+
+
 
 
 @Component({
@@ -29,7 +32,8 @@ export class ItemListComponent implements OnInit {
     @ViewChild(DataGrid) datagrid: DataGrid;
     @ViewChild(AlertBoxComponent) alertBox: AlertBoxComponent;
 
-    public title: string = 'Library items';
+    private __title: string = 'Library items: ';
+    public title: string;
     public list: ItemGrid = new ItemGrid();
     public columns: Array<DataGridColumn> = [];
 
@@ -50,6 +54,7 @@ export class ItemListComponent implements OnInit {
         this.autoFilter = false;
         this.list.gridInfo.pageSize = 20;
         this.list.gridInfo.itemTypeId = 2;
+        this.title = this.__title;
     }
 
     public ngOnInit() {
@@ -96,54 +101,71 @@ export class ItemListComponent implements OnInit {
 
     private getListOnSuccess(response: TransactionInfo): void {
 
-        console.log(response.data);
+        //console.log(response.data);
 
         let list = new ItemGrid(response.data);
-        if (list) {
-            // columns
-            let columns: Array<DataGridColumn> = [];
-            for (const c of list.fields) {
-                if (!c.gridHide) {
-                    let options = '';
-                    if (c.key === 'key' || c.propType === LPropTypeEnum.Hyperlink)
-                        options = (options === '' ? '' : ',') + '"hyperLink": true';
-                    switch (c.propType) {
-                        case LPropTypeEnum.Image:
-                        case LPropTypeEnum.Video:
-                        case LPropTypeEnum.Text:
-                            options = (options === '' ? '' : ',') + '"disableSorting": true';
-                            break;
 
-                        case LPropTypeEnum.Date:
-                            options = (options === '' ? '' : ',') + '"formatDate": true';
-                            break;
+        // columns
+        let columns: Array<DataGridColumn> = [];
+        for (const c of list.fields) {
 
-                        case LPropTypeEnum.Time:
-                            options = (options === '' ? '' : ',') + '"formatTime": true';
-                            break;
+            if (!c.gridHide) {
 
-                        case LPropTypeEnum.DateTime:
-                            options = (options === '' ? '' : ',') + '"formatDate": true';
-                            options = (options === '' ? '' : ',') + '"formatTime": true';
-                            break;
-                    }
-                    if (!c.isSortable) {
-                        options = (options === '' ? '' : ',') + '"disableSorting": true';
-                    }
-                    let column = new DataGridColumn(c.key, c.name, '{' + options + '}');
-                    columns.push(column);
+                let options: string = '';
+
+                if (c.key === 'key' || c.propType === LPropTypeEnum.Hyperlink) {
+                    options = options + (options === '' ? '' : ',') + '"hyperLink": true';
                 }
+
+                if (!c.isSortable) {
+                    options = options + (options === '' ? '' : ',') + '"disableSorting": true';
+                }
+
+                switch (c.propType) {
+                    case LPropTypeEnum.Image:
+                    case LPropTypeEnum.Video:
+                    case LPropTypeEnum.Text:
+                        //options = options + (options === '' ? '' : ',') + '"disableSorting": true';
+                        break;
+
+                    case LPropTypeEnum.Date:
+                        options = options + (options === '' ? '' : ',') + '"formatDate": true';
+                        break;
+
+                    case LPropTypeEnum.Time:
+                        options = options + (options === '' ? '' : ',') + '"formatTime": true';
+                        break;
+
+                    case LPropTypeEnum.DateTime:
+                        options = options + (options === '' ? '' : ',') + '"formatDate": true';
+                        options = options + (options === '' ? '' : ',') + '"formatTime": true';
+                        break;
+
+                    case LPropTypeEnum.Item:
+                    case LPropTypeEnum.Image:
+                    case LPropTypeEnum.Video:
+                    case LPropTypeEnum.Hyperlink:
+                        break;
+                }
+
+                //console.log(options);
+
+                let column = new DataGridColumn(c.key, c.name, '{' + options + '}');
+                columns.push(column);
             }
-            columns.push(new DataGridColumn('', '', '{"disableSorting": true, "buttons": [{"name": "x", "icon": "trash", "class": "btn btn-danger"}]}'));
-
-            this.columns = columns;
-            this.list = list;
-            this.datagrid.databind(this.list.gridInfo);
-
-            //console.log(this.columns);
-            //console.log(this.list.data);
-            //console.log(this.list.gridInfo);
         }
+
+        columns.push(new DataGridColumn('', '', '{"disableSorting": true, "buttons": [{"name": "x", "icon": "trash", "class": "btn btn-danger"}]}'));
+
+        this.columns = columns;
+        this.list = list;
+        this.datagrid.databind(this.list.gridInfo);
+
+        this.title = this.__title + this.list.gridInfo.name;
+
+        //console.log(this.columns);
+        //console.log(this.list.data);
+        //console.log(this.list.gridInfo);
 
         this.alertBox.renderSuccessMessage(response.returnMessage);
         this.runningSearch = false;
@@ -187,50 +209,54 @@ export class ItemListComponent implements OnInit {
 
     private onDelete(item: IItemData) {
 
-        /*this.modalSubscription = this.modalService.onHide.subscribe((reason: string) => {
-            //console.log(`onHide event has been fired${reason ? ', dismissed by ' + reason : ''}`);
-            this.modalSubscription.unsubscribe();
-            if (this.modalRef.content.result) {
-                console.log("Deleting product feature " + item.code);
+        let yesNo: ConfirmYesNoComponent = this.modalService.show(ConfirmYesNoComponent).content;
+        yesNo.title = "Delete " + this.list.gridInfo.name;
+        yesNo.message = "About to delete entry '" + item.key + "'. Proceed?";
 
-                this.libraryService.deleteProductFeature(item)
-                    .subscribe(
+        let modalHide = this.modalService.onHide.subscribe((reason: string) => {
+
+            //console.log(`onHide event has been fired${reason ? ', dismissed by ' + reason : ''}`);
+            modalHide.unsubscribe();
+
+            if (yesNo.result) {
+                console.log("Deleting item " + item.id);
+
+                this.libraryService.deleteItem(item).subscribe(
                     response => this.executeSearch(),
                     response => this.getListOnError(response)
-                    );
+                );
             }
         });
-        this.modalRef = this.modalService.show(ConfirmYesNoComponent);
-        let yesNo: ConfirmYesNoComponent = this.modalRef.content;
-        yesNo.title = "Delete Product Feature";
-        yesNo.message = "About to delete product feature '" + item.code + "'. Proceed?";*/
+
     }
 
     private onEdit(item?: IItemData) {
 
-        /*this.modalSubscription = this.modalService.onHide.subscribe((reason: string) => {
-            //console.log(`onHidden event has been fired${reason ? ', dismissed by ' + reason : ''}`);
-            this.modalSubscription.unsubscribe();
+        console.log(item);
 
-            if (maintComponent.hasUpdated) {
-                this.executeSearch();
-            }
-        });
-
-        let modalRef = this.modalService.show(ProductFeatureComponent,
+        let maintComponent: ItemComponent = this.modalService.show(ItemComponent,
             Object.assign({}, {
                 animated: true,
                 keyboard: true,
                 backdrop: true,
                 ignoreBackdropClick: false
             }, { class: 'modal-lg' })
-        );
-
-        let maintComponent: ProductFeatureComponent = modalRef.content;
+        ).content;
 
         if (item) {
-            maintComponent.getItem(item.productFeatureID);
-        }*/
+            //maintComponent.getItem(item.id);
+        }
+
+        let modalHide = this.modalService.onHide.subscribe((reason: string) => {
+
+            //console.log(`onHidden event has been fired${reason ? ', dismissed by ' + reason : ''}`);
+            modalHide.unsubscribe();
+
+            //if (maintComponent.hasUpdated) {
+            //    this.executeSearch();
+            //}
+        });
+
     }
 
     private addItem() {
@@ -240,18 +266,18 @@ export class ItemListComponent implements OnInit {
 
     private onItemSelected(itemSelected: number) {
 
-        /*let rowSelected = itemSelected;
+        let rowSelected = itemSelected;
         let item = this.list.data[rowSelected];
 
         //this.router.navigate(['/customers/customer-maintenance', { id: item.ProductFeatureId }]);
 
-        this.onEdit(item);*/
+        this.onEdit(item);
     }
 
     private onSorting(sortDirection: string, sortExpression: string) {
         this.list.gridInfo.sortDirection = sortDirection;
         this.list.gridInfo.sortExpression = sortExpression; // obsolete
-        this.list.fields.filter(f => f.key == sortExpression).forEach(f => this.list.gridInfo.sortId = f.id);
+        //this.list.fields.filter(f => f.key == sortExpression).forEach(f => this.list.gridInfo.sortId = f.id);
 
         this.list.gridInfo.currentPageNumber = 1;
         this.delaySearch = false;
@@ -272,10 +298,8 @@ export class ItemListComponent implements OnInit {
     }
 
     public reset(): void {
-        this.list.gridInfo.filter = "";
-        this.list.gridInfo.currentPageNumber = 1;
-        this.list.gridInfo.sortId = -1;
-        this.list.gridInfo.sortExpression = "";
+        this.list.gridInfo.reset();
+        this.datagrid.sortColumn = "";
         this.delaySearch = false;
         this.executeSearch();
     }

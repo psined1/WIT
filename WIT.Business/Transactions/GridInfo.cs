@@ -13,7 +13,6 @@ namespace WIT.Business.Entities
         public int TotalPages { get; set; }
         public int TotalRows { get; set; }
         public int PageSize { get; set; }
-        public int SortId { get; set; }
         public string SortExpression { get; set; }
         public string SortDirection { get; set; }
         public int CurrentPageNumber { get; set; }
@@ -32,7 +31,6 @@ namespace WIT.Business.Entities
             PageSize = 0;
             CurrentPageNumber = 0;
             SortDirection = "ASC";
-            SortId = 0;
 
             Filter = "";
 
@@ -44,14 +42,6 @@ namespace WIT.Business.Entities
     {
         public static IQueryable<T> Page<T>(this IQueryable<T> q, GridInfo info)
         {
-            if (!string.IsNullOrWhiteSpace(info.SortExpression))
-            {
-                if (string.IsNullOrWhiteSpace(info.SortDirection))
-                    info.SortDirection = "ASC";
-
-                q = q.OrderBy(string.Format("{0} {1}", info.SortExpression, info.SortDirection));
-            }
-
             if (info.PageSize > 0)
             {
                 if (info.CurrentPageNumber < 1)

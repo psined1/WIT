@@ -6,9 +6,9 @@ set identity_insert LItemType off;
 go
 
 set identity_insert LItemProp on;
-insert LItemProp (ItemPropID, ItemTypeID, Name, PropType, ValueRule) values 
+insert LItemProp (ItemPropID, ItemTypeID, Name, PropType, [Required]) values 
 	(1, 1, 'Name', 0, 1),
-	(2, 1, 'Description', 0, 1)
+	(2, 1, 'Description', 0, 0)
 ;
 set identity_insert LItemProp off;
 go
@@ -47,9 +47,9 @@ set identity_insert LItemType off;
 go
 
 set identity_insert LItemProp on;
-insert LItemProp (ItemPropID, ItemTypeID, Name, PropType, ValueRule) values
+insert LItemProp (ItemPropID, ItemTypeID, Name, PropType, [Required]) values
 	(3, 2, 'Name', 0, 1),
-	(4, 2, 'Description', 0, 1)
+	(4, 2, 'Description', 0, 0)
 ;
 set identity_insert LItemProp off;
 go

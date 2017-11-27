@@ -18,6 +18,7 @@ namespace WIT.Data.Models
         public LItem()
         {
             this.LItemValues = new HashSet<LItemValue>();
+            this.LItemValueItems = new HashSet<LItemValue>();
         }
     
         public long ItemID { get; set; }
@@ -31,5 +32,7 @@ namespace WIT.Data.Models
         public virtual LItemType LItemType { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<LItemValue> LItemValues { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<LItemValue> LItemValueItems { get; set; }
     }
 }

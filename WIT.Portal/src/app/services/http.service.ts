@@ -30,30 +30,37 @@ export class HttpService {
         return headers;
     }
 
-    public httpPost(url: string, object?: any): Observable<any> {
+    public httpPost(url: string, object?: any, blockUi: boolean = true): Observable<any> {
 
-        this.blockUIService.startBlock();
+        if (blockUi)
+            this.blockUIService.startBlock();
      
         let body = JSON.stringify(object || {});
         let headers = this.makeHeaders();
         let options = new RequestOptions({ headers: headers });
 
         return this.http.post(url, body, options)
-            .map(response => this.parseResponse(response, this.blockUIService, true))
-            .catch(err => this.handleError(err, this.blockUIService, true)
+            .map(response => this.parseResponse(response, this.blockUIService, blockUi))
+            .catch(err => this.handleError(err, this.blockUIService, blockUi)
             );
     }
 
-
     public httpPostNonblocking(url: string, object?: any): Observable<any> {
 
-        let body = JSON.stringify(object || {});
+        return this.httpPost(url, object, false);
+    }
+
+    public httpGet(url: string, blockUi: boolean = true): Observable<any> {
+
+        if (blockUi)
+            this.blockUIService.startBlock();
+
         let headers = this.makeHeaders();
         let options = new RequestOptions({ headers: headers });
 
-        return this.http.post(url, body, options)
-            .map(response => this.parseResponse(response, this.blockUIService, false))
-            .catch(err => this.handleError(err, this.blockUIService, false)
+        return this.http.get(url, options)
+            .map(response => this.parseResponse(response, this.blockUIService, blockUi))
+            .catch(err => this.handleError(err, this.blockUIService, blockUi)
             );
     }
 

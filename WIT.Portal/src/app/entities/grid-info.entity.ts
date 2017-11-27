@@ -6,11 +6,12 @@ export class GridInfo {
     public totalRows: number;
     public pageSize: number;
     public currentPageNumber: number;
-    public sortId: number;              // library item property ID, -1 = itemId, 0 = key
-    public sortExpression: string;      // obsolete, use sortId
+    public sortExpression: string;
     public sortDirection: string;
     public filter: string;
     public itemTypeId: number;
+    public name: string;
+    public help: string;
 
     constructor()
     constructor(rhs: GridInfo)
@@ -24,7 +25,8 @@ export class GridInfo {
             this.sortDirection = rhs.sortDirection;
             this.filter = rhs.filter;
             this.itemTypeId = rhs.itemTypeId;
-            this.sortId = rhs.sortId;
+            this.name = rhs.name;
+            this.help = rhs.help;
         } else {
             this.totalRows = 0;
             this.pageSize = 0;
@@ -49,7 +51,6 @@ export class GridInfo {
         this.sortDirection = "";
         this.sortExpression = "";
         this.filter = "";
-        this.sortId = 0;
     }
 }
 

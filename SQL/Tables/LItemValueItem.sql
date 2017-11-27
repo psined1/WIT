@@ -1,0 +1,38 @@
+USE [WIT]
+GO
+
+/****** Object:  Table [dbo].[LItemValueItem]    Script Date: 11/24/2017 10:11:02 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[LItemValueItem](
+	[ItemValueID] [bigint] NOT NULL,
+	[Value] [bigint] NOT NULL,
+ CONSTRAINT [PK_LItemValueItem] PRIMARY KEY CLUSTERED 
+(
+	[ItemValueID] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+ALTER TABLE [dbo].[LItemValueItem]  WITH CHECK ADD  CONSTRAINT [FK_LItemValueItem_LItem] FOREIGN KEY([Value])
+REFERENCES [dbo].[LItem] ([ItemID])
+GO
+
+ALTER TABLE [dbo].[LItemValueItem] CHECK CONSTRAINT [FK_LItemValueItem_LItem]
+GO
+
+ALTER TABLE [dbo].[LItemValueItem]  WITH CHECK ADD  CONSTRAINT [FK_LItemValueItem_LItemValue] FOREIGN KEY([ItemValueID])
+REFERENCES [dbo].[LItemValue] ([ItemValueID])
+ON UPDATE CASCADE
+ON DELETE CASCADE
+GO
+
+ALTER TABLE [dbo].[LItemValueItem] CHECK CONSTRAINT [FK_LItemValueItem_LItemValue]
+GO
+
+

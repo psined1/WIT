@@ -29,5 +29,6 @@ namespace WIT.Data.Models
         public virtual LItemValueInteger LItemValueInteger { get; set; }
         public virtual LItemValueString LItemValueString { get; set; }
         public virtual LItemValueText LItemValueText { get; set; }
+        public virtual LItem LItemValueItem { get; set; }
     }
 }

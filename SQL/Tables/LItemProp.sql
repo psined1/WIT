@@ -1,7 +1,7 @@
 USE [WIT]
 GO
 
-/****** Object:  Table [dbo].[LItemProp]    Script Date: 11/16/2017 15:28:45 ******/
+/****** Object:  Table [dbo].[LItemProp]    Script Date: 11/24/2017 09:13:21 ******/
 SET ANSI_NULLS ON
 GO
 
@@ -17,8 +17,9 @@ CREATE TABLE [dbo].[LItemProp](
 	[Name] [varchar](100) NOT NULL,
 	[Description] [varchar](250) NULL,
 	[PropType] [int] NOT NULL,
+	[Required] [bit] NOT NULL,
+	[Multiple] [bit] NOT NULL,
 	[ValueItemTypeID] [int] NULL,
-	[ValueRule] [int] NOT NULL,
 	[GridHide] [bit] NOT NULL,
 	[CreatedOn] [datetime] NULL,
 	[UpdatedOn] [datetime] NULL,
@@ -54,7 +55,10 @@ GO
 ALTER TABLE [dbo].[LItemProp] ADD  CONSTRAINT [DF_LItemProp_PropType]  DEFAULT ((0)) FOR [PropType]
 GO
 
-ALTER TABLE [dbo].[LItemProp] ADD  CONSTRAINT [DF_LItemProp_ValueRule]  DEFAULT ((0)) FOR [ValueRule]
+ALTER TABLE [dbo].[LItemProp] ADD  CONSTRAINT [DF_LItemProp_Required]  DEFAULT ((0)) FOR [Required]
+GO
+
+ALTER TABLE [dbo].[LItemProp] ADD  CONSTRAINT [DF_LItemProp_Multiple]  DEFAULT ((0)) FOR [Multiple]
 GO
 
 ALTER TABLE [dbo].[LItemProp] ADD  CONSTRAINT [DF_LItemProp_GridHide]  DEFAULT ((0)) FOR [GridHide]

@@ -170,4 +170,25 @@ namespace WIT.Business
             return item.ValidationErrors.Count == 0;
         }
     }
+
+    public class ItemValidator
+    {
+        private WitEntityValidator<ItemEntity> _validator = new WitEntityValidator<ItemEntity>();
+        private WitEntities _db = null;
+
+        private ItemValidator(WitEntities db)
+        {
+            _db = db;
+
+            _validator.RuleSet("delete", () =>
+            {
+            });
+        }
+
+        public static bool CheckDelete(WitEntities db, ItemEntity item)
+        {
+            item.ValidationErrors = new ItemValidator(db)._validator.CheckErrors(item, "delete");
+            return item.ValidationErrors.Count == 0;
+        }
+    }
 }

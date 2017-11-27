@@ -4,7 +4,7 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="c5e0f40d1df24114a8716d0a1593aaff" Name="Diagram1" >
+      <Diagram DiagramId="c5e0f40d1df24114a8716d0a1593aaff" Name="Diagram1" ZoomLevel="95" >
         <EntityTypeShape EntityType="WIT.Data.Models.User" Width="1.5" PointX="0.75" PointY="0.75" />
         <EntityTypeShape EntityType="WIT.Data.Models.Customer" Width="1.5" PointX="3.375" PointY="0.75" />
         <EntityTypeShape EntityType="WIT.Data.Models.ProductFeature" Width="1.5" PointX="0.75" PointY="4.75" />
@@ -31,6 +31,7 @@
         <AssociationConnector Association="WIT.Data.Models.FK_LItemValueInteger_LItemValue" />
         <AssociationConnector Association="WIT.Data.Models.FK_LItemValueString_LItemValue" />
         <AssociationConnector Association="WIT.Data.Models.FK_LItemValueText_LItemValue" />
+        <AssociationConnector Association="WIT.Data.Models.LItemValueItem" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

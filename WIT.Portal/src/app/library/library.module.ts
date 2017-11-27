@@ -48,7 +48,8 @@ import { ItemListComponent } from './item/item-list.component';
         ProductFeatureComponent,
         ProductClassComponent,
         ProductComponent,
-        CustomerComponent
+        CustomerComponent,
+        ItemComponent
     ],
     providers: [
         BsModalService,

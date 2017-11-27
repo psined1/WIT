@@ -9,7 +9,7 @@ import { ProductFeature, ProductFeatureList } from '../entities/product-feature.
 import { ProductClass, ProductClassList } from '../entities/product-class.entity';
 import { Product, ProductList } from '../entities/product.entity';
 import { Customer, CustomerList } from '../entities/customer.entity';
-import { GridInfo } from '../entities/grid-info.entity';
+import { GridInfo, IItemData } from '../entities/grid-info.entity';
 
 
 @Injectable()
@@ -17,10 +17,17 @@ export class LibraryService {
 
     constructor(private httpService: HttpService, private sessionService: SessionService) { }
 
+    // generic item
     public getItems(gridInfo: GridInfo): Observable<any> {
         let url = this.sessionService.apiServer + "library/getItems";
         return this.httpService.httpPostNonblocking(url, gridInfo);
     }
+
+    public deleteItem(item: IItemData): Observable<any> {
+        let url = this.sessionService.apiServer + "library/deleteItem?itemId=" + item.id;
+        return this.httpService.httpGet(url);
+    }
+
 
     // Product Features
     public getProductFeatures(list: ProductFeatureList): Observable<any> {

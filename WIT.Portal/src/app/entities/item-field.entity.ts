@@ -13,13 +13,6 @@ export enum LPropTypeEnum {
     Hyperlink = 9,
 }
 
-export enum LValueRuleEnum {
-    SingleOptional = 0,
-    SingleRequired = 1,
-    MultipleOptional = 2,
-    MultipleRequired = 3,
-}
-
 export class ItemField {
 
     public id: number;
@@ -29,7 +22,8 @@ export class ItemField {
     public propType: LPropTypeEnum;
     public valueItemTypeID?: number;
     public gridHide: Boolean;
-    public valueRule: LValueRuleEnum;
+    public required: Boolean;
+    public multiple: Boolean;
     public disabled: Boolean;
     public isSortable: Boolean;
 
@@ -45,7 +39,8 @@ export class ItemField {
             this.propType = rhs.propType;
             this.valueItemTypeID = rhs.valueItemTypeID;
             this.gridHide = rhs.gridHide;
-            this.valueRule = rhs.valueRule;
+            this.required = rhs.required;
+            this.multiple = rhs.multiple;
             this.disabled = rhs.disabled;
             this.isSortable = rhs.isSortable;
         } else {
@@ -54,10 +49,11 @@ export class ItemField {
         }
 
         this.propType = this.propType || LPropTypeEnum.String;
-        this.valueRule = this.valueRule || LValueRuleEnum.SingleOptional;
+        this.required = !!this.required;
+        this.multiple = !!this.multiple;
         this.id = this.id || 0;
-        this.disabled = this.disabled || rhs.disabled;
-        this.isSortable = this.isSortable || rhs.isSortable;
+        this.disabled = !!this.disabled;
+        this.isSortable = !!this.isSortable;
     }
 }
 
