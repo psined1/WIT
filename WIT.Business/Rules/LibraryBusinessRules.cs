@@ -193,6 +193,14 @@ namespace WIT.Business
             });
         }
 
+        public static bool Check(WitEntities db, ItemEntity item)
+        {
+            //item.ValidationErrors = new ItemValidator(db)._validator.CheckErrors(item, "delete");
+            //return item.ValidationErrors.Count == 0;
+
+            return true;    // TODO: implement
+        }
+
         public static bool CheckDelete(WitEntities db, ItemEntity item)
         {
             //item.ValidationErrors = new ItemValidator(db)._validator.CheckErrors(item, "delete");

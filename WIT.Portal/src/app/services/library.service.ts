@@ -10,7 +10,7 @@ import { ProductClass, ProductClassList } from '../entities/product-class.entity
 import { Product, ProductList } from '../entities/product.entity';
 import { Customer, CustomerList } from '../entities/customer.entity';
 import { GridInfo } from '../entities/grid-info.entity';
-import { IItemData } from '../entities/item-field.entity';
+import { ItemEntity } from '../entities/item-field.entity';
 
 
 @Injectable()
@@ -37,6 +37,11 @@ export class LibraryService {
     public getBlankItem(itemTypeId: number): Observable<any> {
         let url = this.sessionService.apiServer + "library/getBlankItem?itemTypeId=" + itemTypeId;
         return this.httpService.httpGet(url);
+    }
+
+    public updateItem(item: ItemEntity): Observable<any> {
+        let url = this.sessionService.apiServer + "library/updateItem";
+        return this.httpService.httpPost(url, item);
     }
 
 

@@ -11,7 +11,7 @@ import { ConfirmYesNoComponent } from '../../shared/confirm-yes-no/confirm-yes-n
 
 import { TransactionInfo } from '../../entities/transaction-info.entity';
 
-import { ItemField, LPropTypeEnum, ItemValue, ItemEntity, IItemData } from '../../entities/item-field.entity';
+import { ItemField, LPropTypeEnum, ItemValue, ItemEntity } from '../../entities/item-field.entity';
 
 
 @Component({
@@ -29,7 +29,7 @@ export class ItemComponent implements OnInit {
     private alertBox: AlertBoxComponent;
 
     @Input()
-    public item: IItemData = new ItemEntity();
+    public item: ItemEntity = new ItemEntity();
 
     public hasUpdated: Boolean;
 
@@ -48,9 +48,6 @@ export class ItemComponent implements OnInit {
     ngOnInit() {
 
         this.hasUpdated = false;
-
-        /*if (!this.item)
-            this.item = new ProductClass();*/
 
         this.route.params.subscribe(params => {
 
@@ -96,58 +93,41 @@ export class ItemComponent implements OnInit {
 
     private getOnSuccess(response: TransactionInfo) {
 
-        let item = new ItemEntity(response.data);
-        if (item) {
-            this.item = item;
-        }
-
-        console.log(item);
+        this.item = new ItemEntity(response.data);
     }
 
     private getOnError(response: TransactionInfo) {
 
-        let item = new ItemEntity(response.data);
-        if (item) {
-            this.item = item;
-        }
-
-        console.log(item);
-
+        this.item = new ItemEntity(response.data);
         this.alertBox.renderErrorMessage(response.returnMessage);
     }
 
     public updateItem(): void {
 
         this.clearStatus();
-        /*this.libraryService.updateProductClass(this.item).subscribe(
+        this.libraryService.updateItem(this.item).subscribe(
             response => this.updateOnSuccess(response),
             response => this.updateOnError(response)
-        );*/
+        );
     }
 
     private updateOnSuccess(response: TransactionInfo) {
 
-        /*let item = new ProductClass(response.data);
-        this.item = item;
-
-        this.alertBox.renderSuccessMessage(response.returnMessage);*/
-
+        this.item = new ItemEntity(response.data);
+        this.alertBox.renderSuccessMessage(response.returnMessage);
         this.hasUpdated = true;
     }
 
     private updateOnError(response: TransactionInfo) {
 
-        /*let item = new ProductClass(response.data);
-        if (item) {
-            this.item.validationErrors = item.validationErrors;
-        }
-        this.alertBox.renderErrorMessage(response.returnMessage);*/
+        this.item = new ItemEntity(response.data);
+        this.alertBox.renderErrorMessage(response.returnMessage);
     }
 
 
     private clearStatus() {
 
-        //this.item.validationErrors = {};
+        this.item.fields.forEach(f => f.validationError == null);
         this.alertBox.clear();
     }
 }

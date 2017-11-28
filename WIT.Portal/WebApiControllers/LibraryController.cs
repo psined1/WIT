@@ -358,6 +358,103 @@ namespace WIT.Portal.WebApiControllers
             });
         }
 
+
+        /// <summary>
+        /// UpdateCustomer
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        [Route("UpdateItem")]
+        [HttpPost]
+        public HttpResponseMessage UpdateItem(HttpRequestMessage request, [FromBody] ItemEntity item)
+        {
+            return BaseAction(request, (transaction) => {
+
+                transaction.Data = item;
+
+                this.ValidateToken(request, transaction);
+
+                if (!ItemValidator.Check(_db, item))
+                {
+                    transaction.ReturnMessage = "Please correct all errors.";
+                    throw new HttpResponseException(HttpStatusCode.BadRequest);
+                }
+
+                LItem existingItem = _db.LItems
+                    .Include(i => i.LItemType.LItemProps)
+                    .Include(i => i.LItemValues)
+                    .FirstOrDefault(i => i.ItemID == item.Id)
+                    ;
+
+                if (existingItem == null)
+                {
+                    existingItem = _db.LItems.Add(new LItem() {
+                        CreatedBy = transaction.CurrentUserEmail
+                    });
+                }
+
+                foreach (var prop in existingItem.LItemType.LItemProps)
+                {
+                    var currentValues = existingItem.LItemValues.Where(v => v.ItemPropID == prop.ItemPropID);
+                    var updatedField = item.Fields.FirstOrDefault(f => f.Id == prop.ItemPropID);
+
+                    switch (prop.PropType)
+                    {
+                        case LPropTypeEnum.String:
+                            string newValue = updatedField?.Value as string;
+                            if (newValue == null)
+                            {
+                                _db.LItemValues.RemoveRange(currentValues);
+                            }
+                            else
+                            {
+                                string newValue = updatedField.Value as string;
+                            }
+                            break;
+
+                        case LPropTypeEnum.Text:
+                            Value = values[0]?.LItemValueText?.Value;
+                            break;
+
+                        case LPropTypeEnum.Date:
+                        case LPropTypeEnum.DateTime:
+                        case LPropTypeEnum.Time:
+                            Value = values[0]?.LItemValueDateTime?.Value;
+                            break;
+
+                        case LPropTypeEnum.Integer:
+                            Value = values[0]?.LItemValueInteger?.Value;
+                            break;
+
+                        case LPropTypeEnum.Decimal:
+                            Value = values[0]?.LItemValueDecimal?.Value;
+                            break;
+
+                        case LPropTypeEnum.Item:
+                            Value = values
+                                .OrderBy(v => v.ItemValueID)
+                                .Take(Multiple ? values.Count : 1)
+                                .Select(v => v.LItemValueItem.ItemID)
+                                .ToArray();
+                            break;
+
+                        // TODO: implement other types
+                        case LPropTypeEnum.Hyperlink:
+                        case LPropTypeEnum.Image:
+                        case LPropTypeEnum.Video:
+                            break;
+                    }
+                }
+
+                existingItem.UpdatedBy = transaction.CurrentUserEmail;
+
+                _db.SaveChanges();
+
+                transaction.Data = new ItemEntity(existingItem);
+            });
+        }
+
         #endregion  // Item
 
         #region ProductFeature
