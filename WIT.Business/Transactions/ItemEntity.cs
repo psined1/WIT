@@ -82,6 +82,10 @@ namespace WIT.Business.Entities
 
         public string ValidationError { get; set; }
 
+        public ItemValue()
+        {
+        }
+
         public ItemValue(LItemProp prop, List<LItemValue> values)
             : base(prop)
         {
@@ -152,6 +156,11 @@ namespace WIT.Business.Entities
 
         // obsolete
         //public Dictionary<string, string> ValidationErrors { get; set; }
+
+        public ItemEntity()
+        {
+            Fields = new List<ItemValue>();
+        }
 
         public ItemEntity(LItem existingItem)
         {

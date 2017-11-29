@@ -74,10 +74,6 @@
           <Property Name="ItemValueID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="ItemID" Type="bigint" Nullable="false" />
           <Property Name="ItemPropID" Type="int" Nullable="false" />
-          <Property Name="CreatedOn" Type="datetime" />
-          <Property Name="UpdatedOn" Type="datetime" />
-          <Property Name="CreatedBy" Type="varchar" MaxLength="50" />
-          <Property Name="UpdatedBy" Type="varchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="LItemValueDateTime">
           <Key>
@@ -689,10 +685,6 @@
           <Property Name="ItemValueID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="ItemID" Type="Int64" Nullable="false" />
           <Property Name="ItemPropID" Type="Int32" Nullable="false" />
-          <Property Name="CreatedOn" Type="DateTime" Precision="3" />
-          <Property Name="UpdatedOn" Type="DateTime" Precision="3" />
-          <Property Name="CreatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="UpdatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="LItem" Relationship="WIT.Data.Models.FK_LItemValue_LItem" FromRole="LItemValue" ToRole="LItem" />
           <NavigationProperty Name="LItemProp" Relationship="WIT.Data.Models.FK_LItemValue_LItemProp" FromRole="LItemValue" ToRole="LItemProp" />
           <NavigationProperty Name="LItemValueDateTime" Relationship="WIT.Data.Models.FK_LItemValueDateTime_LItemValue" FromRole="LItemValue" ToRole="LItemValueDateTime" />
@@ -1021,10 +1013,6 @@
           <EntitySetMapping Name="LItemValues">
             <EntityTypeMapping TypeName="WIT.Data.Models.LItemValue">
               <MappingFragment StoreEntitySet="LItemValue">
-                <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
-                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
-                <ScalarProperty Name="UpdatedOn" ColumnName="UpdatedOn" />
-                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
                 <ScalarProperty Name="ItemPropID" ColumnName="ItemPropID" />
                 <ScalarProperty Name="ItemID" ColumnName="ItemID" />
                 <ScalarProperty Name="ItemValueID" ColumnName="ItemValueID" />

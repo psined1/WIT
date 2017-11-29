@@ -13,7 +13,6 @@ import { AlertBoxComponent } from '../../shared/alertbox.component';
 import { ConfirmYesNoComponent } from '../../shared/confirm-yes-no/confirm-yes-no.component';
 
 import { TransactionInfo } from '../../entities/transaction-info.entity';
-//import { ProductFeature, ProductFeatureList } from '../../entities/product-feature.entity';
 
 import { ItemComponent } from "./item.component";
 
@@ -249,9 +248,9 @@ export class ItemListComponent implements OnInit {
             //console.log(`onHidden event has been fired${reason ? ', dismissed by ' + reason : ''}`);
             modalHide.unsubscribe();
 
-            //if (maintComponent.hasUpdated) {
-            //    this.executeSearch();
-            //}
+            if (maintComponent.hasUpdated) {
+                this.executeSearch();
+            }
         });
 
     }
@@ -273,8 +272,7 @@ export class ItemListComponent implements OnInit {
 
     private onSorting(sortDirection: string, sortExpression: string) {
         this.list.gridInfo.sortDirection = sortDirection;
-        this.list.gridInfo.sortExpression = sortExpression; // obsolete
-        //this.list.fields.filter(f => f.key == sortExpression).forEach(f => this.list.gridInfo.sortId = f.id);
+        this.list.gridInfo.sortExpression = sortExpression;
 
         this.list.gridInfo.currentPageNumber = 1;
         this.delaySearch = false;

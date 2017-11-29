@@ -396,47 +396,119 @@ namespace WIT.Portal.WebApiControllers
 
                 foreach (var prop in existingItem.LItemType.LItemProps)
                 {
-                    var currentValues = existingItem.LItemValues.Where(v => v.ItemPropID == prop.ItemPropID);
-                    var updatedField = item.Fields.FirstOrDefault(f => f.Id == prop.ItemPropID);
+                    var currentValues = existingItem.LItemValues
+                        .Where(v => v.ItemPropID == prop.ItemPropID)
+                        .OrderBy(v => v.ItemValueID)
+                        ;
+
+                    var updatedField = item.Fields
+                        .FirstOrDefault(f => f.Id == prop.ItemPropID)
+                        ;
 
                     switch (prop.PropType)
                     {
                         case LPropTypeEnum.String:
-                            string newValue = updatedField?.Value as string;
-                            if (newValue == null)
                             {
-                                _db.LItemValues.RemoveRange(currentValues);
-                            }
-                            else
-                            {
-                                string newValue = updatedField.Value as string;
+                                string newValue = updatedField?.Value as string;
+                                if (newValue == null)
+                                {
+                                    _db.LItemValues.RemoveRange(currentValues);
+                                }
+                                else
+                                {
+                                    var currentValue = currentValues.FirstOrDefault();
+                                    if (currentValue != null)
+                                    {
+                                        if (currentValue.LItemValueString == null)
+                                        {
+                                            _db.LItemValueStrings.Add(new LItemValueString()
+                                            {
+                                                ItemValueID = currentValue.ItemValueID,
+                                                Value = newValue
+                                            });
+                                        }
+                                        else if (currentValue.LItemValueString.Value != newValue)
+                                        {
+                                            currentValue.LItemValueString.Value = newValue;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        _db.LItemValues.Add(new LItemValue()
+                                        {
+                                            ItemID = existingItem.ItemID,
+                                            ItemPropID = prop.ItemPropID,
+                                            LItemValueString = new LItemValueString()
+                                            {
+                                                Value = newValue
+                                            }
+                                        });
+                                    }
+                                }
                             }
                             break;
 
                         case LPropTypeEnum.Text:
-                            Value = values[0]?.LItemValueText?.Value;
+                            {
+                                string newValue = updatedField?.Value as string;
+                                if (newValue == null)
+                                {
+                                    _db.LItemValues.RemoveRange(currentValues);
+                                }
+                                else
+                                {
+                                    var currentValue = currentValues.FirstOrDefault();
+                                    if (currentValue != null)
+                                    {
+                                        if (currentValue.LItemValueText == null)
+                                        {
+                                            _db.LItemValueTexts.Add(new LItemValueText()
+                                            {
+                                                ItemValueID = currentValue.ItemValueID,
+                                                Value = newValue
+                                            });
+                                        }
+                                        else if (currentValue.LItemValueText.Value != newValue)
+                                        {
+                                            currentValue.LItemValueText.Value = newValue;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        _db.LItemValues.Add(new LItemValue()
+                                        {
+                                            ItemID = existingItem.ItemID,
+                                            ItemPropID = prop.ItemPropID,
+                                            LItemValueText = new LItemValueText()
+                                            {
+                                                Value = newValue
+                                            }
+                                        });
+                                    }
+                                }
+                            }
                             break;
 
                         case LPropTypeEnum.Date:
                         case LPropTypeEnum.DateTime:
                         case LPropTypeEnum.Time:
-                            Value = values[0]?.LItemValueDateTime?.Value;
+                            //Value = values[0]?.LItemValueDateTime?.Value;
                             break;
 
                         case LPropTypeEnum.Integer:
-                            Value = values[0]?.LItemValueInteger?.Value;
+                            //Value = values[0]?.LItemValueInteger?.Value;
                             break;
 
                         case LPropTypeEnum.Decimal:
-                            Value = values[0]?.LItemValueDecimal?.Value;
+                            //Value = values[0]?.LItemValueDecimal?.Value;
                             break;
 
                         case LPropTypeEnum.Item:
-                            Value = values
+                            /*Value = values
                                 .OrderBy(v => v.ItemValueID)
                                 .Take(Multiple ? values.Count : 1)
                                 .Select(v => v.LItemValueItem.ItemID)
-                                .ToArray();
+                                .ToArray();*/
                             break;
 
                         // TODO: implement other types

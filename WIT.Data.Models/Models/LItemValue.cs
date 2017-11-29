@@ -17,10 +17,6 @@ namespace WIT.Data.Models
         public long ItemValueID { get; set; }
         public long ItemID { get; set; }
         public int ItemPropID { get; set; }
-        public Nullable<System.DateTime> CreatedOn { get; set; }
-        public Nullable<System.DateTime> UpdatedOn { get; set; }
-        public string CreatedBy { get; set; }
-        public string UpdatedBy { get; set; }
     
         public virtual LItem LItem { get; set; }
         public virtual LItemProp LItemProp { get; set; }
