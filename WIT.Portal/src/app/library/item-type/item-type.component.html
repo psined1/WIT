@@ -91,6 +91,13 @@
                                                 </div>
                                             </div>
 
+                                            <div class="form-group">
+                                                <label class="col-lg-3 col-sm-2 control-label">Type</label>
+                                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                                    <select class="form-control" [(ngModel)]="prop.help" (change)="isDirty=true"></select>
+                                                </div>
+                                            </div>
+
                                         </div>
 
                                     </accordion-group>
