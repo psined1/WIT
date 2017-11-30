@@ -129,7 +129,7 @@ export class ItemEntity extends BaseEntity implements IItemData {
     }
 
     public get isValid(): boolean {
-        return true;
+        return !!this.name;
     }
 }
 
