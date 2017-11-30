@@ -1,0 +1,45 @@
+<h4 class="page-header">{{title}}</h4>
+
+<div class="form-horizontal" style="margin-bottom:25px;">
+
+    <div style="width:20%; float:left; padding-right:1px;">
+        <input type="text" class="form-control" placeholder="Filter" [ngModel]="list.filter" (ngModelChange)="filterChanged($event)" />       
+    </div>
+
+    <div style="float:left; padding-right:1px; padding-left:5px;">
+        <button class="btn btn-default" (click)="reset()">
+            <b>Clear</b>
+        </button>
+    </div>
+
+    <div style="float:left; padding-right:1px; padding-left:5px;">
+        <button class="btn btn-primary" (click)="search()">
+            <b>Search</b>
+        </button>
+    </div>
+
+    <div style="float:left; padding-right:1px; padding-left:5px;">
+        <button class="btn btn-success" (click)="addItem()">
+            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>&nbsp;Add item type
+        </button>
+    </div>
+
+    <div style="float:right; padding-left:5px;">
+        <label class="checkbox-inline"><input type="checkbox" [(ngModel)]="autoFilter" name="autoFilter">&nbsp;Auto Filter</label>
+    </div>
+
+</div>
+
+<br clear="all" />
+
+<datagrid [rows]="list.items"
+          [columns]="columns"
+          [pageSize]="list.gridInfo.pageSize"
+          (datagridEvent)="datagridEvent($event)">
+</datagrid>
+
+<br style="clear:both;" />
+
+<div>
+    <alertbox></alertbox>
+</div>

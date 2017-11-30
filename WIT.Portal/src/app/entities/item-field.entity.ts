@@ -67,6 +67,10 @@ export class ItemField {
         this.disabled = !!this.disabled;
         this.isSortable = !!this.isSortable;
     }
+
+    public get caption(): string {
+        return this.name || 'Unnamed';
+    }
 }
 
 export class ItemValue extends ItemField
@@ -99,6 +103,7 @@ export class ItemEntity extends BaseEntity implements IItemData {
     public id: number;
 
     // from LItemType entity
+    public itemTypeId: number;
     public name: string;
     public help: string;
 
@@ -113,9 +118,18 @@ export class ItemEntity extends BaseEntity implements IItemData {
 
         if (rhs) {
             if (!rhs.id) this.id = 0;
+            this.fields = rhs.fields.map(f => new ItemValue(f));
         }
 
         this.fields = this.fields || [];
+    }
+
+    public get caption() {
+        return this.name || 'Unnamed';
+    }
+
+    public get isValid(): boolean {
+        return true;
     }
 }
 

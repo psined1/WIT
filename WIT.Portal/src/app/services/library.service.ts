@@ -16,7 +16,21 @@ import { ItemEntity } from '../entities/item-field.entity';
 @Injectable()
 export class LibraryService {
 
-    constructor(private httpService: HttpService, private sessionService: SessionService) { }
+    constructor(
+        private httpService: HttpService,
+        private sessionService: SessionService
+    ) { }
+
+    // item type
+    public getItemTypes(gridInfo: GridInfo): Observable<any> {
+        let url = this.sessionService.apiServer + "library/getItemTypes";
+        return this.httpService.httpPostNonblocking(url, gridInfo);
+    }
+
+    public deleteItemType(itemTypeId: number): Observable<any> {
+        let url = this.sessionService.apiServer + "library/deleteItemType?itemTypeId=" + itemTypeId;
+        return this.httpService.httpGet(url);
+    }
 
     // generic item
     public getItems(gridInfo: GridInfo): Observable<any> {

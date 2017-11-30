@@ -136,6 +136,296 @@ namespace WIT.Business.Entities
             : base(prop)
         {
         }
+
+        public static void UpdateItemValue(ItemValue updatedField,
+            WitEntities _db,
+            LItem existingItem,
+            LItemProp prop)
+        {
+            switch (prop.PropType)
+            {
+                case LPropTypeEnum.String:
+                    UpdateValueString(updatedField, _db, existingItem, prop);
+                    break;
+
+                case LPropTypeEnum.Text:
+                    UpdateValueText(updatedField, _db, existingItem, prop);
+                    break;
+
+                case LPropTypeEnum.Date:
+                case LPropTypeEnum.DateTime:
+                case LPropTypeEnum.Time:
+                    UpdateValueDateTime(updatedField, _db, existingItem, prop);
+                    break;
+
+                case LPropTypeEnum.Integer:
+                    UpdateValueInteger(updatedField, _db, existingItem, prop);
+                    break;
+
+                case LPropTypeEnum.Decimal:
+                    UpdateValueDecimal(updatedField, _db, existingItem, prop);
+                    break;
+
+                case LPropTypeEnum.Item:
+                    UpdateValueItem(updatedField, _db, existingItem, prop);
+                    break;
+
+                // TODO: implement other types
+                case LPropTypeEnum.Hyperlink:
+                case LPropTypeEnum.Image:
+                case LPropTypeEnum.Video:
+                    break;
+            }
+        }
+
+        private static void UpdateValueString(
+            ItemValue updatedField,
+            WitEntities _db,
+            LItem existingItem,
+            LItemProp prop
+            )
+        {
+            var currentValues = existingItem.LItemValues
+                .Where(v => v.ItemPropID == prop.ItemPropID)
+                .OrderBy(v => v.ItemValueID)
+                ;
+
+            string newValue = updatedField?.Value as string;
+            if (newValue == null)
+            {
+                _db.LItemValues.RemoveRange(currentValues);
+            }
+            else
+            {
+                var currentValue = currentValues.FirstOrDefault();
+                if (currentValue != null)
+                {
+                    if (currentValue.LItemValueString == null)
+                    {
+                        currentValue.LItemValueString = new LItemValueString()
+                        {
+                            Value = newValue
+                        };
+                    }
+                    else if (currentValue.LItemValueString.Value != newValue)
+                    {
+                        currentValue.LItemValueString.Value = newValue;
+                    }
+                }
+                else
+                {
+                    existingItem.LItemValues.Add(new LItemValue()
+                    {
+                        ItemPropID = prop.ItemPropID,
+                        LItemValueString = new LItemValueString()
+                        {
+                            Value = newValue
+                        }
+                    });
+                }
+            }
+        }
+
+        private static void UpdateValueText(
+            ItemValue updatedField,
+            WitEntities _db,
+            LItem existingItem,
+            LItemProp prop
+            )
+        {
+            var currentValues = existingItem.LItemValues
+                .Where(v => v.ItemPropID == prop.ItemPropID)
+                .OrderBy(v => v.ItemValueID)
+                ;
+
+            string newValue = updatedField?.Value as string;
+            if (newValue == null)
+            {
+                _db.LItemValues.RemoveRange(currentValues);
+            }
+            else
+            {
+                var currentValue = currentValues.FirstOrDefault();
+                if (currentValue != null)
+                {
+                    if (currentValue.LItemValueText == null)
+                    {
+                        currentValue.LItemValueText = new LItemValueText()
+                        {
+                            Value = newValue
+                        };
+                    }
+                    else if (currentValue.LItemValueText.Value != newValue)
+                    {
+                        currentValue.LItemValueText.Value = newValue;
+                    }
+                }
+                else
+                {
+                    existingItem.LItemValues.Add(new LItemValue()
+                    {
+                        ItemPropID = prop.ItemPropID,
+                        LItemValueText = new LItemValueText()
+                        {
+                            Value = newValue
+                        }
+                    });
+                }
+            }
+        }
+
+        private static void UpdateValueDateTime(
+            ItemValue updatedField,
+            WitEntities _db,
+            LItem existingItem,
+            LItemProp prop
+            )
+        {
+            var currentValues = existingItem.LItemValues
+                .Where(v => v.ItemPropID == prop.ItemPropID)
+                .OrderBy(v => v.ItemValueID)
+                ;
+
+            Nullable<DateTime> newValue = updatedField?.Value as Nullable<DateTime>;
+            if (!newValue.HasValue)
+            {
+                _db.LItemValues.RemoveRange(currentValues);
+            }
+            else
+            {
+                var currentValue = currentValues.FirstOrDefault();
+                if (currentValue != null)
+                {
+                    if (currentValue.LItemValueDateTime == null)
+                    {
+                        currentValue.LItemValueDateTime = new LItemValueDateTime()
+                        {
+                            Value = newValue.Value
+                        };
+                    }
+                    else if (currentValue.LItemValueDateTime.Value != newValue.Value)
+                    {
+                        currentValue.LItemValueDateTime.Value = newValue.Value;
+                    }
+                }
+                else
+                {
+                    existingItem.LItemValues.Add(new LItemValue()
+                    {
+                        ItemPropID = prop.ItemPropID,
+                        LItemValueDateTime = new LItemValueDateTime()
+                        {
+                            Value = newValue.Value
+                        }
+                    });
+                }
+            }
+        }
+
+        private static void UpdateValueInteger(
+            ItemValue updatedField,
+            WitEntities _db,
+            LItem existingItem,
+            LItemProp prop
+            )
+        {
+            var currentValues = existingItem.LItemValues
+                .Where(v => v.ItemPropID == prop.ItemPropID)
+                .OrderBy(v => v.ItemValueID)
+                ;
+
+            Nullable<int> newValue = updatedField?.Value as Nullable<int>;
+            if (!newValue.HasValue)
+            {
+                _db.LItemValues.RemoveRange(currentValues);
+            }
+            else
+            {
+                var currentValue = currentValues.FirstOrDefault();
+                if (currentValue != null)
+                {
+                    if (currentValue.LItemValueInteger == null)
+                    {
+                        currentValue.LItemValueInteger = new LItemValueInteger()
+                        {
+                            Value = newValue.Value
+                        };
+                    }
+                    else if (currentValue.LItemValueInteger.Value != newValue.Value)
+                    {
+                        currentValue.LItemValueInteger.Value = newValue.Value;
+                    }
+                }
+                else
+                {
+                    existingItem.LItemValues.Add(new LItemValue()
+                    {
+                        ItemPropID = prop.ItemPropID,
+                        LItemValueInteger = new LItemValueInteger()
+                        {
+                            Value = newValue.Value
+                        }
+                    });
+                }
+            }
+        }
+
+        private static void UpdateValueDecimal(
+            ItemValue updatedField,
+            WitEntities _db,
+            LItem existingItem,
+            LItemProp prop
+            )
+        {
+            var currentValues = existingItem.LItemValues
+                .Where(v => v.ItemPropID == prop.ItemPropID)
+                .OrderBy(v => v.ItemValueID)
+                ;
+
+            Nullable<decimal> newValue = updatedField?.Value as Nullable<decimal>;
+            if (!newValue.HasValue)
+            {
+                _db.LItemValues.RemoveRange(currentValues);
+            }
+            else
+            {
+                var currentValue = currentValues.FirstOrDefault();
+                if (currentValue != null)
+                {
+                    if (currentValue.LItemValueDecimal == null)
+                    {
+                        currentValue.LItemValueDecimal = new LItemValueDecimal()
+                        {
+                            Value = newValue.Value
+                        };
+                    }
+                    else if (currentValue.LItemValueDecimal.Value != newValue.Value)
+                    {
+                        currentValue.LItemValueDecimal.Value = newValue.Value;
+                    }
+                }
+                else
+                {
+                    existingItem.LItemValues.Add(new LItemValue()
+                    {
+                        ItemPropID = prop.ItemPropID,
+                        LItemValueDecimal = new LItemValueDecimal()
+                        {
+                            Value = newValue.Value
+                        }
+                    });
+                }
+            }
+        }
+
+        private static void UpdateValueItem(
+            ItemValue updatedField,
+            WitEntities _db,
+            LItem existingItem,
+            LItemProp prop
+            )
+        {
+        }
     }
 
     public class ItemEntity
@@ -148,6 +438,7 @@ namespace WIT.Business.Entities
         public string UpdatedBy { get; set; }
 
         // from LItemType entity
+        public int ItemTypeId { get; set; }
         public string Name { get; set; }
         public string Help { get; set; }
 
@@ -172,6 +463,7 @@ namespace WIT.Business.Entities
                 UpdatedBy = existingItem.UpdatedBy;
                 UpdatedOn = existingItem.UpdatedOn;
 
+                ItemTypeId = existingItem.LItemType.ItemTypeID;
                 Name = existingItem.LItemType.Name;
                 Help = existingItem.LItemType.Description;
 
@@ -193,6 +485,7 @@ namespace WIT.Business.Entities
         {
             if (existingItemType != null)
             {
+                ItemTypeId = existingItemType.ItemTypeID;
                 Name = existingItemType.Name;
                 Help = existingItemType.Description;
 
@@ -202,6 +495,18 @@ namespace WIT.Business.Entities
                 {
                     Fields.Add(new ItemValue(prop));
                 }
+            }
+        }
+
+        public void UpdateItemValues(WitEntities _db, LItem existingItem)
+        {
+            foreach (var prop in existingItem.LItemType.LItemProps)
+            {
+                var updatedField = Fields
+                    .FirstOrDefault(f => f.Id == prop.ItemPropID)
+                    ;
+
+                ItemValue.UpdateItemValue(updatedField, _db, existingItem, prop);
             }
         }
     }

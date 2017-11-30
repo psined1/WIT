@@ -2,7 +2,8 @@
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
-import { ModalModule, TabsModule, BsModalService, BsModalRef, TypeaheadModule } from 'ngx-bootstrap';
+import { ModalModule, TabsModule, AccordionModule, BsModalService, BsModalRef, TypeaheadModule } from 'ngx-bootstrap';
+import { DragulaModule } from 'ng2-dragula';
 
 import { SharedModule } from '../shared/shared.module';
 import { LibraryService } from '../services/library.service';
@@ -13,17 +14,17 @@ import { ConfirmYesNoComponent } from '../shared/confirm-yes-no/confirm-yes-no.c
 
 import { ProductFeatureListComponent } from "./product-feature/product-feature-list.component";
 import { ProductFeatureComponent } from "./product-feature/product-feature.component";
-
 import { ProductClassListComponent } from "./product-class/product-class-list.component";
 import { ProductClassComponent } from "./product-class/product-class.component";
-
 import { ProductListComponent } from "./product/product-list.component";
 import { ProductComponent } from "./product/product.component";
-
 import { CustomerListComponent } from "./customer/customer-list.component";
 import { CustomerComponent } from "./customer/customer.component";
-import { ItemComponent } from './item/item.component';
+
 import { ItemListComponent } from './item/item-list.component';
+import { ItemComponent } from './item/item.component';
+import { ItemTypeListComponent } from './item-type/item-type-list.component';
+import { ItemTypeComponent } from './item-type/item-type.component';
 
 
 @NgModule({
@@ -32,7 +33,9 @@ import { ItemListComponent } from './item/item-list.component';
         ProductClassListComponent, ProductClassComponent,
         ProductListComponent, ProductComponent,
         CustomerListComponent, CustomerComponent,
-        ItemListComponent, ItemComponent
+
+        ItemListComponent, ItemComponent,
+        ItemTypeListComponent, ItemTypeComponent
     ],
     imports: [
         CommonModule,
@@ -41,7 +44,9 @@ import { ItemListComponent } from './item/item-list.component';
         SharedModule,
         ModalModule.forRoot(),
         TabsModule.forRoot(),
-        TypeaheadModule.forRoot()
+        TypeaheadModule.forRoot(),
+        AccordionModule.forRoot(),
+        DragulaModule
     ],
     entryComponents: [
         ConfirmYesNoComponent,
@@ -49,7 +54,8 @@ import { ItemListComponent } from './item/item-list.component';
         ProductClassComponent,
         ProductComponent,
         CustomerComponent,
-        ItemComponent
+        ItemComponent,
+        ItemTypeComponent
     ],
     providers: [
         BsModalService,

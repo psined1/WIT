@@ -1,0 +1,124 @@
+<div class="modal-header">
+
+    <h3 class="modal-title pull-left">{{title}}<span [ngStyle]="{'font-style': !item.name ? 'italic' : ''}">{{item.caption}}</span></h3>
+
+</div>
+
+<div class="modal-body">
+
+    <div class="form-horizontal" role="form">
+
+        <tabset>
+
+            <!-- Basic info tab -->
+
+            <tab heading="Basic Info">
+
+                <!--div class="panel panel-default" style="margin-top:20px"-->
+
+                    <div class="form-horizontal" role="form">
+
+                        <div style="padding:10px;margin:10px; ">
+
+                            <div class="form-group">
+                                <label class="col-lg-3 col-sm-2 control-label required">Name</label>
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <input type="text" class="form-control"
+                                           (change)="isDirty=true" [(ngModel)]="item.name" [ngClass]="{'validation-error': !item.name}" />
+                                </div>
+                                <div class="col-lg-3" *ngIf="!item.name">
+                                    <small class="text-danger">
+                                        Name is required
+                                    </small>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-lg-3 col-sm-2 control-label">Description</label>
+                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                    <textarea rows="5" class="form-control"
+                                              (change)="isDirty=true" [(ngModel)]="item.help" [ngClass]="{'validation-error': false}"></textarea>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                <!--/div-->
+
+            </tab>
+
+            <!-- Props tab -->
+
+            <tab heading="Fields">
+
+                <div class="panel panel-body">
+
+                    <div class='wrapper'>
+                        <accordion [closeOthers]="true">
+                            <div [dragula]="'allProps'" [dragulaModel]='item.fields'>
+
+                                <content *ngFor="let prop of item.fields; let i = index">
+
+                                    <accordion-group #group (isOpenChange)="isOpenChange($event)">
+
+                                        <div accordion-heading>
+                                            <span class="handle glyphicon glyphicon-sort" aria-hidden="true"></span>&nbsp;&nbsp;
+                                            <span [ngStyle]="{'font-style': !prop.name || prop.name === '' ? 'italic' : ''}">{{i+1}}. {{prop.caption}}</span>
+                                            <i class="pull-right float-xs-right glyphicon"
+                                               [ngClass]="{'glyphicon-chevron-down': group?.isOpen, 'glyphicon-chevron-right': !group?.isOpen}"></i>
+                                        </div>
+
+                                        <div class="form-horizontal" role="form">
+
+                                            <div class="form-group">
+                                                <label class="col-lg-3 col-sm-2 control-label required">Name</label>
+                                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                                    <input type="text" class="form-control" [(ngModel)]="prop.name" (change)="isDirty=true" [ngClass]="{'validation-error': !prop.name || prop.name === ''}">
+                                                </div>
+                                                <div class="col-lg-3" *ngIf="!prop.name || prop.name === ''">
+                                                    <small class="text-danger">
+                                                        Name is required
+                                                    </small>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label class="col-lg-3 col-sm-2 control-label">Description</label>
+                                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                                                    <textarea class="form-control" rows="5" [(ngModel)]="prop.help" (change)="isDirty=true"></textarea>
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                    </accordion-group>
+
+                                </content>
+
+                            </div>
+                        </accordion>
+                    </div>
+
+                    <span *ngIf="!item.fields.length">No fields have been defined.</span>
+                    <button type="button" class="btn btn-success" (click)="addProp()">
+                        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>&nbsp;Add field
+                    </button>
+
+                </div>
+
+            </tab>
+
+        </tabset>
+
+        <alertbox [alerts]="alerts" [messageBox]="messageBox"></alertbox>
+
+    </div>
+
+    <div class="modal-footer">
+        <div class="pull-left">
+            <button class="btn btn-primary" (click)="save()" [disabled]="!(isDirty && item.isValid)">Save Changes</button>
+            <button class="btn btn-default" (click)="bsModalRef.hide()">Close</button>
+        </div>
+    </div>

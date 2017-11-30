@@ -1,6 +1,5 @@
-﻿import { ItemField, IItemData } from './item-field.entity';
+﻿import { ItemField, IItemData, ItemEntity } from './item-field.entity';
 
-// obsolete
 export class GridInfo {
 
     public totalRows: number;
@@ -54,8 +53,6 @@ export class GridInfo {
     }
 }
 
-
-
 export class ItemGrid {
     public gridInfo: GridInfo;
     public fields: Array<ItemField>;
@@ -83,8 +80,6 @@ export class ItemGrid {
     }
 }
 
-
-// obsolete
 export class ListBase {
 
     public gridInfo: GridInfo;
@@ -98,6 +93,23 @@ export class ListBase {
             this.gridInfo = new GridInfo(rhs.gridInfo);
         } else {
             this.gridInfo = new GridInfo();
+        }
+    }
+}
+
+export class ItemTypeList extends ListBase {
+    public items: Array<ItemEntity>;
+
+    constructor()
+    constructor(rhs: ItemTypeList)
+    constructor(rhs?: ItemTypeList) {
+
+        super(rhs);
+
+        if (!this.items || !Array.isArray(this.items)) {
+            this.items = new Array<ItemEntity>();
+        } else {
+            this.items = this.items.map(v => new ItemEntity(v));
         }
     }
 }
