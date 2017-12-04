@@ -17,7 +17,9 @@ export class BaseEntity {
             this.updatedBy = rhs.updatedBy;
 
             // copy all properties
-            for (let k in rhs) this[k] = rhs[k];
+            for (let k in rhs)
+                if (Object.prototype.hasOwnProperty.call(rhs, k))
+                    this[k] = rhs[k];
         }
 
         this.validationErrors = this.validationErrors || {};

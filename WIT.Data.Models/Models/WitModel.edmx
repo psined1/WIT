@@ -53,6 +53,7 @@
           <Property Name="Unique" Type="bit" Nullable="false" />
           <Property Name="UpperCase" Type="bit" Nullable="false" />
           <Property Name="GridHide" Type="bit" Nullable="false" />
+          <Property Name="Radix" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="LItemType">
           <Key>
@@ -662,6 +663,7 @@
           <Property Name="Multiple" Type="Boolean" Nullable="false" />
           <Property Name="Unique" Type="Boolean" Nullable="false" />
           <Property Name="UpperCase" Type="Boolean" Nullable="false" />
+          <Property Name="Radix" Type="Int32" Nullable="false" />
         </EntityType>
         <EntityType Name="LItemType">
           <Key>
@@ -978,6 +980,7 @@
           <EntitySetMapping Name="LItemProps">
             <EntityTypeMapping TypeName="WIT.Data.Models.LItemProp">
               <MappingFragment StoreEntitySet="LItemProp">
+                <ScalarProperty Name="Radix" ColumnName="Radix" />
                 <ScalarProperty Name="UpperCase" ColumnName="UpperCase" />
                 <ScalarProperty Name="Unique" ColumnName="Unique" />
                 <ScalarProperty Name="Multiple" ColumnName="Multiple" />

@@ -23,6 +23,9 @@ namespace WIT.Business.Entities
         public bool Multiple { get; set; }
         public bool Unique { get; set; }
         public bool UpperCase { get; set; }
+        public int Radix { get; set; }
+
+
         public bool Disabled
         {
             get {
@@ -70,7 +73,25 @@ namespace WIT.Business.Entities
                 Multiple = prop.Multiple;
                 Unique = prop.Unique;
                 UpperCase = prop.UpperCase;
+                Radix = prop.Radix;
             }
+        }
+
+        public void UpdateItemProp(WitEntities _db, LItemProp existingField, TransactionInfo transaction)
+        {
+            existingField.UpdatedBy = transaction.CurrentUserEmail;
+
+            existingField.Name = Name;
+            existingField.Description = Help;
+
+            existingField.PropType = PropType;
+            //existingField.ValueItemTypeID { get; set; }
+            existingField.GridHide = GridHide;
+            existingField.Required = Required;
+            existingField.Multiple = Multiple;
+            existingField.Unique = Unique;
+            existingField.UpperCase = UpperCase;
+            existingField.Radix = Radix;
         }
     }
 
@@ -140,34 +161,35 @@ namespace WIT.Business.Entities
         public static void UpdateItemValue(ItemValue updatedField,
             WitEntities _db,
             LItem existingItem,
-            LItemProp prop)
+            LItemProp prop,
+            TransactionInfo transaction)
         {
             switch (prop.PropType)
             {
                 case LPropTypeEnum.String:
-                    UpdateValueString(updatedField, _db, existingItem, prop);
+                    UpdateValueString(updatedField, _db, existingItem, prop, transaction);
                     break;
 
                 case LPropTypeEnum.Text:
-                    UpdateValueText(updatedField, _db, existingItem, prop);
+                    UpdateValueText(updatedField, _db, existingItem, prop, transaction);
                     break;
 
                 case LPropTypeEnum.Date:
                 case LPropTypeEnum.DateTime:
                 case LPropTypeEnum.Time:
-                    UpdateValueDateTime(updatedField, _db, existingItem, prop);
+                    UpdateValueDateTime(updatedField, _db, existingItem, prop, transaction);
                     break;
 
                 case LPropTypeEnum.Integer:
-                    UpdateValueInteger(updatedField, _db, existingItem, prop);
+                    UpdateValueInteger(updatedField, _db, existingItem, prop, transaction);
                     break;
 
                 case LPropTypeEnum.Decimal:
-                    UpdateValueDecimal(updatedField, _db, existingItem, prop);
+                    UpdateValueDecimal(updatedField, _db, existingItem, prop, transaction);
                     break;
 
                 case LPropTypeEnum.Item:
-                    UpdateValueItem(updatedField, _db, existingItem, prop);
+                    UpdateValueItem(updatedField, _db, existingItem, prop, transaction);
                     break;
 
                 // TODO: implement other types
@@ -182,7 +204,8 @@ namespace WIT.Business.Entities
             ItemValue updatedField,
             WitEntities _db,
             LItem existingItem,
-            LItemProp prop
+            LItemProp prop,
+            TransactionInfo transaction
             )
         {
             var currentValues = existingItem.LItemValues
@@ -230,7 +253,8 @@ namespace WIT.Business.Entities
             ItemValue updatedField,
             WitEntities _db,
             LItem existingItem,
-            LItemProp prop
+            LItemProp prop,
+            TransactionInfo transaction
             )
         {
             var currentValues = existingItem.LItemValues
@@ -278,7 +302,8 @@ namespace WIT.Business.Entities
             ItemValue updatedField,
             WitEntities _db,
             LItem existingItem,
-            LItemProp prop
+            LItemProp prop,
+            TransactionInfo transaction
             )
         {
             var currentValues = existingItem.LItemValues
@@ -326,7 +351,8 @@ namespace WIT.Business.Entities
             ItemValue updatedField,
             WitEntities _db,
             LItem existingItem,
-            LItemProp prop
+            LItemProp prop,
+            TransactionInfo transaction
             )
         {
             var currentValues = existingItem.LItemValues
@@ -374,7 +400,8 @@ namespace WIT.Business.Entities
             ItemValue updatedField,
             WitEntities _db,
             LItem existingItem,
-            LItemProp prop
+            LItemProp prop,
+            TransactionInfo transaction
             )
         {
             var currentValues = existingItem.LItemValues
@@ -422,7 +449,8 @@ namespace WIT.Business.Entities
             ItemValue updatedField,
             WitEntities _db,
             LItem existingItem,
-            LItemProp prop
+            LItemProp prop,
+            TransactionInfo transaction
             )
         {
         }
@@ -469,7 +497,7 @@ namespace WIT.Business.Entities
 
                 Fields = new List<ItemValue>(existingItem.LItemType.LItemProps.Count + 1);
 
-                foreach (var prop in existingItem.LItemType.LItemProps.OrderBy(p => p.ItemPropID))
+                foreach (var prop in existingItem.LItemType.LItemProps.OrderBy(p => p.Radix))
                 {
                     var propValues = prop.LItemValues.Where(v => v.ItemID == existingItem.ItemID)
                         .OrderBy(v => v.ItemValueID)
@@ -491,14 +519,14 @@ namespace WIT.Business.Entities
 
                 Fields = new List<ItemValue>(existingItemType.LItemProps.Count + 1);
 
-                foreach (var prop in existingItemType.LItemProps.OrderBy(p => p.ItemPropID))
+                foreach (var prop in existingItemType.LItemProps.OrderBy(p => p.Radix))
                 {
                     Fields.Add(new ItemValue(prop));
                 }
             }
         }
 
-        public void UpdateItemValues(WitEntities _db, LItem existingItem)
+        public void UpdateItemValues(WitEntities _db, LItem existingItem, TransactionInfo transaction)
         {
             foreach (var prop in existingItem.LItemType.LItemProps)
             {
@@ -506,7 +534,38 @@ namespace WIT.Business.Entities
                     .FirstOrDefault(f => f.Id == prop.ItemPropID)
                     ;
 
-                ItemValue.UpdateItemValue(updatedField, _db, existingItem, prop);
+                ItemValue.UpdateItemValue(updatedField, _db, existingItem, prop, transaction);
+            }
+        }
+
+        public void UpdateItemType(WitEntities _db, LItemType existingItem, TransactionInfo transaction)
+        {
+            existingItem.Name = Name;
+            existingItem.Description = Help;
+
+            // delete fields which are no longer
+            foreach(var oldField in existingItem.LItemProps)
+            {
+                if (!Fields.Any(f => f.Id == oldField.ItemPropID))
+                    existingItem.LItemProps.Remove(oldField);
+            }
+
+            // update existing or add new fields
+            int i = 0;
+            foreach (var f in Fields)
+            {
+                f.Radix = i++;
+
+                var existingField = existingItem.LItemProps.FirstOrDefault(p => p.ItemPropID == f.Id);
+                if (existingField == null)
+                {
+                    existingField = new LItemProp() {
+                        CreatedBy = transaction.CurrentUserEmail
+                    };
+                    existingItem.LItemProps.Add(existingField);
+                }
+
+                f.UpdateItemProp(_db, existingField, transaction);
             }
         }
     }

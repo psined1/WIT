@@ -25,6 +25,7 @@ import { ItemListComponent } from './item/item-list.component';
 import { ItemComponent } from './item/item.component';
 import { ItemTypeListComponent } from './item-type/item-type-list.component';
 import { ItemTypeComponent } from './item-type/item-type.component';
+import { PropTypeKeyPipe } from './item-type/prop-type-key.pipe';
 
 
 @NgModule({
@@ -35,7 +36,9 @@ import { ItemTypeComponent } from './item-type/item-type.component';
         CustomerListComponent, CustomerComponent,
 
         ItemListComponent, ItemComponent,
-        ItemTypeListComponent, ItemTypeComponent
+        ItemTypeListComponent, ItemTypeComponent,
+
+        PropTypeKeyPipe
     ],
     imports: [
         CommonModule,

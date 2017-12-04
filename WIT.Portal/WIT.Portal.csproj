@@ -420,6 +420,7 @@
     <TypeScriptCompile Include="src\app\library\customer\customer.component.ts" />
     <TypeScriptCompile Include="src\app\library\item-type\item-type-list.component.ts" />
     <TypeScriptCompile Include="src\app\library\item-type\item-type.component.ts" />
+    <TypeScriptCompile Include="src\app\library\item-type\prop-type-key.pipe.ts" />
     <TypeScriptCompile Include="src\app\library\item\item.component.ts" />
     <TypeScriptCompile Include="src\app\library\item\item-list.component.ts" />
     <TypeScriptCompile Include="src\app\library\library-routing.module.ts" />

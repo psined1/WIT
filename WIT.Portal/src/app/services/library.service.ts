@@ -27,6 +27,11 @@ export class LibraryService {
         return this.httpService.httpPostNonblocking(url, gridInfo);
     }
 
+    public getItemType(itemTypeId: number): Observable<any> {
+        let url = this.sessionService.apiServer + "library/getItemType?itemTypeId=" + itemTypeId;
+        return this.httpService.httpGet(url);
+    }
+
     public deleteItemType(itemTypeId: number): Observable<any> {
         let url = this.sessionService.apiServer + "library/deleteItemType?itemTypeId=" + itemTypeId;
         return this.httpService.httpGet(url);

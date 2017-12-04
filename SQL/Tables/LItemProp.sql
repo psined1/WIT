@@ -1,7 +1,7 @@
 USE [WIT]
 GO
 
-/****** Object:  Table [dbo].[LItemProp]    Script Date: 11/27/2017 11:23:13 ******/
+/****** Object:  Table [dbo].[LItemProp]    Script Date: 12/03/2017 22:12:16 ******/
 SET ANSI_NULLS ON
 GO
 
@@ -27,6 +27,7 @@ CREATE TABLE [dbo].[LItemProp](
 	[Unique] [bit] NOT NULL,
 	[UpperCase] [bit] NOT NULL,
 	[GridHide] [bit] NOT NULL,
+	[Radix] [int] NOT NULL,
  CONSTRAINT [PK_LItemProp] PRIMARY KEY CLUSTERED 
 (
 	[ItemPropID] ASC

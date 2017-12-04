@@ -15,6 +15,7 @@ export enum LPropTypeEnum {
     Item = 100,
 }
 
+
 export class ItemField {
 
     public id: number;
@@ -23,14 +24,13 @@ export class ItemField {
     public help: string;
     public propType: LPropTypeEnum;
     public valueItemTypeID?: number;
-    public gridHide: Boolean;
-    public required: Boolean;
-    public multiple: Boolean;
-    public unique: Boolean;
-    public upperCase: Boolean;
-    public disabled: Boolean;
-    public isSortable: Boolean;
-    public isItemKey: Boolean;
+    public gridHide: boolean;
+    public required: boolean;
+    public multiple: boolean;
+    public unique: boolean;
+    public upperCase: boolean;
+    public disabled: boolean;
+    public isSortable: boolean;
 
     constructor()
     constructor(rhs: ItemField)
@@ -50,7 +50,6 @@ export class ItemField {
             this.upperCase = rhs.upperCase;
             this.disabled = rhs.disabled;
             this.isSortable = rhs.isSortable;
-            this.isItemKey = rhs.isItemKey;
 
             if (rhs.valueItemTypeID)
                 this.valueItemTypeID = rhs.valueItemTypeID;
@@ -58,18 +57,25 @@ export class ItemField {
 
             this.key = null;
             this.name = null;
+            this.help = null;
         }
 
+        this.id = this.id || 0;
         this.propType = this.propType || LPropTypeEnum.String;
+
         this.required = !!this.required;
         this.multiple = !!this.multiple;
-        this.id = this.id || 0;
         this.disabled = !!this.disabled;
         this.isSortable = !!this.isSortable;
+        this.gridHide = !!this.gridHide;
     }
 
     public get caption(): string {
         return this.name || 'Unnamed';
+    }
+
+    public get isItemKey(): boolean {
+        return this.unique && this.required && !this.multiple;
     }
 }
 
@@ -90,6 +96,40 @@ export class ItemValue extends ItemField
             if (rhs.validationError)
                 this.validationError = rhs.validationError;
         }
+    }
+}
+
+export class ItemType extends BaseEntity {
+
+    // from LItemType entity
+    public itemTypeId: number;
+    public name: string;
+    public help: string;
+    //public menuHide: boolean;
+
+    // from LItemProp/Value
+    public fields: Array<ItemField>;
+
+    constructor()
+    constructor(rhs: ItemType)
+    constructor(rhs?: ItemType) {
+
+        super(rhs);
+
+        if (rhs) {
+            if (!rhs.itemTypeId) this.itemTypeId = 0;
+            this.fields = rhs.fields.map(f => new ItemField(f));
+        }
+
+        this.fields = this.fields || [];
+    }
+
+    public get caption() {
+        return this.name || 'Unnamed';
+    }
+
+    public get isValid(): boolean {
+        return !!this.name;
     }
 }
 

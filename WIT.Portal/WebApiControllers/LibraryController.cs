@@ -92,6 +92,34 @@ namespace WIT.Portal.WebApiControllers
         /// <param name="request"></param>
         /// <param name="itemId"></param>
         /// <returns></returns>
+        [Route("GetItemType")]
+        [HttpGet]
+        public HttpResponseMessage GetLItemType(HttpRequestMessage request, long itemTypeId)
+        {
+            return BaseAction(request, (transaction) => {
+
+                this.ValidateToken(request, transaction);
+
+                var existingItem = _db.LItemTypes.Include(t => t.LItemProps).FirstOrDefault(t => t.ItemTypeID == itemTypeId);
+
+                if (existingItem == null)
+                {
+                    transaction.ReturnMessage = string.Format("Item type with id {0} not found", itemTypeId);
+                    throw new HttpResponseException(HttpStatusCode.NotFound);
+                }
+
+                ItemEntity item = new ItemEntity(existingItem);
+
+                transaction.Data = item;
+            });
+        }
+
+        /// <summary>
+        /// DeleteItem
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="itemId"></param>
+        /// <returns></returns>
         [Route("DeleteItemType")]
         [HttpGet]
         public HttpResponseMessage DeleteLItemType(HttpRequestMessage request, long itemTypeId)
@@ -120,6 +148,51 @@ namespace WIT.Portal.WebApiControllers
                 _db.SaveChanges();
 
                 transaction.Data = item;
+            });
+        }
+
+        /// <summary>
+        /// UpdateCustomer
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        [Route("UpdateItemType")]
+        [HttpPost]
+        public HttpResponseMessage UpdateItemType(HttpRequestMessage request, [FromBody] ItemEntity item)
+        {
+            return BaseAction(request, (transaction) => {
+
+                transaction.Data = item;
+
+                this.ValidateToken(request, transaction);
+
+                if (!ItemTypeValidator.Check(_db, item))
+                {
+                    transaction.ReturnMessage = "Please correct all errors.";
+                    throw new HttpResponseException(HttpStatusCode.BadRequest);
+                }
+
+                LItemType existingItem = _db.LItemTypes
+                    .Include(i => i.LItemProps)
+                    .FirstOrDefault(i => i.ItemTypeID == item.ItemTypeId)
+                    ;
+
+                if (existingItem == null)
+                {
+                    existingItem = _db.LItemTypes.Add(new LItemType()
+                    {
+                        CreatedBy = transaction.CurrentUserEmail
+                    });
+                }
+
+                existingItem.UpdatedBy = transaction.CurrentUserEmail;
+
+                item.UpdateItemType(_db, existingItem, transaction);
+
+                _db.SaveChanges();
+
+                transaction.Data = new ItemEntity(existingItem);
             });
         }
 
@@ -155,7 +228,7 @@ namespace WIT.Portal.WebApiControllers
 
                 ItemField sortField = grid.Fields.FirstOrDefault(f => f.Id == 0);
 
-                foreach (var prop in itemType.LItemProps.OrderBy(p => p.ItemPropID))
+                foreach (var prop in itemType.LItemProps.OrderBy(p => p.Radix))
                 {
                     ItemField field = new ItemField(prop);
 
@@ -490,7 +563,7 @@ namespace WIT.Portal.WebApiControllers
 
                 existingItem.UpdatedBy = transaction.CurrentUserEmail;
 
-                item.UpdateItemValues(_db, existingItem);
+                item.UpdateItemValues(_db, existingItem, transaction);
 
                 _db.SaveChanges();
 

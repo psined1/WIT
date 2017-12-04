@@ -18,7 +18,7 @@ import { TransactionInfo } from '../../entities/transaction-info.entity';
 
 import { ItemTypeComponent } from './item-type.component';
 
-import { ItemEntity } from '../../entities/item-field.entity';
+import { ItemType } from '../../entities/item-field.entity';
 import { ItemTypeList } from '../../entities/grid-info.entity';
 
 
@@ -142,7 +142,7 @@ export class ItemTypeListComponent implements OnInit {
         }
     }
 
-    private onDelete(item: ItemEntity) {
+    private onDelete(item: ItemType) {
 
         let yesNo: ConfirmYesNoComponent = this.modalService.show(ConfirmYesNoComponent).content;
         yesNo.title = "Delete item type";
@@ -164,7 +164,7 @@ export class ItemTypeListComponent implements OnInit {
         });
     }
 
-    private onEdit(item?: ItemEntity) {
+    private onEdit(item?: ItemType) {
 
         let maintComponent: ItemTypeComponent = this.modalService.show(ItemTypeComponent,
             Object.assign({}, {
@@ -176,8 +176,7 @@ export class ItemTypeListComponent implements OnInit {
         ).content;
 
         if (item) {
-            //maintComponent.getItem(item.productClassID);
-            maintComponent.item = item;
+            maintComponent.getItem(item.itemTypeId);
         }
 
         let modalHide = this.modalService.onHide.subscribe((reason: string) => {

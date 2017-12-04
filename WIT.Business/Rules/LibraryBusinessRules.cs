@@ -171,6 +171,45 @@ namespace WIT.Business
         }
     }
 
+    public class ItemTypeValidator
+    {
+        private WitEntityValidator<ItemEntity> _validator = new WitEntityValidator<ItemEntity>();
+        private WitEntities _db = null;
+
+        private ItemTypeValidator(WitEntities db)
+        {
+            _db = db;
+
+            _validator.RuleSet("delete", () =>
+            {
+            });
+
+            _validator.RuleSet("new", () =>
+            {
+            });
+
+            _validator.RuleSet("update", () =>
+            {
+            });
+        }
+
+        public static bool Check(WitEntities db, ItemEntity item)
+        {
+            //item.ValidationErrors = new ItemValidator(db)._validator.CheckErrors(item, "delete");
+            //return item.ValidationErrors.Count == 0;
+
+            return true;    // TODO: implement
+        }
+
+        public static bool CheckDelete(WitEntities db, ItemEntity item)
+        {
+            //item.ValidationErrors = new ItemValidator(db)._validator.CheckErrors(item, "delete");
+            //return item.ValidationErrors.Count == 0;
+
+            return true;    // TODO: implement
+        }
+    }
+
     public class ItemValidator
     {
         private WitEntityValidator<ItemEntity> _validator = new WitEntityValidator<ItemEntity>();

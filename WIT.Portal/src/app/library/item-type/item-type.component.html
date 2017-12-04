@@ -12,7 +12,7 @@
 
             <!-- Basic info tab -->
 
-            <tab heading="Basic Info">
+            <tab heading="General">
 
                 <!--div class="panel panel-default" style="margin-top:20px"-->
 
@@ -51,7 +51,7 @@
 
             <!-- Props tab -->
 
-            <tab heading="Fields">
+            <tab heading="Properties">
 
                 <div class="panel panel-body">
 
@@ -94,7 +94,72 @@
                                             <div class="form-group">
                                                 <label class="col-lg-3 col-sm-2 control-label">Type</label>
                                                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                                                    <select class="form-control" [(ngModel)]="prop.help" (change)="isDirty=true"></select>
+                                                    <select class="form-control" [(ngModel)]="prop.propType" (change)="isDirty=true">
+                                                        <option *ngFor="let t of propTypes | propTypeKey" [value]="t.key">{{t.value}}</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label class="col-lg-3 col-sm-2 control-label">Options</label>
+                                                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+
+                                                    <div class="checkbox">
+                                                        <label>
+                                                            <input type="checkbox" (change)="isDirty=true"
+                                                                   [(ngModel)]="prop.required" [ngClass]="{'validation-error': false}">
+                                                            Required
+                                                        </label>
+                                                    </div>
+
+                                                    <div class="checkbox">
+                                                        <label>
+                                                            <input type="checkbox" (change)="isDirty=true"
+                                                                   [(ngModel)]="prop.unique" [ngClass]="{'validation-error': false}">
+                                                            Unique
+                                                        </label>
+                                                    </div>
+                                                    
+                                                    <div class="checkbox">
+                                                        <label>
+                                                            <input type="checkbox" (change)="isDirty=true"
+                                                                   [(ngModel)]="prop.multiple" [disabled]="prop.propType != 100" [ngClass]="{'validation-error': false}">
+                                                            Multiple
+                                                        </label>
+                                                    </div>
+
+                                                    <div class="checkbox">
+                                                        <label>
+                                                            <input type="checkbox" (change)="isDirty=true"
+                                                                   [(ngModel)]="prop.isItemKey" [disabled]="true" [ngClass]="{'validation-error': false}">
+                                                            Item key
+                                                        </label>
+                                                    </div>
+
+                                                    <div class="checkbox">
+                                                        <label>
+                                                            <input type="checkbox" (change)="isDirty=true"
+                                                                   [(ngModel)]="prop.upperCase" [ngClass]="{'validation-error': false}">
+                                                            Upper case
+                                                        </label>
+                                                    </div>
+
+                                                    <div class="checkbox">
+                                                        <label>
+                                                            <input type="checkbox" (change)="isDirty=true"
+                                                                   [(ngModel)]="prop.gridHide" [ngClass]="{'validation-error': false}">
+                                                            Hide in grid
+                                                        </label>
+                                                    </div>
+
+                                                    <div class="checkbox">
+                                                        <label>
+                                                            <input type="checkbox" (change)="isDirty=true"
+                                                                   [(ngModel)]="prop.isSortable" [ngClass]="{'validation-error': false}">
+                                                            Sortable
+                                                        </label>
+                                                    </div>
+
                                                 </div>
                                             </div>
 
@@ -109,6 +174,7 @@
                     </div>
 
                     <span *ngIf="!item.fields.length">No fields have been defined.</span>
+
                     <button type="button" class="btn btn-success" (click)="addProp()">
                         <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>&nbsp;Add field
                     </button>
@@ -123,9 +189,11 @@
 
     </div>
 
-    <div class="modal-footer">
-        <div class="pull-left">
-            <button class="btn btn-primary" (click)="save()" [disabled]="!(isDirty && item.isValid)">Save Changes</button>
-            <button class="btn btn-default" (click)="bsModalRef.hide()">Close</button>
-        </div>
+</div>
+
+<div class="modal-footer">
+    <div class="pull-left">
+        <button type="button" class="btn btn-primary" (click)="save()" [disabled]="!(isDirty && item.isValid)">Save Changes</button>
+        <button type="button" class="btn btn-default" (click)="bsModalRef.hide()">Close</button>
     </div>
+</div>

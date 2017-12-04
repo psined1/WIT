@@ -18,14 +18,14 @@ set identity_insert LItemType off;
 go
 
 set identity_insert LItemProp on;
-insert LItemProp (ItemPropID, ItemTypeID, Name, PropType, [Required], [Unique], UpperCase, Multiple) values 
-	(1, 1, 'Code', 0, 1, 1, 1, 0),
-	(2, 1, 'Name', 0, 1, 0, 0, 0),
-	(3, 1, 'Description', 1, 0, 0, 0, 0),
+insert LItemProp (ItemPropID, ItemTypeID, Name, PropType, [Required], [Unique], UpperCase, Multiple, Radix) values 
+	(1, 1, 'Code', 0, 1, 1, 1, 0, 0),
+	(2, 1, 'Name', 0, 1, 0, 0, 0, 1),
+	(3, 1, 'Description', 1, 0, 0, 0, 0, 2),
 	
-	(4, 2, 'Code', 0, 1, 1, 1, 0),
-	(5, 2, 'Name', 0, 1, 0, 0, 0),
-	(6, 2, 'Description', 1, 0, 0, 0, 0)
+	(4, 2, 'Code', 0, 1, 1, 1, 0, 0),
+	(5, 2, 'Name', 0, 1, 0, 0, 0, 1),
+	(6, 2, 'Description', 1, 0, 0, 0, 0, 2)
 ;
 set identity_insert LItemProp off;
 go

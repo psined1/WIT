@@ -35,6 +35,7 @@ namespace WIT.Data.Models
         public bool Multiple { get; set; }
         public bool Unique { get; set; }
         public bool UpperCase { get; set; }
+        public int Radix { get; set; }
     
         public virtual LItemType LItemType { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

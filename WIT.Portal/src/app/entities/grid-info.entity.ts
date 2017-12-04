@@ -1,4 +1,4 @@
-﻿import { ItemField, IItemData, ItemEntity } from './item-field.entity';
+﻿import { ItemField, IItemData, ItemEntity, ItemType } from './item-field.entity';
 
 export class GridInfo {
 
@@ -98,7 +98,7 @@ export class ListBase {
 }
 
 export class ItemTypeList extends ListBase {
-    public items: Array<ItemEntity>;
+    public items: Array<ItemType>;
 
     constructor()
     constructor(rhs: ItemTypeList)
@@ -107,9 +107,9 @@ export class ItemTypeList extends ListBase {
         super(rhs);
 
         if (!this.items || !Array.isArray(this.items)) {
-            this.items = new Array<ItemEntity>();
+            this.items = new Array<ItemType>();
         } else {
-            this.items = this.items.map(v => new ItemEntity(v));
+            this.items = this.items.map(v => new ItemType(v));
         }
     }
 }
