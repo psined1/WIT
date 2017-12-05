@@ -75,7 +75,7 @@ export class ItemField {
     }
 
     public get isItemKey(): boolean {
-        return this.unique && this.required && !this.multiple;
+        return this.unique && this.required && !this.multiple && this.propType == LPropTypeEnum.String;
     }
 }
 

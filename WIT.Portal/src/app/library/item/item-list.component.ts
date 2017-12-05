@@ -112,6 +112,8 @@ export class ItemListComponent implements OnInit {
 
                 let options: string = '';
 
+                console.log(c);
+
                 if (c.isItemKey || c.propType === LPropTypeEnum.Hyperlink) {
                     options = options + (options === '' ? '' : ',') + '"hyperLink": true';
                 }

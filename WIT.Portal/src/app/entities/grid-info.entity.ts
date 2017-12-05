@@ -62,8 +62,9 @@ export class ItemGrid {
     constructor(rhs: ItemGrid)
     constructor(rhs?: ItemGrid) {
         if (rhs) {
-            for (let k in rhs) this[k] = rhs[k];
+            this.data = [...rhs.data];
             this.gridInfo = new GridInfo(rhs.gridInfo);
+            this.fields = rhs.fields.map(f => new ItemField(f));
         }
 
         if (!this.data || !Array.isArray(this.data)) {

@@ -74,7 +74,7 @@ namespace WIT.Portal.WebApiControllers
                 List<ItemEntity> list = new List<ItemEntity>(info.TotalRows);
                 foreach (var t in q.Page(info).ToList())
                 {
-                    list.Add(new ItemEntity(t));
+                    list.Add(new ItemEntity(_db, t));
                 }
 
                 transaction.Data = new
@@ -108,7 +108,7 @@ namespace WIT.Portal.WebApiControllers
                     throw new HttpResponseException(HttpStatusCode.NotFound);
                 }
 
-                ItemEntity item = new ItemEntity(existingItem);
+                ItemEntity item = new ItemEntity(_db, existingItem);
 
                 transaction.Data = item;
             });
@@ -136,7 +136,7 @@ namespace WIT.Portal.WebApiControllers
                     throw new HttpResponseException(HttpStatusCode.NotFound);
                 }
 
-                ItemEntity item = new ItemEntity(existingItem);
+                ItemEntity item = new ItemEntity(_db, existingItem);
 
                 /* TODO: if (!ItemValidator.CheckDelete(_db, item))
                 {
@@ -192,7 +192,7 @@ namespace WIT.Portal.WebApiControllers
 
                 _db.SaveChanges();
 
-                transaction.Data = new ItemEntity(existingItem);
+                transaction.Data = new ItemEntity(_db, existingItem);
             });
         }
 
@@ -456,7 +456,7 @@ namespace WIT.Portal.WebApiControllers
                     throw new HttpResponseException(HttpStatusCode.NotFound);
                 }
 
-                ItemEntity item = new ItemEntity(existingItem);
+                ItemEntity item = new ItemEntity(_db, existingItem);
 
                 transaction.Data = item;
             });
@@ -482,7 +482,7 @@ namespace WIT.Portal.WebApiControllers
                     throw new HttpResponseException(HttpStatusCode.NotFound);
                 }
 
-                ItemEntity blankItem = new ItemEntity(existingItemType);
+                ItemEntity blankItem = new ItemEntity(_db, existingItemType);
 
                 transaction.Data = blankItem;
             });
@@ -510,7 +510,7 @@ namespace WIT.Portal.WebApiControllers
                     throw new HttpResponseException(HttpStatusCode.NotFound);
                 }
 
-                ItemEntity item = new ItemEntity(existingItem);
+                ItemEntity item = new ItemEntity(_db, existingItem);
 
                 if (!ItemValidator.CheckDelete(_db, item))
                 {
@@ -557,6 +557,7 @@ namespace WIT.Portal.WebApiControllers
                 if (existingItem == null)
                 {
                     existingItem = _db.LItems.Add(new LItem() {
+                        LItemType = _db.LItemTypes.FirstOrDefault(t => t.ItemTypeID == item.ItemTypeId),
                         CreatedBy = transaction.CurrentUserEmail
                     });
                 }
@@ -567,7 +568,7 @@ namespace WIT.Portal.WebApiControllers
 
                 _db.SaveChanges();
 
-                transaction.Data = new ItemEntity(existingItem);
+                transaction.Data = new ItemEntity(_db, existingItem);
             });
         }
 

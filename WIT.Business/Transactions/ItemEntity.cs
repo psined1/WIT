@@ -46,13 +46,13 @@ namespace WIT.Business.Entities
             }
         }
 
-        public bool IsItemKey
+        /*public bool IsItemKey
         {
             get
             {
                 return Unique && Required && !Multiple;
             }
-        }
+        }*/
 
         public ItemField()
         {
@@ -96,10 +96,46 @@ namespace WIT.Business.Entities
     }
 
 
+    public interface IValue
+    {
+        long Id { get; set; }
+    }
+
+    public class LookupValue : IValue
+    {
+        public long Id { get; set; }
+        //public long ItemId { get; set; }
+        public object Key { get; set; }
+    }
+
+    public class StringValue : IValue
+    {
+        public long Id { get; set; }
+        public string Value { get; set; }
+    }
+
+    public class DateTimeValue : IValue
+    {
+        public long Id { get; set; }
+        public DateTime? Value { get; set; }
+    }
+
+    public class IntegerValue : IValue
+    {
+        public long Id { get; set; }
+        public int? Value { get; set; }
+    }
+
+    public class DecimalValue : IValue
+    {
+        public long Id { get; set; }
+        public decimal? Value { get; set; }
+    }
+
     public class ItemValue : ItemField
     {
         // from LITemPropValueNnnn entity
-        public dynamic Value { get; set; }
+        public object Value { get; set; }
 
         public string ValidationError { get; set; }
 
@@ -107,41 +143,53 @@ namespace WIT.Business.Entities
         {
         }
 
-        public ItemValue(LItemProp prop, List<LItemValue> values)
-            : base(prop)
+        public static object GetValue(WitEntities _db, LItemValue fromValue)
         {
-            if (values.Count > 0)
+            if (fromValue != null)
             {
-                switch (prop.PropType)
+                switch (fromValue.LItemProp.PropType)
                 {
                     case LPropTypeEnum.String:
-                        Value = values[0]?.LItemValueString?.Value;
-                        break;
+                        return fromValue.LItemValueString?.Value;
 
                     case LPropTypeEnum.Text:
-                        Value = values[0]?.LItemValueText?.Value;
-                        break;
+                        return fromValue.LItemValueText?.Value;
 
                     case LPropTypeEnum.Date:
                     case LPropTypeEnum.DateTime:
                     case LPropTypeEnum.Time:
-                        Value = values[0]?.LItemValueDateTime?.Value;
-                        break;
+                        return fromValue.LItemValueDateTime?.Value;
 
                     case LPropTypeEnum.Integer:
-                        Value = values[0]?.LItemValueInteger?.Value;
-                        break;
+                        return fromValue.LItemValueInteger?.Value;
 
                     case LPropTypeEnum.Decimal:
-                        Value = values[0]?.LItemValueDecimal?.Value;
-                        break;
+                        return fromValue.LItemValueDecimal?.Value;
 
                     case LPropTypeEnum.Item:
-                        Value = values
-                            .OrderBy(v => v.ItemValueID)
-                            .Take(Multiple ? values.Count : 1)
-                            .Select(v => v.LItemValueItem.ItemID)
-                            .ToArray();
+                        {
+                            var lookupItem = fromValue.LItemValueItem;
+
+                            if (lookupItem != null)
+                            {
+                                var lookupItemProp = _db.LItemProps.FirstOrDefault(p =>
+                                    p.ItemTypeID == lookupItem.ItemTypeID &&
+                                    !p.Multiple && p.Required && p.Unique
+                                );
+
+                                if (lookupItemProp != null)
+                                {
+                                    var lookupValues = _db.LItemValues
+                                        .OrderBy(v => v.ItemValueID)
+                                        .Where(v => v.ItemPropID == lookupItemProp.ItemPropID && v.ItemID == lookupItem.ItemID)
+                                        .Select(v => v.LItemValueString.Value)
+                                        .ToArray()
+                                        ;
+
+                                    return string.Join(", ", lookupValues);
+                                }
+                            }
+                        }
                         break;
 
                     // TODO: implement other types
@@ -151,6 +199,32 @@ namespace WIT.Business.Entities
                         break;
                 }
             }
+
+            return null;
+        }
+
+        public ItemValue(WitEntities _db, LItemProp prop, LItem existingItem)
+            : base(prop)
+        {
+            var itemValues = existingItem.LItemValues.Where(v => v.ItemPropID == Id)
+                .OrderBy(v => v.ItemValueID)
+                .ToList()
+                ;
+
+            var values = new List<object>(itemValues.Count);
+
+            foreach (var value in itemValues)
+            {
+                if (!Multiple)
+                {
+                    Value = GetValue(_db, value);
+                    return;
+                }
+
+                values.Add(GetValue(_db, value));
+            }
+
+            Value = values;
         }
 
         public ItemValue(LItemProp prop)
@@ -158,38 +232,118 @@ namespace WIT.Business.Entities
         {
         }
 
-        public static void UpdateItemValue(ItemValue updatedField,
+        public static void UpdateValue(
             WitEntities _db,
             LItem existingItem,
             LItemProp prop,
+            ItemValue updatedField,
             TransactionInfo transaction)
         {
+            var value = updatedField?.Value;
+
+            if (value == null)
+            {
+                return;
+            }
+
             switch (prop.PropType)
             {
                 case LPropTypeEnum.String:
-                    UpdateValueString(updatedField, _db, existingItem, prop, transaction);
+                    {
+                        string newValue = value as string;
+                        if (newValue != null)
+                        {
+                            existingItem.LItemValues.Add(new LItemValue()
+                            {
+                                ItemPropID = prop.ItemPropID,
+                                LItemValueString = new LItemValueString()
+                                {
+                                    Value = newValue
+                                }
+                            });
+                        }
+                    }
                     break;
 
                 case LPropTypeEnum.Text:
-                    UpdateValueText(updatedField, _db, existingItem, prop, transaction);
+                    {
+                        string newValue = value as string;
+                        if (newValue != null)
+                        {
+                            existingItem.LItemValues.Add(new LItemValue()
+                            {
+                                ItemPropID = prop.ItemPropID,
+                                LItemValueText = new LItemValueText()
+                                {
+                                    Value = newValue
+                                }
+                            });
+                        }
+                    }
                     break;
 
                 case LPropTypeEnum.Date:
                 case LPropTypeEnum.DateTime:
                 case LPropTypeEnum.Time:
-                    UpdateValueDateTime(updatedField, _db, existingItem, prop, transaction);
+                    existingItem.LItemValues.Add(new LItemValue()
+                    {
+                        ItemPropID = prop.ItemPropID,
+                        LItemValueDateTime = new LItemValueDateTime()
+                        {
+                            Value = (DateTime)value
+                        }
+                    });
                     break;
 
                 case LPropTypeEnum.Integer:
-                    UpdateValueInteger(updatedField, _db, existingItem, prop, transaction);
+                    existingItem.LItemValues.Add(new LItemValue()
+                    {
+                        ItemPropID = prop.ItemPropID,
+                        LItemValueInteger = new LItemValueInteger()
+                        {
+                            Value = (int)value
+                        }
+                    });
                     break;
 
                 case LPropTypeEnum.Decimal:
-                    UpdateValueDecimal(updatedField, _db, existingItem, prop, transaction);
+                    existingItem.LItemValues.Add(new LItemValue()
+                    {
+                        ItemPropID = prop.ItemPropID,
+                        LItemValueDecimal = new LItemValueDecimal()
+                        {
+                            Value = (decimal)value
+                        }
+                    });
                     break;
 
                 case LPropTypeEnum.Item:
-                    UpdateValueItem(updatedField, _db, existingItem, prop, transaction);
+                    {
+                        var lookupItemProp = _db.LItemProps.FirstOrDefault(p =>
+                            p.ItemTypeID == prop.ValueItemTypeID &&
+                            !p.Multiple && p.Required && p.Unique
+                        );
+
+                        var values = value as string ?? "";
+
+                        foreach (var newValue in values.Split(','))
+                        {
+                            var lookupItem = _db.LItemValueStrings.FirstOrDefault(s => 
+                                s.Value == newValue && 
+                                s.LItemValue.ItemPropID == lookupItemProp.ItemPropID &&
+                                s.LItemValue.LItem.ItemTypeID == prop.ValueItemTypeID
+                                );
+
+                            if (lookupItem != null)
+                            {
+                                existingItem.LItemValues.Add(new LItemValue()
+                                {
+                                    ItemPropID = prop.ItemPropID,
+                                    LItemValueItem = lookupItem.LItemValue.LItem
+                                });
+                            }
+                        }
+                    }
                     break;
 
                 // TODO: implement other types
@@ -199,262 +353,8 @@ namespace WIT.Business.Entities
                     break;
             }
         }
-
-        private static void UpdateValueString(
-            ItemValue updatedField,
-            WitEntities _db,
-            LItem existingItem,
-            LItemProp prop,
-            TransactionInfo transaction
-            )
-        {
-            var currentValues = existingItem.LItemValues
-                .Where(v => v.ItemPropID == prop.ItemPropID)
-                .OrderBy(v => v.ItemValueID)
-                ;
-
-            string newValue = updatedField?.Value as string;
-            if (newValue == null)
-            {
-                _db.LItemValues.RemoveRange(currentValues);
-            }
-            else
-            {
-                var currentValue = currentValues.FirstOrDefault();
-                if (currentValue != null)
-                {
-                    if (currentValue.LItemValueString == null)
-                    {
-                        currentValue.LItemValueString = new LItemValueString()
-                        {
-                            Value = newValue
-                        };
-                    }
-                    else if (currentValue.LItemValueString.Value != newValue)
-                    {
-                        currentValue.LItemValueString.Value = newValue;
-                    }
-                }
-                else
-                {
-                    existingItem.LItemValues.Add(new LItemValue()
-                    {
-                        ItemPropID = prop.ItemPropID,
-                        LItemValueString = new LItemValueString()
-                        {
-                            Value = newValue
-                        }
-                    });
-                }
-            }
-        }
-
-        private static void UpdateValueText(
-            ItemValue updatedField,
-            WitEntities _db,
-            LItem existingItem,
-            LItemProp prop,
-            TransactionInfo transaction
-            )
-        {
-            var currentValues = existingItem.LItemValues
-                .Where(v => v.ItemPropID == prop.ItemPropID)
-                .OrderBy(v => v.ItemValueID)
-                ;
-
-            string newValue = updatedField?.Value as string;
-            if (newValue == null)
-            {
-                _db.LItemValues.RemoveRange(currentValues);
-            }
-            else
-            {
-                var currentValue = currentValues.FirstOrDefault();
-                if (currentValue != null)
-                {
-                    if (currentValue.LItemValueText == null)
-                    {
-                        currentValue.LItemValueText = new LItemValueText()
-                        {
-                            Value = newValue
-                        };
-                    }
-                    else if (currentValue.LItemValueText.Value != newValue)
-                    {
-                        currentValue.LItemValueText.Value = newValue;
-                    }
-                }
-                else
-                {
-                    existingItem.LItemValues.Add(new LItemValue()
-                    {
-                        ItemPropID = prop.ItemPropID,
-                        LItemValueText = new LItemValueText()
-                        {
-                            Value = newValue
-                        }
-                    });
-                }
-            }
-        }
-
-        private static void UpdateValueDateTime(
-            ItemValue updatedField,
-            WitEntities _db,
-            LItem existingItem,
-            LItemProp prop,
-            TransactionInfo transaction
-            )
-        {
-            var currentValues = existingItem.LItemValues
-                .Where(v => v.ItemPropID == prop.ItemPropID)
-                .OrderBy(v => v.ItemValueID)
-                ;
-
-            Nullable<DateTime> newValue = updatedField?.Value as Nullable<DateTime>;
-            if (!newValue.HasValue)
-            {
-                _db.LItemValues.RemoveRange(currentValues);
-            }
-            else
-            {
-                var currentValue = currentValues.FirstOrDefault();
-                if (currentValue != null)
-                {
-                    if (currentValue.LItemValueDateTime == null)
-                    {
-                        currentValue.LItemValueDateTime = new LItemValueDateTime()
-                        {
-                            Value = newValue.Value
-                        };
-                    }
-                    else if (currentValue.LItemValueDateTime.Value != newValue.Value)
-                    {
-                        currentValue.LItemValueDateTime.Value = newValue.Value;
-                    }
-                }
-                else
-                {
-                    existingItem.LItemValues.Add(new LItemValue()
-                    {
-                        ItemPropID = prop.ItemPropID,
-                        LItemValueDateTime = new LItemValueDateTime()
-                        {
-                            Value = newValue.Value
-                        }
-                    });
-                }
-            }
-        }
-
-        private static void UpdateValueInteger(
-            ItemValue updatedField,
-            WitEntities _db,
-            LItem existingItem,
-            LItemProp prop,
-            TransactionInfo transaction
-            )
-        {
-            var currentValues = existingItem.LItemValues
-                .Where(v => v.ItemPropID == prop.ItemPropID)
-                .OrderBy(v => v.ItemValueID)
-                ;
-
-            Nullable<int> newValue = updatedField?.Value as Nullable<int>;
-            if (!newValue.HasValue)
-            {
-                _db.LItemValues.RemoveRange(currentValues);
-            }
-            else
-            {
-                var currentValue = currentValues.FirstOrDefault();
-                if (currentValue != null)
-                {
-                    if (currentValue.LItemValueInteger == null)
-                    {
-                        currentValue.LItemValueInteger = new LItemValueInteger()
-                        {
-                            Value = newValue.Value
-                        };
-                    }
-                    else if (currentValue.LItemValueInteger.Value != newValue.Value)
-                    {
-                        currentValue.LItemValueInteger.Value = newValue.Value;
-                    }
-                }
-                else
-                {
-                    existingItem.LItemValues.Add(new LItemValue()
-                    {
-                        ItemPropID = prop.ItemPropID,
-                        LItemValueInteger = new LItemValueInteger()
-                        {
-                            Value = newValue.Value
-                        }
-                    });
-                }
-            }
-        }
-
-        private static void UpdateValueDecimal(
-            ItemValue updatedField,
-            WitEntities _db,
-            LItem existingItem,
-            LItemProp prop,
-            TransactionInfo transaction
-            )
-        {
-            var currentValues = existingItem.LItemValues
-                .Where(v => v.ItemPropID == prop.ItemPropID)
-                .OrderBy(v => v.ItemValueID)
-                ;
-
-            Nullable<decimal> newValue = updatedField?.Value as Nullable<decimal>;
-            if (!newValue.HasValue)
-            {
-                _db.LItemValues.RemoveRange(currentValues);
-            }
-            else
-            {
-                var currentValue = currentValues.FirstOrDefault();
-                if (currentValue != null)
-                {
-                    if (currentValue.LItemValueDecimal == null)
-                    {
-                        currentValue.LItemValueDecimal = new LItemValueDecimal()
-                        {
-                            Value = newValue.Value
-                        };
-                    }
-                    else if (currentValue.LItemValueDecimal.Value != newValue.Value)
-                    {
-                        currentValue.LItemValueDecimal.Value = newValue.Value;
-                    }
-                }
-                else
-                {
-                    existingItem.LItemValues.Add(new LItemValue()
-                    {
-                        ItemPropID = prop.ItemPropID,
-                        LItemValueDecimal = new LItemValueDecimal()
-                        {
-                            Value = newValue.Value
-                        }
-                    });
-                }
-            }
-        }
-
-        private static void UpdateValueItem(
-            ItemValue updatedField,
-            WitEntities _db,
-            LItem existingItem,
-            LItemProp prop,
-            TransactionInfo transaction
-            )
-        {
-        }
     }
+
 
     public class ItemEntity
     {
@@ -481,7 +381,7 @@ namespace WIT.Business.Entities
             Fields = new List<ItemValue>();
         }
 
-        public ItemEntity(LItem existingItem)
+        public ItemEntity(WitEntities _db, LItem existingItem)
         {
             if (existingItem != null)
             {
@@ -499,17 +399,12 @@ namespace WIT.Business.Entities
 
                 foreach (var prop in existingItem.LItemType.LItemProps.OrderBy(p => p.Radix))
                 {
-                    var propValues = prop.LItemValues.Where(v => v.ItemID == existingItem.ItemID)
-                        .OrderBy(v => v.ItemValueID)
-                        .ToList()
-                        ;
-
-                    Fields.Add(new ItemValue(prop, propValues));
+                    Fields.Add(new ItemValue(_db, prop, existingItem));
                 }
             }
         }
 
-        public ItemEntity(LItemType existingItemType)
+        public ItemEntity(WitEntities _db, LItemType existingItemType)
         {
             if (existingItemType != null)
             {
@@ -528,13 +423,15 @@ namespace WIT.Business.Entities
 
         public void UpdateItemValues(WitEntities _db, LItem existingItem, TransactionInfo transaction)
         {
+            _db.LItemValues.RemoveRange(existingItem.LItemValues);
+
             foreach (var prop in existingItem.LItemType.LItemProps)
             {
                 var updatedField = Fields
                     .FirstOrDefault(f => f.Id == prop.ItemPropID)
                     ;
 
-                ItemValue.UpdateItemValue(updatedField, _db, existingItem, prop, transaction);
+                ItemValue.UpdateValue(_db, existingItem, prop, updatedField, transaction);
             }
         }
 
