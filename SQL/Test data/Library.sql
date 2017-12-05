@@ -1,3 +1,5 @@
+use WIT
+go
 truncate table LItemValueString
 truncate table LItemValueText
 truncate table LItemValueInteger

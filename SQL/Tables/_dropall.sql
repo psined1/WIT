@@ -1,3 +1,5 @@
+use WIT
+go
 drop table LItemValueString
 drop table LItemValueText
 drop table LItemValueInteger
