@@ -18,6 +18,7 @@ namespace WIT.Data.Models
         public LItemProp()
         {
             this.LItemValues = new HashSet<LItemValue>();
+            this.LItemTypeLookups = new HashSet<LItemTypeLookup>();
         }
     
         public int ItemPropID { get; set; }
@@ -40,5 +41,7 @@ namespace WIT.Data.Models
         public virtual LItemType LItemType { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<LItemValue> LItemValues { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<LItemTypeLookup> LItemTypeLookups { get; set; }
     }
 }

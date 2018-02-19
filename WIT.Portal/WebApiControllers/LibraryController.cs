@@ -100,15 +100,15 @@ namespace WIT.Portal.WebApiControllers
 
                 this.ValidateToken(request, transaction);
 
-                var existingItem = _db.LItemTypes.Include(t => t.LItemProps).FirstOrDefault(t => t.ItemTypeID == itemTypeId);
+                var existingItemType = _db.LItemTypes.Include(t => t.LItemProps).FirstOrDefault(t => t.ItemTypeID == itemTypeId);
 
-                if (existingItem == null)
+                if (existingItemType == null)
                 {
                     transaction.ReturnMessage = string.Format("Item type with id {0} not found", itemTypeId);
                     throw new HttpResponseException(HttpStatusCode.NotFound);
                 }
 
-                ItemEntity item = new ItemEntity(_db, existingItem);
+                ItemEntity item = new ItemEntity(_db, existingItemType);
 
                 transaction.Data = item;
             });
@@ -128,15 +128,15 @@ namespace WIT.Portal.WebApiControllers
 
                 this.ValidateToken(request, transaction);
 
-                var existingItem = _db.LItemTypes.Include(t => t.LItemProps).FirstOrDefault(t => t.ItemTypeID == itemTypeId);
+                var existingItemType = _db.LItemTypes.Include(t => t.LItemProps).FirstOrDefault(t => t.ItemTypeID == itemTypeId);
 
-                if (existingItem == null)
+                if (existingItemType == null)
                 {
                     transaction.ReturnMessage = string.Format("Item type with id {0} not found", itemTypeId);
                     throw new HttpResponseException(HttpStatusCode.NotFound);
                 }
 
-                ItemEntity item = new ItemEntity(_db, existingItem);
+                ItemEntity item = new ItemEntity(_db, existingItemType);
 
                 /* TODO: if (!ItemValidator.CheckDelete(_db, item))
                 {
@@ -144,7 +144,7 @@ namespace WIT.Portal.WebApiControllers
                     throw new HttpResponseException(HttpStatusCode.BadRequest);
                 }*/
 
-                _db.LItemTypes.Remove(existingItem);
+                _db.LItemTypes.Remove(existingItemType);
                 _db.SaveChanges();
 
                 transaction.Data = item;
@@ -173,26 +173,26 @@ namespace WIT.Portal.WebApiControllers
                     throw new HttpResponseException(HttpStatusCode.BadRequest);
                 }
 
-                LItemType existingItem = _db.LItemTypes
+                LItemType existingItemType = _db.LItemTypes
                     .Include(i => i.LItemProps)
                     .FirstOrDefault(i => i.ItemTypeID == item.ItemTypeId)
                     ;
 
-                if (existingItem == null)
+                if (existingItemType == null)
                 {
-                    existingItem = _db.LItemTypes.Add(new LItemType()
+                    existingItemType = _db.LItemTypes.Add(new LItemType()
                     {
                         CreatedBy = transaction.CurrentUserEmail
                     });
                 }
 
-                existingItem.UpdatedBy = transaction.CurrentUserEmail;
+                existingItemType.UpdatedBy = transaction.CurrentUserEmail;
 
-                item.UpdateItemType(_db, existingItem, transaction);
+                item.UpdateItemType(_db, existingItemType, transaction);
 
                 _db.SaveChanges();
 
-                transaction.Data = new ItemEntity(_db, existingItem);
+                transaction.Data = new ItemEntity(_db, existingItemType);
             });
         }
 
@@ -437,7 +437,7 @@ namespace WIT.Portal.WebApiControllers
         }
 
         /// <summary>
-        /// GetProductFeature
+        /// GetItem
         /// </summary>
         /// <param name="request"></param>
         /// <param name="itemId"></param>
@@ -463,7 +463,7 @@ namespace WIT.Portal.WebApiControllers
         }
 
         /// <summary>
-        /// GetProductFeature
+        /// GetItemForType
         /// </summary>
         /// <param name="request"></param>
         /// <param name="itemId"></param>
@@ -527,7 +527,7 @@ namespace WIT.Portal.WebApiControllers
 
 
         /// <summary>
-        /// UpdateCustomer
+        /// UpdateItem
         /// </summary>
         /// <param name="request"></param>
         /// <param name="item"></param>
@@ -574,7 +574,9 @@ namespace WIT.Portal.WebApiControllers
 
         #endregion  // Item
 
-        #region ProductFeature
+        #region Obsolete
+
+        #region ProductFeature (obsolete)
 
         /// <summary>
         /// GetProductFeatures
@@ -720,7 +722,7 @@ namespace WIT.Portal.WebApiControllers
 
         #endregion  // ProductFeature
 
-        #region ProductClass
+        #region ProductClass (obsolete)
 
         /// <summary>
         /// GetProductClasss
@@ -865,7 +867,7 @@ namespace WIT.Portal.WebApiControllers
 
         #endregion  // ProductClass
 
-        #region Product
+        #region Product (obsolete)
 
         /// <summary>
         /// GetProducts
@@ -1014,7 +1016,7 @@ namespace WIT.Portal.WebApiControllers
 
         #endregion  // Product
 
-        #region Customer
+        #region Customer (obsolete)
 
         /// <summary>
         /// GetCustomers
@@ -1164,5 +1166,7 @@ namespace WIT.Portal.WebApiControllers
         }
 
         #endregion  // Customer
+
+        #endregion  // Obsolete
     }
 }

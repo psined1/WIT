@@ -12,19 +12,13 @@ namespace WIT.Data.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class LItemValue
+    public partial class LItemValueItem
     {
         public long ItemValueID { get; set; }
-        public long ItemID { get; set; }
-        public int ItemPropID { get; set; }
+        public long Value { get; set; }
+        public Nullable<int> Nill { get; set; }
     
         public virtual LItem LItem { get; set; }
-        public virtual LItemProp LItemProp { get; set; }
-        public virtual LItemValueDateTime LItemValueDateTime { get; set; }
-        public virtual LItemValueDecimal LItemValueDecimal { get; set; }
-        public virtual LItemValueInteger LItemValueInteger { get; set; }
-        public virtual LItemValueString LItemValueString { get; set; }
-        public virtual LItemValueText LItemValueText { get; set; }
-        public virtual LItemValueItem LItemValueItem { get; set; }
+        public virtual LItemValue LItemValue { get; set; }
     }
 }

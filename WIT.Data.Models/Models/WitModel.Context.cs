@@ -39,5 +39,7 @@ namespace WIT.Data.Models
         public virtual DbSet<LItemValueInteger> LItemValueIntegers { get; set; }
         public virtual DbSet<LItemValueString> LItemValueStrings { get; set; }
         public virtual DbSet<LItemValueText> LItemValueTexts { get; set; }
+        public virtual DbSet<LItemTypeLookup> LItemTypeLookups { get; set; }
+        public virtual DbSet<LItemValueItem> LItemValueItems { get; set; }
     }
 }

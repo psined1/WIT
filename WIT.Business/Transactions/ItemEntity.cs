@@ -46,13 +46,16 @@ namespace WIT.Business.Entities
             }
         }
 
-        /*public bool IsItemKey
+        public bool CanBeLookupKey
         {
             get
             {
-                return Unique && Required && !Multiple;
+                return
+                    Unique && Required && !Multiple &&
+                    (PropType == LPropTypeEnum.String || PropType == LPropTypeEnum.Integer)
+                    ;
             }
-        }*/
+        }
 
         public ItemField()
         {
@@ -172,7 +175,7 @@ namespace WIT.Business.Entities
 
                             if (lookupItem != null)
                             {
-                                var lookupItemProp = _db.LItemProps.FirstOrDefault(p =>
+                                /*var lookupItemProp = _db.LItemTypeLookups.FirstOrDefault(p =>
                                     p.ItemTypeID == lookupItem.ItemTypeID &&
                                     !p.Multiple && p.Required && p.Unique
                                 );
@@ -187,7 +190,7 @@ namespace WIT.Business.Entities
                                         ;
 
                                     return string.Join(", ", lookupValues);
-                                }
+                                }*/
                             }
                         }
                         break;
@@ -319,29 +322,32 @@ namespace WIT.Business.Entities
 
                 case LPropTypeEnum.Item:
                     {
-                        var lookupItemProp = _db.LItemProps.FirstOrDefault(p =>
-                            p.ItemTypeID == prop.ValueItemTypeID &&
-                            !p.Multiple && p.Required && p.Unique
-                        );
+                        var lookupItemProp = _db.LItemTypeLookups
+                            .FirstOrDefault(p => p.ItemTypeID == prop.ValueItemTypeID)?
+                            .LItemProp
+                            ;
 
-                        var values = value as string ?? "";
-
-                        foreach (var newValue in values.Split(','))
+                        if (lookupItemProp != null)
                         {
-                            var lookupItem = _db.LItemValueStrings.FirstOrDefault(s => 
-                                s.Value == newValue && 
-                                s.LItemValue.ItemPropID == lookupItemProp.ItemPropID &&
-                                s.LItemValue.LItem.ItemTypeID == prop.ValueItemTypeID
-                                );
+                            var values = value as string ?? "";
 
-                            if (lookupItem != null)
+                            /*foreach (var newValue in values.Split(','))
                             {
-                                existingItem.LItemValues.Add(new LItemValue()
+                                var lookupItem = _db.LItemValueStrings.FirstOrDefault(s => 
+                                    s.Value == newValue && 
+                                    s.LItemValue.ItemPropID == lookupItemProp.ItemPropID &&
+                                    s.LItemValue.LItem.ItemTypeID == prop.ValueItemTypeID
+                                    );
+
+                                if (lookupItem != null)
                                 {
-                                    ItemPropID = prop.ItemPropID,
-                                    LItemValueItem = lookupItem.LItemValue.LItem
-                                });
-                            }
+                                    existingItem.LItemValues.Add(new LItemValue()
+                                    {
+                                        ItemPropID = prop.ItemPropID,
+                                        LItemValueItem = lookupItem.LItemValue.LItem
+                                    });
+                                }
+                            }*/
                         }
                     }
                     break;

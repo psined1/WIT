@@ -62,6 +62,9 @@
     <Compile Include="Models\LItemType.cs">
       <DependentUpon>WitModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\LItemTypeLookup.cs">
+      <DependentUpon>WitModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\LItemValue.cs">
       <DependentUpon>WitModel.tt</DependentUpon>
     </Compile>
@@ -72,6 +75,9 @@
       <DependentUpon>WitModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\LItemValueInteger.cs">
+      <DependentUpon>WitModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\LItemValueItem.cs">
       <DependentUpon>WitModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\LItemValueString.cs">

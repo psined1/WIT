@@ -1,7 +1,7 @@
 USE [WIT]
 GO
 
-/****** Object:  Table [dbo].[LItemValueItem]    Script Date: 11/24/2017 10:11:02 ******/
+/****** Object:  Table [dbo].[LItemValueItem]    Script Date: 02/17/2018 19:49:27 ******/
 SET ANSI_NULLS ON
 GO
 

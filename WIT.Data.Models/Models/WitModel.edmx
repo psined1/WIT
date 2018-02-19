@@ -68,6 +68,14 @@
           <Property Name="CreatedBy" Type="varchar" MaxLength="50" />
           <Property Name="UpdatedBy" Type="varchar" MaxLength="50" />
         </EntityType>
+        <EntityType Name="LItemTypeLookup">
+          <Key>
+            <PropertyRef Name="ItemTypeID" />
+          </Key>
+          <Property Name="ItemTypeID" Type="int" Nullable="false" />
+          <Property Name="ItemPropID" Type="int" Nullable="false" />
+          <Property Name="Nill" Type="int" />
+        </EntityType>
         <EntityType Name="LItemValue">
           <Key>
             <PropertyRef Name="ItemValueID" />
@@ -103,6 +111,7 @@
           </Key>
           <Property Name="ItemValueID" Type="bigint" Nullable="false" />
           <Property Name="Value" Type="bigint" Nullable="false" />
+          <Property Name="Nill" Type="int" />
         </EntityType>
         <EntityType Name="LItemValueString">
           <Key>
@@ -213,6 +222,32 @@
             </Principal>
             <Dependent Role="LItemProp">
               <PropertyRef Name="ValueItemTypeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_LItemTypeLookup_LItemProp">
+          <End Role="LItemProp" Type="Self.LItemProp" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="LItemTypeLookup" Type="Self.LItemTypeLookup" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="LItemProp">
+              <PropertyRef Name="ItemPropID" />
+            </Principal>
+            <Dependent Role="LItemTypeLookup">
+              <PropertyRef Name="ItemPropID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_LItemTypeLookup_LItemType">
+          <End Role="LItemType" Type="Self.LItemType" Multiplicity="1" />
+          <End Role="LItemTypeLookup" Type="Self.LItemTypeLookup" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="LItemType">
+              <PropertyRef Name="ItemTypeID" />
+            </Principal>
+            <Dependent Role="LItemTypeLookup">
+              <PropertyRef Name="ItemTypeID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -369,6 +404,7 @@
           <EntitySet Name="LItem" EntityType="Self.LItem" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="LItemProp" EntityType="Self.LItemProp" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="LItemType" EntityType="Self.LItemType" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="LItemTypeLookup" EntityType="Self.LItemTypeLookup" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="LItemValue" EntityType="Self.LItemValue" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="LItemValueDateTime" EntityType="Self.LItemValueDateTime" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="LItemValueDecimal" EntityType="Self.LItemValueDecimal" Schema="dbo" store:Type="Tables" />
@@ -391,6 +427,14 @@
           <AssociationSet Name="FK_LItemProp_LItemType_Value" Association="Self.FK_LItemProp_LItemType_Value">
             <End Role="LItemType" EntitySet="LItemType" />
             <End Role="LItemProp" EntitySet="LItemProp" />
+          </AssociationSet>
+          <AssociationSet Name="FK_LItemTypeLookup_LItemProp" Association="Self.FK_LItemTypeLookup_LItemProp">
+            <End Role="LItemProp" EntitySet="LItemProp" />
+            <End Role="LItemTypeLookup" EntitySet="LItemTypeLookup" />
+          </AssociationSet>
+          <AssociationSet Name="FK_LItemTypeLookup_LItemType" Association="Self.FK_LItemTypeLookup_LItemType">
+            <End Role="LItemType" EntitySet="LItemType" />
+            <End Role="LItemTypeLookup" EntitySet="LItemTypeLookup" />
           </AssociationSet>
           <AssociationSet Name="FK_LItemValue_LItem" Association="Self.FK_LItemValue_LItem">
             <End Role="LItem" EntitySet="LItem" />
@@ -504,9 +548,23 @@
             <End Role="LItemValue" EntitySet="LItemValues" />
             <End Role="LItemValueText" EntitySet="LItemValueTexts" />
           </AssociationSet>
-          <AssociationSet Name="LItemValueItem" Association="WIT.Data.Models.LItemValueItem">
+          <EntitySet Name="LItemTypeLookups" EntityType="WIT.Data.Models.LItemTypeLookup" />
+          <AssociationSet Name="FK_LItemTypeLookup_LItemProp" Association="WIT.Data.Models.FK_LItemTypeLookup_LItemProp">
+            <End Role="LItemProp" EntitySet="LItemProps" />
+            <End Role="LItemTypeLookup" EntitySet="LItemTypeLookups" />
+          </AssociationSet>
+          <AssociationSet Name="FK_LItemTypeLookup_LItemType" Association="WIT.Data.Models.FK_LItemTypeLookup_LItemType">
+            <End Role="LItemType" EntitySet="LItemTypes" />
+            <End Role="LItemTypeLookup" EntitySet="LItemTypeLookups" />
+          </AssociationSet>
+          <EntitySet Name="LItemValueItems" EntityType="WIT.Data.Models.LItemValueItem" />
+          <AssociationSet Name="FK_LItemValueItem_LItem" Association="WIT.Data.Models.FK_LItemValueItem_LItem">
             <End Role="LItem" EntitySet="LItems" />
+            <End Role="LItemValueItem" EntitySet="LItemValueItems" />
+          </AssociationSet>
+          <AssociationSet Name="FK_LItemValueItem_LItemValue" Association="WIT.Data.Models.FK_LItemValueItem_LItemValue">
             <End Role="LItemValue" EntitySet="LItemValues" />
+            <End Role="LItemValueItem" EntitySet="LItemValueItems" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="User">
@@ -640,7 +698,7 @@
           <Property Name="UpdatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="LItemType" Relationship="WIT.Data.Models.FK_LItem_LItemType" FromRole="LItem" ToRole="LItemType" />
           <NavigationProperty Name="LItemValues" Relationship="WIT.Data.Models.FK_LItemValue_LItem" FromRole="LItem" ToRole="LItemValue" />
-          <NavigationProperty Name="LItemValueItems" Relationship="WIT.Data.Models.LItemValueItem" FromRole="LItem" ToRole="LItemValue" />
+          <NavigationProperty Name="LItemValueItems" Relationship="WIT.Data.Models.FK_LItemValueItem_LItem" FromRole="LItem" ToRole="LItemValueItem" />
         </EntityType>
         <EntityType Name="LItemProp">
           <Key>
@@ -664,6 +722,7 @@
           <Property Name="Unique" Type="Boolean" Nullable="false" />
           <Property Name="UpperCase" Type="Boolean" Nullable="false" />
           <Property Name="Radix" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="LItemTypeLookups" Relationship="WIT.Data.Models.FK_LItemTypeLookup_LItemProp" FromRole="LItemProp" ToRole="LItemTypeLookup" />
         </EntityType>
         <EntityType Name="LItemType">
           <Key>
@@ -679,6 +738,7 @@
           <Property Name="UpdatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="LItems" Relationship="WIT.Data.Models.FK_LItem_LItemType" FromRole="LItemType" ToRole="LItem" />
           <NavigationProperty Name="LItemProps" Relationship="WIT.Data.Models.FK_LItemProp_LItemType" FromRole="LItemType" ToRole="LItemProp" />
+          <NavigationProperty Name="LItemTypeLookup" Relationship="WIT.Data.Models.FK_LItemTypeLookup_LItemType" FromRole="LItemType" ToRole="LItemTypeLookup" />
         </EntityType>
         <EntityType Name="LItemValue">
           <Key>
@@ -694,7 +754,7 @@
           <NavigationProperty Name="LItemValueInteger" Relationship="WIT.Data.Models.FK_LItemValueInteger_LItemValue" FromRole="LItemValue" ToRole="LItemValueInteger" />
           <NavigationProperty Name="LItemValueString" Relationship="WIT.Data.Models.FK_LItemValueString_LItemValue" FromRole="LItemValue" ToRole="LItemValueString" />
           <NavigationProperty Name="LItemValueText" Relationship="WIT.Data.Models.FK_LItemValueText_LItemValue" FromRole="LItemValue" ToRole="LItemValueText" />
-          <NavigationProperty Name="LItemValueItem" Relationship="WIT.Data.Models.LItemValueItem" FromRole="LItemValue" ToRole="LItem" />
+          <NavigationProperty Name="LItemValueItem" Relationship="WIT.Data.Models.FK_LItemValueItem_LItemValue" FromRole="LItemValue" ToRole="LItemValueItem" />
         </EntityType>
         <EntityType Name="LItemValueDateTime">
           <Key>
@@ -872,9 +932,77 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="LItemValueItem">
-          <End Type="WIT.Data.Models.LItem" Role="LItem" Multiplicity="0..1" />
-          <End Type="WIT.Data.Models.LItemValue" Role="LItemValue" Multiplicity="*" />
+        <EntityType Name="LItemTypeLookup">
+          <Key>
+            <PropertyRef Name="ItemTypeID" />
+          </Key>
+          <Property Name="ItemTypeID" Type="Int32" Nullable="false" />
+          <Property Name="ItemPropID" Type="Int32" Nullable="false" />
+          <Property Name="Nill" Type="Int32" />
+          <NavigationProperty Name="LItemProp" Relationship="WIT.Data.Models.FK_LItemTypeLookup_LItemProp" FromRole="LItemTypeLookup" ToRole="LItemProp" />
+          <NavigationProperty Name="LItemType" Relationship="WIT.Data.Models.FK_LItemTypeLookup_LItemType" FromRole="LItemTypeLookup" ToRole="LItemType" />
+        </EntityType>
+        <Association Name="FK_LItemTypeLookup_LItemProp">
+          <End Type="WIT.Data.Models.LItemProp" Role="LItemProp" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="WIT.Data.Models.LItemTypeLookup" Role="LItemTypeLookup" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="LItemProp">
+              <PropertyRef Name="ItemPropID" />
+            </Principal>
+            <Dependent Role="LItemTypeLookup">
+              <PropertyRef Name="ItemPropID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_LItemTypeLookup_LItemType">
+          <End Type="WIT.Data.Models.LItemType" Role="LItemType" Multiplicity="1" />
+          <End Type="WIT.Data.Models.LItemTypeLookup" Role="LItemTypeLookup" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="LItemType">
+              <PropertyRef Name="ItemTypeID" />
+            </Principal>
+            <Dependent Role="LItemTypeLookup">
+              <PropertyRef Name="ItemTypeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="LItemValueItem">
+          <Key>
+            <PropertyRef Name="ItemValueID" />
+          </Key>
+          <Property Name="ItemValueID" Type="Int64" Nullable="false" />
+          <Property Name="Value" Type="Int64" Nullable="false" />
+          <Property Name="Nill" Type="Int32" />
+          <NavigationProperty Name="LItem" Relationship="WIT.Data.Models.FK_LItemValueItem_LItem" FromRole="LItemValueItem" ToRole="LItem" />
+          <NavigationProperty Name="LItemValue" Relationship="WIT.Data.Models.FK_LItemValueItem_LItemValue" FromRole="LItemValueItem" ToRole="LItemValue" />
+        </EntityType>
+        <Association Name="FK_LItemValueItem_LItem">
+          <End Type="WIT.Data.Models.LItem" Role="LItem" Multiplicity="1" />
+          <End Type="WIT.Data.Models.LItemValueItem" Role="LItemValueItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="LItem">
+              <PropertyRef Name="ItemID" />
+            </Principal>
+            <Dependent Role="LItemValueItem">
+              <PropertyRef Name="Value" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_LItemValueItem_LItemValue">
+          <End Type="WIT.Data.Models.LItemValue" Role="LItemValue" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="WIT.Data.Models.LItemValueItem" Role="LItemValueItem" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="LItemValue">
+              <PropertyRef Name="ItemValueID" />
+            </Principal>
+            <Dependent Role="LItemValueItem">
+              <PropertyRef Name="ItemValueID" />
+            </Dependent>
+          </ReferentialConstraint>
         </Association>
         </Schema>
     </edmx:ConceptualModels>
@@ -1062,15 +1190,24 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <AssociationSetMapping Name="LItemValueItem" TypeName="WIT.Data.Models.LItemValueItem" StoreEntitySet="LItemValueItem">
-            <EndProperty Name="LItemValue">
-              <ScalarProperty Name="ItemValueID" ColumnName="ItemValueID" />
-            </EndProperty>
-            <EndProperty Name="LItem">
-              <ScalarProperty Name="ItemID" ColumnName="Value" />
-            </EndProperty>
-            <Condition ColumnName="Value" IsNull="false" />
-          </AssociationSetMapping>
+          <EntitySetMapping Name="LItemTypeLookups">
+            <EntityTypeMapping TypeName="WIT.Data.Models.LItemTypeLookup">
+              <MappingFragment StoreEntitySet="LItemTypeLookup">
+                <ScalarProperty Name="Nill" ColumnName="Nill" />
+                <ScalarProperty Name="ItemPropID" ColumnName="ItemPropID" />
+                <ScalarProperty Name="ItemTypeID" ColumnName="ItemTypeID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="LItemValueItems">
+            <EntityTypeMapping TypeName="WIT.Data.Models.LItemValueItem">
+              <MappingFragment StoreEntitySet="LItemValueItem">
+                <ScalarProperty Name="Nill" ColumnName="Nill" />
+                <ScalarProperty Name="Value" ColumnName="Value" />
+                <ScalarProperty Name="ItemValueID" ColumnName="ItemValueID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
