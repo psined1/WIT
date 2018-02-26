@@ -7,6 +7,7 @@ import { DataGrid } from '../shared/datagrid/datagrid.component';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ConfirmYesNoComponent } from './confirm-yes-no/confirm-yes-no.component';
+import { MultiselectComponent } from './multiselect/multiselect.component';
 
 import { ModalModule } from 'ngx-bootstrap';
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
@@ -17,7 +18,8 @@ import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
         AlertBoxComponent,
         AddressComponent,
         DataGrid,
-        ConfirmYesNoComponent
+        ConfirmYesNoComponent,
+        MultiselectComponent
     ],   
     imports: [
         FormsModule,      
@@ -28,7 +30,8 @@ import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
     exports: [
         AlertBoxComponent,
         AddressComponent,
-        DataGrid
+        DataGrid,
+        MultiselectComponent
     ],
     entryComponents: [ConfirmYesNoComponent],
     providers: [AlertBoxComponent, BsModalService, BsModalRef],

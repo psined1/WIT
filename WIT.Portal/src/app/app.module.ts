@@ -21,7 +21,7 @@ import { HttpService } from './services/http.service';
 import { BlockUIService } from './services/blockui.service';
 
 import { BsDropdownModule } from 'ngx-bootstrap';
-import { SplitPaneModule } from 'ng2-split-pane/lib/ng2-split-pane';
+//import { SplitPaneModule } from 'ng2-split-pane/lib/ng2-split-pane';
 
 @NgModule({
     declarations: [
@@ -40,8 +40,8 @@ import { SplitPaneModule } from 'ng2-split-pane/lib/ng2-split-pane';
         HttpModule,
         SharedModule,       
         RouterModule.forRoot(AppRoutes),
-        BsDropdownModule.forRoot(),
-        SplitPaneModule
+        BsDropdownModule.forRoot()
+        /*SplitPaneModule*/
     ],     
     providers: [
         HttpService,

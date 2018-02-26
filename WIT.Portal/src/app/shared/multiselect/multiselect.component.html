@@ -1,0 +1,62 @@
+﻿<div class="btn-group" style="width: 100%">
+    <button type="button" class="btn dropdown-toggle" 
+            style="white-space: nowrap; overflow-x: hidden; text-overflow: ellipsis;"
+            [ngClass]="classesBtn" 
+            (click)="toggleDropdown()" 
+            [disabled]="disabled">
+        {{getButtonText()}}&nbsp;<span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu dropdown-menu-form"
+        [ngStyle]="{display: open ? 'block' : 'none'}" style="width: 100%; overflow-x: auto">
+
+        <li *ngIf="showSelectAll">
+            <a (click)="selectAll()" href="">
+                <span class="glyphicon glyphicon-ok"></span> {{labels && labels.selectAll || 'Select All'}}
+            </a>
+        </li>
+        <li *ngIf="showUnselectAll">
+            <a (click)="unselectAll()" href="">
+                <span class="glyphicon glyphicon-remove"></span> {{labels && labels.unselectAll || 'Unselect All'}}
+            </a>
+        </li>
+        <li *ngIf="(showSelectAll || showUnselectAll)"
+            class="divider">
+        </li>
+
+        <li role="presentation" *ngFor="let o of selectedOptions" class="active">
+            <a class="item-selected" href="" title="{{showTooltip ? getDisplay(o) : ''}}" 
+               (click)="toggleItem(o); $event.stopPropagation()" 
+               style="overflow-x: hidden;text-overflow: ellipsis">
+                <span class="glyphicon glyphicon-remove"></span>
+                {{getDisplay(o)}}
+            </a>
+        </li>
+        <li *ngIf="selectedOptions.length > 0" class="divider"></li>
+
+        <li *ngIf="showSearch">
+            <div class="dropdown-header">
+                <input type="text" class="form-control input-sm" style="width: 100%;"
+                       placeholder="{{labels && labels.search || 'Search...'}}" 
+                       [ngModel]="searchFilter" 
+                       (ngModelChange)="updateOptions()" />
+            </div>
+        </li>
+
+        <li *ngIf="showSearch" class="divider"></li>
+        <li role="presentation" 
+            *ngFor="let o of unselectedOptions | filter:search()"
+            [ngClass]="{disabled : selectionLimit && selectedOptions.length >= selectionLimit}">
+            <a class="item-unselected" href="" title="{{showTooltip ? getDisplay(o) : ''}}" 
+               (click)="toggleItem(o); $event.stopPropagation()" 
+               style="overflow-x: hidden;text-overflow: ellipsis">
+                {{getDisplay(o)}}
+            </a>
+        </li>
+
+        <li class="divider" *ngIf="selectionLimit > 1"></li>
+        <li role="presentation" *ngIf="selectionLimit > 1">
+            <a>{{selectedOptions.length || 0}} / {{selectionLimit}} {{labels.itemsSelected || 'selected'}}</a>
+        </li>
+
+    </ul>
+</div>
